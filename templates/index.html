@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Path2Work — Your Skills. Your Path. Your Future.{% endblock %}
+{% block content %}
+  <section class="hero-section">
+    <div class="hero-copy">
+      <p class="eyebrow">Your next step starts here</p>
+      <h1>Real skills. Meaningful opportunities. A brighter future.</h1>
+      <p class="hero-description">Path2Work helps you build your skills, understand your readiness, and find the right opportunities — all in one place.</p>
+      <div class="hero-actions">
+        {% if current_user %}
+          <a class="button button-primary button-large" href="{{ url_for('opportunities') }}">
+            <span>Find my next step</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+          </a>
+        {% else %}
+          <a class="button button-primary button-large" href="{{ url_for('register') }}">
+            <span>Find my next step</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+          </a>
+        {% endif %}
+        <a class="button button-outline button-large" href="{{ url_for('opportunities') }}">Explore opportunities</a>
+      </div>
+    </div>
+    <div class="hero-media">
+      <img src="{{ url_for('static', filename='assets/home-hero.jpg') }}" alt="A young woman with a laptop looking ahead with confidence">
+    </div>
+  </section>
+
+  <section class="value-section" id="features" aria-label="How Path2Work helps">
+    <div class="value-grid">
+      <article class="value-item">
+        <span class="icon-disc" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2z"/></svg>
+        </span>
+        <h2>Build your profile</h2>
+        <p>Showcase your skills, education, experience and interests.</p>
+      </article>
+      <article class="value-item">
+        <span class="icon-disc" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 19v-5m5 5V9m5 10V5m5 14v-8"/></svg>
+        </span>
+        <h2>Understand your readiness</h2>
+        <p>Get clear feedback and personalised next steps.</p>
+      </article>
+      <article class="value-item">
+        <span class="icon-disc" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18m-11 0v2h4v-2"/></svg>
+        </span>
+        <h2>Find the right opportunities</h2>
+        <p>Discover jobs, internships, learnerships and training.</p>
+      </article>
+      <article class="value-item">
+        <span class="icon-disc" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5zM6 11v5c3 3 9 3 12 0v-5m4-2v7"/></svg>
+        </span>
+        <h2>Grow your skills</h2>
+        <p>Access learning resources and build your future.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="steps-section" id="how-it-works">
+    <div class="section-heading">
+      <span class="section-rule" aria-hidden="true"></span>
+      <h2>How it works</h2>
+      <p>A simple journey from where you are to where you want to be.</p>
+    </div>
+    <ol class="steps-list">
+      <li class="step-item">
+        <span class="step-number">1</span>
+        <div><h3>Create your account</h3><p>It only takes a minute.</p></div>
+        <svg class="step-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </li>
+      <li class="step-item">
+        <span class="step-number">2</span>
+        <div><h3>Build your profile</h3><p>Add your skills, interests and preferences.</p></div>
+        <svg class="step-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </li>
+      <li class="step-item">
+        <span class="step-number">3</span>
+        <div><h3>Get matched</h3><p>See opportunities and learning suggestions.</p></div>
+        <svg class="step-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </li>
+      <li class="step-item">
+        <span class="step-number">4</span>
+        <div><h3>Take action</h3><p>Apply, learn and track your progress.</p></div>
+      </li>
+    </ol>
+  </section>
+{% endblock %}

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0d2d5e">
+    <meta name="description" content="Build your skills, understand your readiness, and find opportunities with Path2Work.">
+    <title>{% block title %}Path2Work — Your Skills. Your Path. Your Future.{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='assets/path2work-logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/site.js') }}" defer></script>
+  </head>
+  <body>
+    {% block header %}
+    <header class="site-header">
+      <a class="brand" href="{{ url_for('home') }}" aria-label="Path2Work home">
+        <img src="{{ url_for('static', filename='assets/path2work-logo.png') }}" alt="Path2Work">
+        <span class="brand-tagline">Your Skills. Your Path. Your Future.</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Open navigation menu" data-menu-toggle>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <nav class="primary-navigation" id="primary-navigation" aria-label="Main navigation" data-navigation>
+        <a class="nav-link {{ 'is-active' if active_page == 'home' else '' }}" href="{{ url_for('home') }}" {{ 'aria-current=page' if active_page == 'home' else '' }}>Home</a>
+        <a class="nav-link {{ 'is-active' if active_page == 'opportunities' else '' }}" href="{{ url_for('opportunities') }}" {{ 'aria-current=page' if active_page == 'opportunities' else '' }}>Opportunities</a>
+        <a class="nav-link" href="{{ url_for('home') }}#features">Learn</a>
+        <a class="nav-link" href="{{ url_for('home') }}#how-it-works">About</a>
+        <div class="nav-actions">
+          {% if current_user %}
+            <span class="signed-in-label">Hi, {{ current_user["full_name"].split(" ")[0] }}</span>
+            <form action="{{ url_for('sign_out') }}" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="button button-outline button-small" type="submit">Sign out</button>
+            </form>
+          {% else %}
+            <a class="button button-outline button-small" href="{{ url_for('sign_in') }}">Sign in</a>
+            <a class="button button-primary button-small" href="{{ url_for('register') }}">Get started</a>
+          {% endif %}
+        </div>
+      </nav>
+    </header>
+    {% endblock %}
+
+    <main id="main-content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-stack" aria-live="polite" aria-atomic="true">
+            {% for category, message in messages %}
+              <p class="flash-message flash-{{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+
+    {% block footer %}
+    <footer class="site-footer">
+      <a class="footer-brand" href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='assets/path2work-logo.png') }}" alt="Path2Work">
+      </a>
+      <p>Your Skills. Your Path. Your Future.</p>
+      <nav aria-label="Footer navigation">
+        <a href="{{ url_for('opportunities') }}">Opportunities</a>
+        <a href="{{ url_for('home') }}#features">Learn</a>
+        <a href="{{ url_for('sign_in') }}">Sign in</a>
+      </nav>
+      <small>&copy; {{ current_year }} Path2Work</small>
+    </footer>
+    {% endblock %}
+  </body>
+</html>

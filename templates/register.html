@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Create your account — Path2Work{% endblock %}
+{% block header %}
+  <header class="auth-header">
+    <a class="brand" href="{{ url_for('home') }}" aria-label="Path2Work home">
+      <img src="{{ url_for('static', filename='assets/path2work-logo.png') }}" alt="Path2Work">
+      <span class="brand-tagline">Your Skills. Your Path. Your Future.</span>
+    </a>
+    <p>Already have an account? <a href="{{ url_for('sign_in') }}">Sign in</a></p>
+  </header>
+{% endblock %}
+{% block content %}
+  <div class="registration-layout">
+    <aside class="promo-panel">
+      <img class="promo-photo" src="{{ url_for('static', filename='assets/signup-male.jpg') }}" alt="" aria-hidden="true">
+      <div class="promo-content">
+        <div class="promo-intro">
+          <p class="eyebrow">Make your next move</p>
+          <h1>Your next chapter starts here.</h1>
+          <p>Build your skills, find real opportunities and take the next step towards a brighter future — all in one place.</p>
+        </div>
+        <ul class="benefit-list">
+          <li>
+            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2z"/></svg></span>
+            <span><strong>Build your profile</strong><span>Showcase your skills, education and experience.</span></span>
+          </li>
+          <li>
+            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19v-5m5 5V9m5 10V5m5 14v-8"/></svg></span>
+            <span><strong>Get matched</strong><span>Discover opportunities and learning suggestions.</span></span>
+          </li>
+          <li>
+            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5zM6 11v5c3 3 9 3 12 0v-5m4-2v7"/></svg></span>
+            <span><strong>Keep learning</strong><span>Build in-demand skills for your future.</span></span>
+          </li>
+          <li>
+            <span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18"/></svg></span>
+            <span><strong>Find opportunities</strong><span>Explore internships and entry-level roles.</span></span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="form-panel" aria-labelledby="register-heading">
+      <div class="form-content">
+        <p class="eyebrow">Create your account</p>
+        <h2 id="register-heading">Let’s get you started</h2>
+        <p class="form-intro">It only takes a minute. You can always update your details later.</p>
+
+        <form class="account-form" action="{{ url_for('register') }}" method="post" data-account-form>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="field-group">
+            <label for="full_name">Full name <span aria-hidden="true">*</span></label>
+            <input id="full_name" name="full_name" type="text" autocomplete="name" maxlength="120" required value="{{ form_data.get('full_name', '') }}" aria-invalid="{{ 'true' if errors.get('full_name') else 'false' }}" {% if errors.get('full_name') %}aria-describedby="full-name-error"{% endif %}>
+            {% if errors.get('full_name') %}<p class="field-error" id="full-name-error">{{ errors.full_name }}</p>{% endif %}
+          </div>
+          <div class="field-group">
+            <label for="email">Email address <span aria-hidden="true">*</span></label>
+            <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required value="{{ form_data.get('email', '') }}" aria-invalid="{{ 'true' if errors.get('email') else 'false' }}" {% if errors.get('email') %}aria-describedby="email-error"{% endif %}>
+            {% if errors.get('email') %}<p class="field-error" id="email-error">{{ errors.email }}</p>{% endif %}
+          </div>
+          <div class="field-group">
+            <label for="password">Password <span aria-hidden="true">*</span></label>
+            <div class="password-field">
+              <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="256" required aria-invalid="{{ 'true' if errors.get('password') else 'false' }}" {% if errors.get('password') %}aria-describedby="password-help password-error"{% else %}aria-describedby="password-help"{% endif %}>
+              <button class="password-toggle" type="button" data-password-toggle aria-label="Show password" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <p class="field-hint" id="password-help">Use at least 8 characters.</p>
+            {% if errors.get('password') %}<p class="field-error" id="password-error">{{ errors.password }}</p>{% endif %}
+          </div>
+          <button class="button button-primary button-submit" type="submit" data-submit-button>
+            <span data-submit-label>Create account</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+          </button>
+          <p class="form-privacy">Your password is securely protected. We never store it in plain text.</p>
+        </form>
+      </div>
+    </section>
+  </div>
+{% endblock %}
+{% block footer %}{% endblock %}

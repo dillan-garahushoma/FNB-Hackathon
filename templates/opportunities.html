@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Opportunities — Path2Work{% endblock %}
+{% block content %}
+  <section class="directory-page">
+    <p class="eyebrow">Explore what's next</p>
+    <h1>Opportunities</h1>
+    <p class="directory-intro">Find jobs, internships, learnerships and training that can help you move forward.</p>
+    <div class="empty-state">
+      <span class="empty-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18"/></svg>
+      </span>
+      <h2>No opportunities listed yet</h2>
+      <p>New listings will appear here when they’re available. Check back soon or start building your profile.</p>
+      <a class="button button-primary" href="{{ url_for('register') }}">Create your account</a>
+    </div>
+  </section>
+{% endblock %}
