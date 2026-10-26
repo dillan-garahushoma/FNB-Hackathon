@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Create account | Path2Work{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-xl">
+    <div class="card p-6 shadow-lg sm:p-8">
+        <h1 class="text-3xl font-extrabold">Create your Path2Work account</h1>
+        <p class="mt-2 text-base text-slate-600">
+            Candidates build a verified Skills Passport. Employers inspect real evidence before they interview.
+        </p>
+
+        <form method="POST" action="{{ url_for('auth.register') }}" class="mt-8 space-y-6">
+            <fieldset>
+                <legend class="field-label">I am signing up as</legend>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="role" value="candidate" checked class="peer sr-only">
+                        <span class="block rounded-xl border-2 border-slate-200 p-4 transition hover:border-slate-400 peer-checked:border-build-dark peer-checked:bg-build-soft peer-focus-visible:ring-2 peer-focus-visible:ring-build-dark peer-focus-visible:ring-offset-2">
+                            <span class="block font-display text-base font-bold text-ink">IT candidate</span>
+                            <span class="block text-sm text-slate-600">Student or graduate</span>
+                        </span>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="role" value="employer" class="peer sr-only">
+                        <span class="block rounded-xl border-2 border-slate-200 p-4 transition hover:border-slate-400 peer-checked:border-match-dark peer-checked:bg-match-soft peer-focus-visible:ring-2 peer-focus-visible:ring-match-dark peer-focus-visible:ring-offset-2">
+                            <span class="block font-display text-base font-bold text-ink">Employer</span>
+                            <span class="block text-sm text-slate-600">Hiring manager or talent lead</span>
+                        </span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <div>
+                <label for="full_name" class="field-label">Full name</label>
+                <input id="full_name" type="text" name="full_name" required autocomplete="name" placeholder="e.g. Sipho Ndlovu" class="field">
+            </div>
+
+            <div>
+                <label for="email" class="field-label">Email address</label>
+                <input id="email" type="email" name="email" required autocomplete="email" inputmode="email" placeholder="sipho@wits.ac.za" class="field" aria-describedby="emailHint">
+                <p id="emailHint" class="field-hint">Use your institution email (.ac.za) to speed up Level 3 source verification.</p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-3">
+                <div class="sm:col-span-2" id="instWrap">
+                    <label for="institution" id="instLabel" class="field-label">University, TVET or institution</label>
+                    <input id="institution" type="text" name="institution" required autocomplete="organization" placeholder="e.g. University of Johannesburg (UJ)" class="field">
+                </div>
+                <div id="gradYearWrap">
+                    <label for="graduation_year" class="field-label">Graduation year</label>
+                    <input id="graduation_year" type="number" name="graduation_year" value="2026" min="2020" max="2030" inputmode="numeric" class="field">
+                </div>
+            </div>
+
+            <div>
+                <label for="password" class="field-label">Password</label>
+                <div class="relative">
+                    <input id="password" type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters" class="field pr-12" aria-describedby="pwHint">
+                    <button type="button" id="togglePassword" aria-controls="password" aria-pressed="false" aria-label="Show password"
+                            class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-lg text-slate-600 hover:text-ink">
+                        <i class="ph ph-eye text-lg" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <p id="pwHint" class="field-hint">Use at least 6 characters. A longer phrase is safer.</p>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full py-3 text-base">Create account</button>
+        </form>
+
+        <p class="mt-6 border-t border-slate-100 pt-5 text-center text-sm text-slate-600">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" class="font-semibold text-build-dark underline underline-offset-2 hover:text-ink">Sign in</a>
+        </p>
+    </div>
+</div>
+
+<script>
+(function () {
+    var instLabel = document.getElementById('instLabel');
+    var instInput = document.getElementById('institution');
+    var instWrap = document.getElementById('instWrap');
+    var gradWrap = document.getElementById('gradYearWrap');
+    var emailInput = document.getElementById('email');
+    var emailHint = document.getElementById('emailHint');
+
+    function applyRole(role) {
+        if (role === 'employer') {
+            instLabel.textContent = 'Company or organisation name';
+            instInput.placeholder = 'e.g. PayFlow FinTech SA';
+            emailInput.placeholder = 'name@yourcompany.co.za';
+            emailHint.textContent = 'Use your work email so candidates and Path2Work can confirm who you are.';
+            gradWrap.style.display = 'none';
+            instWrap.classList.replace('sm:col-span-2', 'sm:col-span-3');
+        } else {
+            instLabel.textContent = 'University, TVET or institution';
+            instInput.placeholder = 'e.g. University of Johannesburg (UJ)';
+            emailInput.placeholder = 'sipho@wits.ac.za';
+            emailHint.textContent = 'Use your institution email (.ac.za) to speed up Level 3 source verification.';
+            gradWrap.style.display = 'block';
+            instWrap.classList.replace('sm:col-span-3', 'sm:col-span-2');
+        }
+    }
+
+    var radios = document.querySelectorAll('input[name="role"]');
+    radios.forEach(function (r) {
+        r.addEventListener('change', function () { applyRole(r.value); });
+    });
+    // Browsers can restore a previously chosen role on back navigation.
+    radios.forEach(function (r) { if (r.checked) applyRole(r.value); });
+
+    var pw = document.getElementById('password');
+    var toggle = document.getElementById('togglePassword');
+    toggle.addEventListener('click', function () {
+        var show = pw.type === 'password';
+        pw.type = show ? 'text' : 'password';
+        toggle.setAttribute('aria-pressed', String(show));
+        toggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        toggle.querySelector('i').className = 'ph ' + (show ? 'ph-eye-slash' : 'ph-eye') + ' text-lg';
+    });
+})();
+</script>
+{% endblock %}

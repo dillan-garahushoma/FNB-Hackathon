@@ -45,6 +45,14 @@ class Path2WorkAppTests(unittest.TestCase):
             follow_redirects=False,
         )
 
+    def post_onboarding(self, step, data):
+        token = self.csrf_token(f'/onboarding/{step}')
+        return self.client.post(
+            f'/onboarding/{step}',
+            data={**data, 'csrf_token': token},
+            follow_redirects=False,
+        )
+
     def test_public_pages_and_local_assets_are_available(self):
         for path in ('/', '/register', '/opportunities', '/signin'):
             with self.subTest(path=path):
@@ -87,7 +95,7 @@ class Path2WorkAppTests(unittest.TestCase):
     def test_registration_hashes_password_and_signs_user_in(self):
         response = self.register()
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], '/')
+        self.assertEqual(response.headers['Location'], '/onboarding/1')
         with self.client.session_transaction() as session:
             self.assertIn('user_id', session)
 
@@ -136,6 +144,84 @@ class Path2WorkAppTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 401)
         self.assertIn(b'Email or password is incorrect', response.data)
+
+    def test_registration_starts_and_persists_the_complete_onboarding_flow(self):
+        response = self.register()
+        self.assertEqual(response.headers['Location'], '/onboarding/1')
+
+        response = self.post_onboarding(1, {'career_goal': 'FIRST_JOB'})
+        self.assertEqual(response.headers['Location'], '/onboarding/2')
+
+        response = self.post_onboarding(2, {
+            'career_fields': ['Information Technology', 'Design & Creative'],
+            'preferred_roles': ['Software Developer', 'Web Designer'],
+        })
+        self.assertEqual(response.headers['Location'], '/onboarding/3')
+
+        response = self.post_onboarding(3, {
+            'preferred_locations': ['Johannesburg', 'Cape Town'],
+            'work_arrangement': 'Hybrid',
+            'availability': 'Immediately',
+            'opportunity_types': ['Jobs', 'Internships'],
+        })
+        self.assertEqual(response.headers['Location'], '/onboarding/4')
+        self.assertIn(b'Review your profile', self.client.get('/onboarding/4').data)
+
+        response = self.client.post(
+            '/onboarding/complete',
+            data={'csrf_token': self.csrf_token('/onboarding/4')},
+            follow_redirects=False,
+        )
+        self.assertEqual(response.headers['Location'], '/')
+
+        with closing(sqlite3.connect(self.database)) as database:
+            user = database.execute(
+                'SELECT career_goal, career_fields, preferred_roles, preferred_locations, '
+                'work_arrangement, availability, opportunity_types, onboarding_completed '
+                'FROM users WHERE email = ?',
+                ('aisha@example.org',),
+            ).fetchone()
+        self.assertEqual(user[0], 'FIRST_JOB')
+        self.assertEqual(user[1], '["Information Technology", "Design & Creative"]')
+        self.assertEqual(user[2], '["Software Developer", "Web Designer"]')
+        self.assertEqual(user[3], '["Johannesburg", "Cape Town"]')
+        self.assertEqual(user[4:7], ('Hybrid', 'Immediately', '["Jobs", "Internships"]'))
+        self.assertEqual(user[7], 1)
+
+    def test_sign_in_resumes_at_the_first_incomplete_onboarding_step(self):
+        self.assertEqual(self.register().headers['Location'], '/onboarding/1')
+        self.assertEqual(
+            self.post_onboarding(1, {'career_goal': 'BUILD_SKILLS'}).headers['Location'],
+            '/onboarding/2',
+        )
+        self.client.post(
+            '/signout',
+            data={'csrf_token': self.csrf_token('/')},
+            follow_redirects=False,
+        )
+
+        token = self.csrf_token('/signin')
+        response = self.client.post(
+            '/signin',
+            data={
+                'csrf_token': token,
+                'email': 'aisha@example.org',
+                'password': 'strongpass8',
+            },
+        )
+        self.assertEqual(response.headers['Location'], '/onboarding/2')
+
+    def test_onboarding_rejects_more_than_three_roles(self):
+        self.assertEqual(self.register().headers['Location'], '/onboarding/1')
+        self.post_onboarding(1, {'career_goal': 'FIRST_JOB'})
+
+        response = self.post_onboarding(2, {
+            'career_fields': ['Information Technology'],
+            'preferred_roles': ['Software Developer', 'IT Support', 'Data Analyst', 'Other'],
+            'other_role': 'Product manager',
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(b'Choose no more than three roles.', response.data)
 
     def test_missing_csrf_token_is_rejected(self):
         response = self.client.post(

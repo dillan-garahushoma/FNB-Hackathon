@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% block title %}Set up your Path2Work profile{% endblock %}
+
+{% block content %}
+  <div class="onboarding-shell">
+    <aside class="onboarding-sidebar" aria-label="Account navigation">
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" href="{{ url_for('home') }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>
+          <span>Home</span>
+        </a>
+        <a class="sidebar-link" href="{{ url_for('opportunities') }}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+          <span>Opportunities</span>
+        </a>
+        <a class="sidebar-link" href="{{ url_for('home') }}#features">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+          <span>Learn</span>
+        </a>
+        <a class="sidebar-link is-active" href="{{ url_for('onboarding') }}" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2z"/></svg>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-summary">
+        <span>Profile setup</span>
+        <strong>{{ current_step }} of 4</strong>
+        <div class="sidebar-progress" role="progressbar" aria-label="Profile setup progress" aria-valuemin="0" aria-valuemax="4" aria-valuenow="{{ current_step }}">
+          <span style="width: {{ current_step * 25 }}%"></span>
+        </div>
+      </div>
+    </aside>
+
+    <section class="onboarding-main" aria-labelledby="onboarding-title">
+      <div class="onboarding-topbar">
+        {% if current_step > 1 %}
+          <a class="back-button" href="{{ url_for('onboarding', step=current_step - 1) }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            <span>Back</span>
+          </a>
+        {% else %}
+          <span class="back-button" aria-hidden="true"></span>
+        {% endif %}
+        <span class="progress-copy">Your profile · {{ current_step }} of 4</span>
+      </div>
+
+      <ol class="stepper" aria-label="Profile setup steps">
+        {% set step_names = ["Career goal", "Interests", "Preferences", "Review"] %}
+        {% for index in range(1, 5) %}
+          <li class="step-node {% if index < current_step %}is-complete{% elif index == current_step %}is-current{% endif %}" {% if index == current_step %}aria-current="step"{% endif %}>
+            <span class="step-pin">{% if index < current_step %}✓{% else %}{{ index }}{% endif %}</span>
+            <span class="step-name">{{ step_names[index - 1] }}</span>
+          </li>
+        {% endfor %}
+      </ol>
+
+      <div class="onboarding-content">
+        {% if step == 1 %}
+          <header class="step-header">
+            <h1 id="onboarding-title">What are you working towards?</h1>
+            <p class="step-subtitle">Choose a goal. You can change it any time.</p>
+          </header>
+          <form class="onboarding-form" method="post" action="{{ url_for('onboarding', step=1) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <fieldset class="goal-grid" aria-describedby="goal-error">
+              <legend class="visually-hidden">Choose your main career goal</legend>
+              {% set goal_icons = {
+                "FIRST_JOB": "M3 7h18v13H3z M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M3 12h18 M10 12v2h4v-2",
+                "INTERNSHIP_LEARNERSHIP": "M4 4h16v12H4z M8 20h8 M12 16v4 M8 8h8 M8 12h5",
+                "WORK_EXPERIENCE": "M4 19V5 M4 19h17 M7 15l4-4 3 2 6-7 M17 6h3v3",
+                "BUILD_SKILLS": "M4 5h16v14H4z M8 9h8 M8 13h5 M8 17h8",
+                "EXPLORE_CAREERS": "M12 3a9 9 0 1 0 9 9 M12 7l3 5-5 3 2-5z M16 3h5v5"
+              } %}
+              {% for value, title, description in goal_options %}
+                <label class="goal-card {% if selected_goal == value %}is-selected{% endif %}">
+                  <input type="radio" name="career_goal" value="{{ value }}" {% if selected_goal == value %}checked{% endif %} required>
+                  <span class="goal-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="{{ goal_icons[value] }}"/></svg>
+                  </span>
+                  <span class="goal-copy">
+                    <span class="goal-title">{{ title }}</span>
+                    <span class="goal-description">{{ description }}</span>
+                  </span>
+                  <span class="goal-check" aria-hidden="true"></span>
+                </label>
+              {% endfor %}
+            </fieldset>
+            <p class="field-error" id="goal-error" {% if not errors.get('career_goal') %}hidden{% endif %} role="alert">{{ errors.get('career_goal', '') }}</p>
+            <div class="form-actions">
+              <button class="button button-primary" type="submit">Continue <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+            </div>
+          </form>
+        {% elif step == 2 %}
+          <header class="step-header">
+            <h1 id="onboarding-title">What interests you?</h1>
+            <p class="step-subtitle">Pick the fields and roles you would like to explore.</p>
+          </header>
+          <form class="onboarding-form" method="post" action="{{ url_for('onboarding', step=2) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <fieldset class="choice-group">
+              <legend>Career fields <span class="required-mark">Choose at least one</span></legend>
+              <div class="choice-grid">
+                {% for field in field_options %}
+                  <label class="choice-chip {% if field in selected_fields %}is-selected{% endif %}">
+                    <input type="checkbox" name="career_fields" value="{{ field }}" {% if field in selected_fields %}checked{% endif %}>
+                    <span class="choice-mark" aria-hidden="true"></span>
+                    <span>{{ field }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+              <p class="field-error" {% if not errors.get('career_fields') %}hidden{% endif %} role="alert">{{ errors.get('career_fields', '') }}</p>
+            </fieldset>
+
+            <fieldset class="choice-group">
+              <legend>Roles <span class="selection-count" data-role-count aria-live="polite">{{ selected_roles|length }} of 3 selected</span></legend>
+              <div class="choice-grid role-grid" data-role-options>
+                {% for role in role_options %}
+                  <label class="choice-chip {% if role in selected_roles %}is-selected{% endif %}">
+                    <input type="checkbox" name="preferred_roles" value="{{ role }}" {% if role in selected_roles %}checked{% endif %}>
+                    <span class="choice-mark" aria-hidden="true"></span>
+                    <span>{{ role }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+              <p class="field-error" data-role-limit role="status" hidden>You can select up to three roles.</p>
+              <p class="field-error" {% if not errors.get('preferred_roles') %}hidden{% endif %} role="alert">{{ errors.get('preferred_roles', '') }}</p>
+              <div class="inline-field" data-other-role {% if "Other" not in selected_roles %}hidden{% endif %}>
+                <label for="other_role">Describe the role</label>
+                <input id="other_role" name="other_role" type="text" maxlength="80" value="{{ other_role }}" {% if "Other" in selected_roles %}required{% endif %} aria-describedby="other-role-error">
+                <p class="field-error" id="other-role-error" {% if not errors.get('other_role') %}hidden{% endif %} role="alert">{{ errors.get('other_role', '') }}</p>
+              </div>
+            </fieldset>
+            <div class="form-actions">
+              <button class="button button-primary" type="submit">Continue <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+            </div>
+          </form>
+        {% elif step == 3 %}
+          <header class="step-header">
+            <h1 id="onboarding-title">Where would you like to work?</h1>
+            <p class="step-subtitle">Set your location and the kind of opportunity you want.</p>
+          </header>
+          <form class="onboarding-form" method="post" action="{{ url_for('onboarding', step=3) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="two-column-grid">
+              <fieldset class="field-group location-field">
+                <legend>Preferred locations <span class="required-mark">Choose one or more</span></legend>
+                <div class="location-entry js-only">
+                  <label class="visually-hidden" for="location-search">Search supported South African cities</label>
+                  <input id="location-search" type="search" list="location-options" autocomplete="off" placeholder="Search a city or town">
+                  <datalist id="location-options">
+                    {% for location in location_options %}<option value="{{ location }}">{% endfor %}
+                  </datalist>
+                  <button class="button button-outline add-location" type="button" data-add-location>Add</button>
+                </div>
+                <div class="selected-locations" data-selected-locations aria-live="polite">
+                  {% for location in selected_locations %}
+                    <span class="location-chip">
+                      <input type="hidden" name="preferred_locations" value="{{ location }}">
+                      <span>{{ location }}</span>
+                      <button type="button" data-remove-location aria-label="Remove {{ location }}">×</button>
+                    </span>
+                  {% endfor %}
+                </div>
+                <label class="no-script-location" for="location-fallback">Choose supported locations</label>
+                <select id="location-fallback" name="preferred_locations" multiple size="4">
+                  {% for location in location_options %}<option value="{{ location }}" {% if location in selected_locations %}selected{% endif %}>{{ location }}</option>{% endfor %}
+                </select>
+                <p class="field-error" {% if not errors.get('preferred_locations') %}hidden{% endif %} role="alert">{{ errors.get('preferred_locations', '') }}</p>
+              </fieldset>
+
+              <fieldset class="field-group">
+                <legend>Work arrangement</legend>
+                <div class="radio-group">
+                  {% for option in work_arrangement_options %}
+                    <label class="radio-choice {% if work_arrangement == option %}is-selected{% endif %}">
+                      <input type="radio" name="work_arrangement" value="{{ option }}" {% if work_arrangement == option %}checked{% endif %} required>
+                      <span class="choice-mark" aria-hidden="true"></span>
+                      <span>{{ option }}</span>
+                    </label>
+                  {% endfor %}
+                </div>
+                <p class="field-error" {% if not errors.get('work_arrangement') %}hidden{% endif %} role="alert">{{ errors.get('work_arrangement', '') }}</p>
+              </fieldset>
+
+              <div class="field-group">
+                <label for="availability">When can you start?</label>
+                <select id="availability" name="availability" required>
+                  <option value="">Choose an option</option>
+                  {% for option in availability_options %}<option value="{{ option }}" {% if availability == option %}selected{% endif %}>{{ option }}</option>{% endfor %}
+                </select>
+                <p class="field-error" {% if not errors.get('availability') %}hidden{% endif %} role="alert">{{ errors.get('availability', '') }}</p>
+              </div>
+
+              <fieldset class="field-group">
+                <legend>Opportunity types <span class="required-mark">Choose at least one</span></legend>
+                <div class="checkbox-group">
+                  {% for option in opportunity_options %}
+                    <label class="checkbox-choice {% if option in opportunity_types %}is-selected{% endif %}">
+                      <input type="checkbox" name="opportunity_types" value="{{ option }}" {% if option in opportunity_types %}checked{% endif %}>
+                      <span class="choice-mark" aria-hidden="true"></span>
+                      <span>{{ option }}</span>
+                    </label>
+                  {% endfor %}
+                </div>
+                <p class="field-error" {% if not errors.get('opportunity_types') %}hidden{% endif %} role="alert">{{ errors.get('opportunity_types', '') }}</p>
+              </fieldset>
+            </div>
+            <div class="form-actions">
+              <button class="button button-primary" type="submit">Review my profile <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+            </div>
+          </form>
+        {% else %}
+          <header class="step-header">
+            <h1 id="onboarding-title">Review your profile</h1>
+            <p class="step-subtitle">Check your choices before finishing setup.</p>
+          </header>
+          <div class="review-layout">
+            <section class="review-section">
+              <div class="review-header"><h2>Your goal</h2><a href="{{ url_for('onboarding', step=1) }}">Edit</a></div>
+              <p>{{ goal_labels.get(selected_goal, "Not selected") }}</p>
+            </section>
+            <section class="review-section">
+              <div class="review-header"><h2>Fields and roles</h2><a href="{{ url_for('onboarding', step=2) }}">Edit</a></div>
+              <div class="chip-row">
+                {% for item in selected_fields %}<span class="mini-chip">{{ item }}</span>{% endfor %}
+                {% for item in selected_roles %}
+                  <span class="mini-chip">{% if item == "Other" %}{{ other_role or "Other role" }}{% else %}{{ item }}{% endif %}</span>
+                {% endfor %}
+              </div>
+            </section>
+            <section class="review-section">
+              <div class="review-header"><h2>Location and preferences</h2><a href="{{ url_for('onboarding', step=3) }}">Edit</a></div>
+              <div class="chip-row">
+                {% for item in selected_locations %}<span class="mini-chip">{{ item }}</span>{% endfor %}
+                {% for item in opportunity_types %}<span class="mini-chip">{{ item }}</span>{% endfor %}
+              </div>
+              <p>{{ work_arrangement or "Work arrangement not selected" }} · {{ availability or "Availability not selected" }}</p>
+            </section>
+            <section class="review-section">
+              <div class="review-header"><h2>Account</h2></div>
+              <p>{{ current_user["full_name"] }} · {{ current_user["email"] }}</p>
+            </section>
+          </div>
+          {% if errors %}
+            <div class="submission-block is-incomplete" role="alert">
+              <p>Some details are missing. Edit the highlighted section to finish setup.</p>
+              <a class="button button-outline" href="{{ url_for('onboarding', step=1) }}">Review my choices</a>
+            </div>
+          {% else %}
+            <div class="submission-block">
+              <div>
+                <h2>You're all set</h2>
+                <p>Your profile is ready. Complete setup to continue to Path2Work.</p>
+              </div>
+              <form method="post" action="{{ url_for('complete_onboarding') }}" data-complete-form>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="button button-primary" type="submit" data-complete-button>Finish setup <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+              </form>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </section>
+
+    <aside class="onboarding-aside" aria-label="Profile support panel">
+      <div class="sidecard-art">
+        <img src="{{ url_for('static', filename='assets/cartoon.jpg') }}" alt="A young person considers different career directions at a signpost.">
+      </div>
+      <div class="sidecard-body">
+        <h2>Build a path that fits you</h2>
+        <p>Your choices help us bring relevant opportunities and learning into view.</p>
+        <ul class="support-checks">
+          <li>Tailored work opportunities</li>
+          <li>Skills and interests matched</li>
+          <li>Location-aware suggestions</li>
+        </ul>
+        <p class="signature">Your path, your future.</p>
+      </div>
+    </aside>
+  </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

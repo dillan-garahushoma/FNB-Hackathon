@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}WorkProof: {{ challenge.title }} | Path2Work{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <a href="{{ url_for('candidate.dashboard') }}" class="text-xs font-semibold text-slate-500 hover:text-slate-800">
+                ← Back to Candidate Dashboard
+            </a>
+            <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-indigo-50 text-build border border-indigo-200">
+                {{ challenge.pathway.title }} • Passing Score: {{ challenge.passing_score }}/100
+            </span>
+        </div>
+
+        <div>
+            <h1 class="text-2xl font-extrabold text-slate-900">{{ challenge.title }}</h1>
+            <div class="mt-3 p-4 rounded-xl bg-slate-900 text-slate-100 text-sm leading-relaxed">
+                <span class="text-xs font-bold uppercase tracking-wider text-teal-300 block mb-1">Production Scenario Brief</span>
+                {{ challenge.scenario }}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 pt-2">
+            <button type="button" onclick="showStep(1)" id="tab-1"
+                class="step-tab text-left p-3 rounded-xl border-2 border-build bg-build/5 transition">
+                <div class="text-xs font-bold uppercase tracking-wider text-build">Step 1 • 40% Weight</div>
+                <div class="text-sm font-extrabold text-slate-900">1. BUILD</div>
+                <div class="text-xs text-slate-500">Repo &amp; Working Code</div>
+            </button>
+            <button type="button" onclick="showStep(2)" id="tab-2"
+                class="step-tab text-left p-3 rounded-xl border-2 border-slate-200 hover:border-prove/60 transition">
+                <div class="text-xs font-bold uppercase tracking-wider text-prove">Step 2 • 30% Weight</div>
+                <div class="text-sm font-extrabold text-slate-900">2. EXPLAIN</div>
+                <div class="text-xs text-slate-500">Trade-offs &amp; Reasoning</div>
+            </button>
+            <button type="button" onclick="showStep(3)" id="tab-3"
+                class="step-tab text-left p-3 rounded-xl border-2 border-slate-200 hover:border-match/60 transition">
+                <div class="text-xs font-bold uppercase tracking-wider text-match">Step 3 • 30% Weight</div>
+                <div class="text-sm font-extrabold text-slate-900">3. ADAPT</div>
+                <div class="text-xs text-slate-500">Handle Change Request</div>
+            </button>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('assessment.submit_workproof', challenge_id=challenge.id) }}" class="space-y-6">
+        <div id="step-1" class="bg-white rounded-2xl border-2 border-build/40 p-6 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                    <span class="px-2.5 py-1 rounded text-xs font-bold uppercase bg-build text-white">Stage 1 of 3: BUILD (40%)</span>
+                    <h2 class="text-lg font-bold text-slate-900 mt-2">Implement &amp; Attach Source Evidence</h2>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 text-sm text-slate-800">
+                <strong class="block text-xs uppercase tracking-wider text-build mb-1">Build Prompt:</strong>
+                {{ challenge.build_prompt }}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    GitHub / GitLab Repository URL
+                </label>
+                <input type="url" name="build_repo_url"
+                    value="{{ submission.build_repo_url if submission and submission.build_repo_url else '' }}"
+                    placeholder="https://github.com/your-username/path2work-solution"
+                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-build">
+                <p class="text-xs text-slate-500 mt-1">Valid repository URLs unlock Level 2 (Evidence Attached) &amp; Level 3 (Source Verified).</p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Core Implementation Code / Script Snippet
+                </label>
+                <textarea name="build_code_snippet" rows="11"
+                    placeholder="Paste your core implementation function, SQL pipeline, or Bash diagnostic script here..."
+                    class="w-full rounded-lg border border-slate-300 p-3.5 text-xs font-mono bg-slate-900 text-emerald-300 focus:outline-none focus:ring-2 focus:ring-build">{{ submission.build_code_snippet if submission and submission.build_code_snippet else '' }}</textarea>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="button" onclick="showStep(2)"
+                    class="px-5 py-2.5 rounded-lg bg-build hover:bg-indigo-600 text-white text-sm font-semibold shadow">
+                    Next: Step 2 [EXPLAIN] →
+                </button>
+            </div>
+        </div>
+
+        <div id="step-2" class="hidden bg-white rounded-2xl border-2 border-prove/40 p-6 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                    <span class="px-2.5 py-1 rounded text-xs font-bold uppercase bg-prove text-white">Stage 2 of 3: EXPLAIN (30%)</span>
+                    <h2 class="text-lg font-bold text-slate-900 mt-2">Defend Your Technical Decisions &amp; Trade-Offs</h2>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-teal-50/70 border border-teal-200 text-sm text-slate-800">
+                <strong class="block text-xs uppercase tracking-wider text-prove mb-1">Explain Prompt:</strong>
+                {{ challenge.explain_prompt }}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Your Engineering Reasoning &amp; Justification
+                </label>
+                <textarea name="explain_notes" rows="8"
+                    placeholder="Explain why you chose specific data structures, status codes, imputation methods, or security rules, and what edge cases you guarded against..."
+                    class="w-full rounded-lg border border-slate-300 p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-prove">{{ submission.explain_notes if submission and submission.explain_notes else '' }}</textarea>
+                <p class="text-xs text-slate-500 mt-1">Tip: Employers read this section to verify you truly understand the code you wrote (anti-AI-copy-paste check).</p>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button type="button" onclick="showStep(1)"
+                    class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50">
+                    ← Back to Step 1 [BUILD]
+                </button>
+                <button type="button" onclick="showStep(3)"
+                    class="px-5 py-2.5 rounded-lg bg-prove hover:bg-teal-700 text-white text-sm font-semibold shadow">
+                    Next: Step 3 [ADAPT] →
+                </button>
+            </div>
+        </div>
+
+        <div id="step-3" class="hidden bg-white rounded-2xl border-2 border-match/40 p-6 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                    <span class="px-2.5 py-1 rounded text-xs font-bold uppercase bg-match text-white">Stage 3 of 3: ADAPT (30%)</span>
+                    <h2 class="text-lg font-bold text-slate-900 mt-2">Respond to Production Requirement Change</h2>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-orange-50/80 border border-orange-200 text-sm text-slate-800">
+                <strong class="block text-xs uppercase tracking-wider text-match mb-1">Dynamic Change Request:</strong>
+                {{ challenge.adapt_prompt }}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Adapted Solution / Code Modification &amp; Scaling Strategy
+                </label>
+                <textarea name="adapt_solution" rows="8"
+                    placeholder="Write the updated logic, query, or architectural modification that satisfies the new constraint..."
+                    class="w-full rounded-lg border border-slate-300 p-3.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-match">{{ submission.adapt_solution if submission and submission.adapt_solution else '' }}</textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                <button type="button" onclick="showStep(2)"
+                    class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50">
+                    ← Back to Step 2 [EXPLAIN]
+                </button>
+
+                <div class="flex items-center space-x-3">
+                    <button type="submit" name="action" value="save_draft"
+                        class="px-4 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold">
+                        Save Draft
+                    </button>
+                    <button type="submit" name="action" value="submit"
+                        class="px-6 py-2.5 rounded-lg bg-gradient-to-r from-build via-prove to-match text-white text-sm font-bold shadow-md hover:opacity-95 transition">
+                        Submit WorkProof for Verification ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+function showStep(stepNum) {
+    [1, 2, 3].forEach(function(n) {
+        const panel = document.getElementById('step-' + n);
+        const tab = document.getElementById('tab-' + n);
+        if (n === stepNum) {
+            panel.classList.remove('hidden');
+            tab.classList.add('ring-2', 'ring-offset-1', 'ring-slate-900', 'bg-slate-50');
+        } else {
+            panel.classList.add('hidden');
+            tab.classList.remove('ring-2', 'ring-offset-1', 'ring-slate-900', 'bg-slate-50');
+        }
+    });
+}
+</script>
+{% endblock %}
