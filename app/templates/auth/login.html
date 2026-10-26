@@ -22,7 +22,7 @@
     ('lerato.mokoena@tut.ac.za', 'Lerato Mokoena', 'TUT', 1, 20, 'New candidate, self-declared')
 ] %}
 
-<div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-12 lg:items-start">
+<div class="auth-layout mx-auto grid max-w-6xl gap-10 lg:grid-cols-12 lg:items-start">
 
     <!-- SIGN-IN FORM: Mobile first, sticky right on desktop -->
     <section aria-labelledby="signin-title" class="order-1 lg:order-2 lg:col-span-5 lg:sticky lg:top-24">
@@ -82,7 +82,7 @@
     <section class="order-2 space-y-8 lg:order-1 lg:col-span-7">
         
         <!-- Auth Visual Image Card -->
-        <div class="relative overflow-hidden rounded-2xl bg-ink text-white shadow-md">
+        <div class="auth-visual relative overflow-hidden rounded-2xl bg-ink text-white shadow-md">
             <div class="absolute inset-0 z-0">
                 <img src="{{ url_for('static', filename='images/path2work-auth.webp') }}" 
                      alt="Path2Work Candidate at work desk" 
