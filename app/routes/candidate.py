@@ -56,6 +56,16 @@ def profile():
     passport = SkillsPassport.query.filter_by(user_id=user.id).first()
 
     if request.method == "POST":
+        if request.form.get("action") == "skip":
+            if not preferences:
+                preferences = CandidatePreferences(user_id=user.id)
+                db.session.add(preferences)
+            preferences.onboarding_completed = True
+            db.session.commit()
+            session.pop("needs_onboarding", None)
+            flash("Setup skipped. You can finish your profile and preferences anytime.", "info")
+            return redirect(url_for("candidate.dashboard"))
+
         institution = (request.form.get("institution") or "").strip()
         location = (request.form.get("location") or "").strip()
         grad_year_raw = request.form.get("graduation_year")
