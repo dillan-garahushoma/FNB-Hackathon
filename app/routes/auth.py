@@ -95,6 +95,12 @@ def register():
         if not full_name or not email or not password:
             flash("Full name, email, and password are required.", "error")
             return render_template("auth/register.html")
+        if len(password) < 8:
+            flash("Choose a password with at least 8 characters.", "error")
+            return render_template("auth/register.html")
+        if "@" not in email or email.startswith("@") or email.endswith("@"):
+            flash("Enter a valid email address.", "error")
+            return render_template("auth/register.html")
 
         if role not in ("candidate", "employer"):
             role = "candidate"
