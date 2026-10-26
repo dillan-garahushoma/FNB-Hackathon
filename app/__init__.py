@@ -53,5 +53,8 @@ def create_app(config_class=Config):
 
     with app.app_context():
         db.create_all()
+        if not app.config.get('TESTING'):
+            from app.services.seed_defaults import ensure_default_pathways
+            ensure_default_pathways()
 
     return app

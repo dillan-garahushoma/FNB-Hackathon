@@ -114,9 +114,21 @@
                     <label for="target_pathway" class="field-label">Target IT pathway</label>
                     <select id="target_pathway" name="target_pathway" class="field">
                         <option value="">Choose a target pathway</option>
-                        {% for pathway in pathways %}
-                        <option value="{{ pathway.slug }}" {% if preferences and preferences.target_pathway_id == pathway.id %}selected{% endif %}>{{ pathway.title }}</option>
-                        {% endfor %}
+                        {% if pathways %}
+                          {% for pathway in pathways %}
+                          <option value="{{ pathway.slug }}" {% if preferences and preferences.target_pathway_id == pathway.id %}selected{% endif %}>{{ pathway.title }}</option>
+                          {% endfor %}
+                        {% else %}
+                          <option value="junior-software-developer">Junior Software Developer</option>
+                          <option value="it-support-cloud">IT Support / Cloud</option>
+                          <option value="junior-data-analyst">Junior Data Analyst</option>
+                          <option value="junior-cybersecurity-analyst">Junior Cybersecurity & SOC Analyst</option>
+                          <option value="junior-qa-automation">Junior QA & Test Automation Engineer</option>
+                          <option value="junior-devops-engineer">Junior DevOps & Cloud Native Engineer</option>
+                          <option value="junior-mobile-developer">Junior Mobile App Developer</option>
+                          <option value="junior-bi-sql-developer">Junior Business Intelligence & SQL Developer</option>
+                          <option value="junior-frontend-uiux">Junior UI/UX & Frontend Engineer</option>
+                        {% endif %}
                     </select>
                     <span class="field-hint">This helps you find a starting challenge. You can explore every pathway from your dashboard.</span>
                 </div>

@@ -78,6 +78,10 @@ def profile():
         preferences.onboarding_completed = True
         if target_slug:
             target = Pathway.query.filter_by(slug=target_slug).first()
+            if not target:
+                from app.services.seed_defaults import ensure_default_pathways
+                ensure_default_pathways()
+                target = Pathway.query.filter_by(slug=target_slug).first()
             if target:
                 preferences.target_pathway_id = target.id
 
@@ -183,6 +187,10 @@ def onboarding():
         return redirect(url_for("candidate.dashboard"))
 
     pathways = Pathway.query.order_by(Pathway.market_share_pct.desc()).all()
+    if not pathways:
+        from app.services.seed_defaults import ensure_default_pathways
+        pathways = ensure_default_pathways()
+
     if request.method == "POST":
         if request.form.get("action") == "skip":
             if not preferences:
@@ -213,6 +221,10 @@ def onboarding():
             db.session.add(preferences)
         if target_slug:
             target = Pathway.query.filter_by(slug=target_slug).first()
+            if not target:
+                from app.services.seed_defaults import ensure_default_pathways
+                ensure_default_pathways()
+                target = Pathway.query.filter_by(slug=target_slug).first()
             if target:
                 preferences.target_pathway_id = target.id
         preferences.skills_summary = skills_summary
