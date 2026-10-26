@@ -4,7 +4,7 @@
 {% set status_labels = {'shortlisted':'Shortlisted','invited':'Interview invited','rejected':'Not a fit'} %}
 <div class="p2w-workspace">
     <header class="page-intro">
-        <div><span class="page-eyebrow">Employer workspace · Evidence-first hiring</span><h1>Find people by what they can do.</h1><p>Search the talent pool, inspect real WorkProof evidence, and make a more informed shortlist before the interview.</p></div>
+        <div><span class="page-eyebrow">Verified Talent Pipeline</span><h1>Find people by what they can do.</h1><p>Search the talent pool, inspect real WorkProof evidence, and make a more informed shortlist before the interview.</p></div>
         <div class="p2w-intro-actions"><a href="{{ url_for('employer.shortlist_board') }}" class="p2w-button p2w-button-quiet"><i class="ph-bold ph-kanban" aria-hidden="true"></i> Shortlist board</a><a href="{{ url_for('employer.export_csv') }}" class="p2w-button p2w-button-primary"><i class="ph-bold ph-download-simple" aria-hidden="true"></i> Export CSV</a></div>
     </header>
 
@@ -20,7 +20,20 @@
             <form method="GET" action="{{ url_for('employer.dashboard') }}" class="p2w-screening" aria-label="Search and filter candidates">
                 <div class="p2w-screening-heading"><div><span class="page-eyebrow">Talent search</span><h2>What do you need?</h2></div><span class="p2w-result-count">{{ candidates|length }} results</span></div>
                 <div class="p2w-screening-grid">
-                    <div class="p2w-search-control p2w-filter-full"><label for="search_skill">Skills, tools or keywords</label><div class="p2w-input-icon"><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i><input id="search_skill" type="search" name="search_skill" value="{{ search_skill }}" placeholder="Try Python, SQL, AWS, Linux…" class="field"></div></div>
+                    <div class="p2w-search-control p2w-filter-full">
+                        <label for="search_skill">Skills, tools or keywords</label>
+                        <div class="p2w-input-icon">
+                            <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
+                            <input id="search_skill" type="search" name="search_skill" value="{{ search_skill }}" placeholder="Try Python, SQL, AWS, Linux…" class="field">
+                        </div>
+                        <div class="p2w-quick-filters" aria-label="Quick search shortcuts">
+                            <span class="p2w-quick-label">Suggestions:</span>
+                            <button type="button" class="p2w-quick-chip" onclick="setQuickSearch('Python')"><i class="ph-bold ph-code" aria-hidden="true"></i> Python</button>
+                            <button type="button" class="p2w-quick-chip" onclick="setQuickSearch('SQL')"><i class="ph-bold ph-database" aria-hidden="true"></i> SQL</button>
+                            <button type="button" class="p2w-quick-chip" onclick="setQuickSearch('AWS')"><i class="ph-bold ph-cloud" aria-hidden="true"></i> Cloud</button>
+                            <button type="button" class="p2w-quick-chip" onclick="setQuickTrust('4')"><i class="ph-bold ph-seal-check" aria-hidden="true"></i> Level 4+ Assessed</button>
+                        </div>
+                    </div>
                     <div><label for="pathway">Target pathway</label><select id="pathway" name="pathway" class="field"><option value="">All pathways</option>{% for p in pathways %}<option value="{{ p.slug }}" {% if selected_pathway == p.slug %}selected{% endif %}>{{ p.title }}</option>{% endfor %}</select></div>
                     <div><label for="location">Location</label><select id="location" name="location" class="field"><option value="">Anywhere in South Africa</option>{% for loc in ['Johannesburg','Cape Town','Durban','Pretoria','Gqeberha','Bloemfontein','Remote'] %}<option value="{{ loc }}" {% if location_filter == loc|lower %}selected{% endif %}>{{ loc }}</option>{% endfor %}</select></div>
                     <div><label for="min_trust">Minimum trust level</label><select id="min_trust" name="min_trust" class="field"><option value="1" {% if min_trust == 1 %}selected{% endif %}>Level 1+ · All profiles</option><option value="2" {% if min_trust == 2 %}selected{% endif %}>Level 2+ · Evidence attached</option><option value="3" {% if min_trust == 3 %}selected{% endif %}>Level 3+ · Source verified</option><option value="4" {% if min_trust == 4 %}selected{% endif %}>Level 4+ · Assessed</option><option value="5" {% if min_trust == 5 %}selected{% endif %}>Level 5 · Employer verified</option></select></div>
@@ -58,5 +71,19 @@
  const range=document.getElementById('min_score'), output=document.getElementById('minScoreOutput');
  if(range&&output)range.addEventListener('input',()=>output.value=range.value);
 })();
+function setQuickSearch(skill) {
+    const input = document.getElementById('search_skill');
+    if (input) {
+        input.value = skill;
+        input.form.submit();
+    }
+}
+function setQuickTrust(level) {
+    const select = document.getElementById('min_trust');
+    if (select) {
+        select.value = level;
+        select.form.submit();
+    }
+}
 </script>
 {% endblock %}

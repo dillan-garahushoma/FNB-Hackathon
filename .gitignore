@@ -10,3 +10,4 @@ instance/
 *.log
 *.err
 .taste-skill/
+scratch/

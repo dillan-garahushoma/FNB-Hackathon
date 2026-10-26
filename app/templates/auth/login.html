@@ -32,9 +32,7 @@
                     <h1 id="signin-title" class="font-display text-2xl font-bold text-ink">Welcome back.</h1>
                     <p class="mt-1 text-xs sm:text-sm text-slate-600">Sign in to continue building proof or reviewing early-career talent.</p>
                 </div>
-                <div class="h-10 w-10 rounded-xl bg-ink text-white flex items-center justify-center font-display font-extrabold text-sm">
-                    P2W
-                </div>
+                <img src="{{ url_for('static', filename='assets/path2work-mark.png') }}" alt="Path2Work" class="h-10 w-10 rounded-xl object-contain bg-white p-1 border border-slate-200 shadow-xs">
             </div>
 
             <form method="POST" action="{{ url_for('auth.login') }}" id="login-form" class="mt-6 space-y-4">
