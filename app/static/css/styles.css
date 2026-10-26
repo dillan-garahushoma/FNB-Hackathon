@@ -223,10 +223,10 @@ p { text-wrap: pretty; }
 .btn.btn-secondary { border-color: #dde2ee; background: #fff; color: var(--ui-ink); }
 .btn.btn-accent { background: #fff; color: #28235e; border: 1px solid rgba(255,255,255,.75); }
 .btn.btn-prove { background: var(--ui-teal); }
-.field.field { border: 1px solid #dfe3ee; border-radius: 10px; padding: 12px 13px; min-height: 45px; background: #fff; box-shadow: 0 1px 2px rgba(20,32,54,.02); }
+.field.field { border: 1px solid #dfe3ee; border-radius: 10px; padding: 13px 15px; min-height: 48px; font-size: 15px; background: #fff; box-shadow: 0 1px 2px rgba(20,32,54,.02); }
 .field.field:focus { border-color: var(--ui-violet); box-shadow: 0 0 0 4px rgba(99,91,255,.12); }
-.field-label { color: #344056; font-size: .82rem; letter-spacing: -.01em; }
-.field-hint { font-size: .78rem; line-height: 1.55; }
+.field-label { color: #1e293b; font-size: .92rem; font-weight: 650; letter-spacing: -.01em; margin-bottom: 6px; display: block; }
+.field-hint { font-size: .84rem; line-height: 1.55; color: #64748b; }
 .badge.badge { letter-spacing: -.01em; }
 
 /* Authenticated workspace shell */
