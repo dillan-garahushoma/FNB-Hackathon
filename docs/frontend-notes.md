@@ -1,77 +1,50 @@
-# Path2Work Frontend Implementation Notes
+# Path2Work Frontend Redesign Notes
 
-## 1. Overview
-Rebuilt and polished the complete Path2Work frontend adhering strictly to the server-rendered Flask/Jinja architecture. Replaced arbitrary layout styles with a cohesive, editorial South African tech talent platform experience.
+## Product direction
 
-## 2. Screens Implemented & Polished
-1. **Public Landing Page (`GET /`)** (`app/templates/index.html`)
-   - High-impact editorial hero utilizing `path2work-hero.webp`
-   - Three-stage WorkProof explanation (Build 40% / Explain 30% / Adapt 30%)
-   - Five-tier trust ladder explainer (Level 1 to Level 5)
-   - Employer screening funnel metric (illustrative 500 applicants to 60 pre-qualified)
-   - One-click demo evaluator accounts gated by `DEMO_MODE`
-2. **Sign In (`GET /login`)** (`app/templates/auth/login.html`)
-   - Split-panel layout integrating `path2work-auth.webp`
-   - Password reveal toggle with accessible `aria-pressed` and `aria-label`
-   - Categorized demo logins for candidates and employers with quick-fill actions
-3. **Register (`GET /register`)** (`app/templates/auth/register.html`)
-   - Progressive enhancement: role switcher seamlessly adapts fields for Candidate vs Employer
-   - Institutional `.ac.za` email guidance for Level 3 Source Verification
-   - Live password strength meter
-4. **Candidate Dashboard (`GET /candidate/dashboard`)** (`app/templates/candidate/dashboard.html`)
-   - Welcome banner with institutional badge and open-to-work status
-   - Segmented five-level trust ladder display
-   - Readiness score card featuring the 70 benchmark threshold marker
-   - Dynamic next-best-action guidance panel
-   - Pathway track grid integrating `path2work-pathway-development.webp` and `path2work-pathway-support.webp`
-5. **Candidate Profile & Preferences (`GET /candidate/profile`)** (`app/templates/candidate/profile.html`)
-   - Two-column settings interface allowing candidates to update metro location and Open-to-Work availability
-   - Full backend persistence wired safely to `candidate.profile` route
-6. **WorkProof Stepper (`GET /candidate/workproof/<id>`)** (`app/templates/candidate/workproof_stepper.html`)
-   - Persistent 3-stage progress rail (Build &rarr; Explain &rarr; Adapt)
-   - Monospace dark-surface code editor with live line count
-   - Real-time word count with thinness warning threshold (&lt;40 words)
-   - Draft saving (`action=save_draft`) and final submission triggers
-   - Removed orphaned `app/templates/assessment/workproof_stepper.html`
-7. **AI Feedback (`GET /assessment/submission/<id>/feedback`)** (`app/templates/assessment/feedback.html`)
-   - Distinct verified states: Pending (with polite auto-polling), Failed (with retry action), Ready (full 100-pt breakdown), Legacy, and Unreviewed
-   - Stage-by-stage score breakdown (points of 40/30/30) and scoring limitation callouts
-8. **Skills Passport (`GET /passport/<user_id>`)** (`app/templates/candidate/skills_passport.html`)
-   - Publicly shareable credential with seal badge and `P2W-ZA-XXXX` identifier
-   - Five-tier trust ladder status
-   - Verified competencies grouped by pathway with extracted skill chips
-   - Accordion WorkProof evidence view with syntax code blocks
-   - Clean `@media print` PDF styles
-9. **Employer Talent Pipeline (`GET /employer/dashboard`)** (`app/templates/employer/dashboard.html`)
-   - KPI metrics row rendering: Total Applicants, WorkProof Completed, Pre-Qualified (>=70), and Shortlisted counts
-   - Integrated `path2work-employer-talent.webp` context banner
-   - Advanced screening filters (Pathway, Skill, Location, Trust Level, Open to Work)
-   - Ranked candidate rows with extracted skill tags and direct evidence access
-   - Live CSV export
-10. **Employer Shortlist Board (`GET /employer/shortlist-board`)** (`app/templates/employer/shortlist_board.html`)
-    - Three-stage recruitment board: Shortlisted &rarr; Invited to Technical Interview &rarr; Not a Fit
-    - Recruiter notes and direct evidence deep-linking
-11. **Candidate Evidence Review (`GET /employer/candidate/<id>/evidence`)** (`app/templates/employer/candidate_evidence.html`)
-    - Two-column layout with sticky decision sidebar
-    - Status management and private recruiter notes
-    - "Endorse as Level 5" employer action with confirmation prompt
+Path2Work helps South African IT students and recent graduates demonstrate job readiness through role-specific WorkProof challenges and a shareable Skills Passport. The experience is designed around **evidence before interviews**, rather than a generic job board or a metrics-heavy admin dashboard.
 
-## 3. Five Generated Images Created & Integrated
-All stored in `app/static/images/` and documented in `app/static/images/README.md`:
-1. `path2work-hero.webp` &mdash; Public Landing Hero
-2. `path2work-auth.webp` &mdash; Sign In & Sign Up Panels
-3. `path2work-pathway-support.webp` &mdash; IT Support / Cloud Pathway Card
-4. `path2work-pathway-development.webp` &mdash; Software Engineering Pathway Card
-5. `path2work-employer-talent.webp` &mdash; Employer Talent Discovery Banner
+Visual direction references established hiring and professional products for interaction patterns, not copied layouts:
+- [LinkedIn Recruiter](https://www.linkedin.com/business/talent/blog/talent-acquisition/tips-for-getting-the-most-out-of-linkedin-recruiter) — clear search and candidate information hierarchy.
+- [Wellfound](https://wellfound.com/) — human-first talent discovery.
+- [Greenhouse's visual candidate pipeline](https://support.greenhouse.io/hc/en-us/articles/4874727408795-Visual-Candidate-Pipeline) — visible hiring-stage progression.
+- [Indeed candidate sourcing](https://www.indeed.com/help/employers/articles/360015979211) — practical search criteria.
 
-## 4. Logo Asset
-- Copied from `C:\Users\garah\Downloads\Path2Work_ Your Future Forward.png` into `app/static/assets/path2work-logo.png`
-- Configured in header navigation, footer, and favicon
+## Implementation
 
-## 5. Backend Dependencies & Fixes Handled
-1. **`DEMO_MODE`:** Explicitly defined in `config.py` (defaults to `True` for demo/testing).
-2. **Employer KPIs:** Fully wired and displayed on `employer/dashboard.html`.
-3. **Candidate Location & Availability:** Implemented `GET` and `POST` routes at `/candidate/profile` persisting to the SQLAlchemy `User` model.
-4. **Shortlist Board:** Built dedicated route `/employer/shortlist-board` and template.
-5. **Orphan Stepper:** Safely removed `app/templates/assessment/workproof_stepper.html`.
-6. **Self-Hosted Design Tokens:** Implemented `app/static/css/styles.css` containing tokens, components, and print rules.
+The application remains Flask + Jinja + SQLAlchemy. This is a presentation and workflow refactor; it does not replace the app with React, introduce a second data layer, or fabricate API routes. Existing route names, form actions, form field names, session logic and database models are retained.
+
+### Screens and journeys updated
+
+1. **Public landing page** — a more focused editorial hero, real product promise, three-stage WorkProof explanation (Build 40% / Explain 30% / Adapt 30%), five evidence-trust levels, employer value proposition, and clear calls to action.
+2. **Role-aware app shell** — distinct public and authenticated navigation, role-specific workspace navigation, clearer page titles, flash messaging, keyboard skip link, and responsive sidebar/navigation behavior.
+3. **Sign in** — direct benefit copy, password visibility control, evaluator account quick-fill, and demo credentials aligned with `seed.py`.
+4. **Registration** — candidate/employer onboarding with an explanatory side panel and preserved server-side form contract and role-selection behavior.
+5. **Candidate workspace** — readiness score and 70-point marker, trust progression, next-step guidance, recent WorkProof activity, pathway cards, searchable/filterable pathways, and explicit challenge actions.
+6. **WorkProof assessment** — Build / Explain / Adapt stage rail, preserved field names and draft/submission actions, clear 40/30/30 score weighting, and a no-JavaScript fallback where all stage panels remain available.
+7. **Assessment feedback** — differentiated pending/failed/ready/legacy/unreviewed states retained, with clearer score presentation and per-stage contribution bars.
+8. **Skills Passport** — public shareable credential, verification ladder, skill evidence, expandable WorkProof responses, copy-link and print actions.
+9. **Candidate profile** — clearer identity, institution, location and Open-to-Work settings, still saved through the existing POST route.
+10. **Employer talent discovery** — visible candidate-pool metrics, server-backed pathway/skill/location/trust/score/Open-to-Work filters, ranked evidence summaries, readiness and trust signals, CSV export and shortlist navigation.
+11. **Employer evidence review** — clearer evidence sections and decision sidebar styling, preserving existing shortlist and endorsement forms.
+12. **Employer shortlist board** — readable hiring-stage columns and candidate evidence links, preserving existing status-management routes.
+
+## Routing and data behavior
+
+- A signed-in user visiting `/` is redirected to the correct role dashboard. This fixes a case where the landing hero could render inside the authenticated workspace shell.
+- Candidate pathway search is a client-side view filter over the pathways already sent by Flask; it does not invent new pathways or backend endpoints.
+- Employer filters remain GET parameters consumed by `employer.dashboard`.
+- Demo account email addresses shown on sign-in now match the account records created by `seed.py`. The shared demo password remains `password123` as configured by seed data.
+
+## Styling and assets
+
+The redesign adds a shared light visual system, accessible focus states, responsive layouts, purposeful spacing, proof-stage color semantics, score meters, clearer candidate rows, print rules and restrained hover motion. It uses existing local project imagery under `app/static/images/`.
+
+**Known follow-up:** existing templates rely heavily on Tailwind utility classes and currently load Tailwind from its CDN. Replacing this with a compiled, minimal local stylesheet and self-hosted font/icon assets is a separate performance pass; removing the CDN before compiling equivalent utilities would break many pages.
+
+## Verification status and next review
+
+- Changes are committed to `ui/path2work-product-redesign` for review in [PR #1](https://github.com/dillan-garahushoma/FNB-Hackathon/pull/1); `main` has not been merged or changed by this PR.
+- A GitHub Actions workflow has been added to compile Python, compile Jinja templates, and run `tests/run_flow_test.py`.
+- I could not clone the repository or launch a local browser from the editing environment, so the visual appearance and the complete browser journey still require a local preview. Do not treat the redesign as browser/E2E verified until the CI result and a candidate/employer preview have been inspected.
+- Recommended preview sequence: public landing → register/sign in → candidate dashboard → WorkProof draft → submit/review → Skills Passport; then sign in as employer → talent discovery filters → candidate evidence → shortlist board → CSV export.
