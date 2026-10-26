@@ -23,7 +23,7 @@ def get_ok(client, path, follow_redirects=False):
 
 
 def main():
-    with tempfile.TemporaryDirectory() as folder:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as folder:
         database_path = os.path.join(folder, "path2work-smoke.sqlite")
 
         class SmokeConfig(Config):
@@ -245,6 +245,11 @@ def main():
             assert saved_preferences and saved_preferences.onboarding_completed
             assert saved_preferences.skills_summary == "Python and SQL"
         print("PASS onboarding completion persists preferences and opens candidate workspace")
+
+        # Release SQLite handles before TemporaryDirectory cleanup on Windows.
+        with app.app_context():
+            db.session.remove()
+            db.engine.dispose()
 
         print("\nAll Path2Work UX route smoke checks passed.")
 

@@ -1,15 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Profile & Work Preferences | Path2Work<script>
-(function () {
-  const summary = document.getElementById('skills_summary');
-  const count = document.getElementById('skillsSummaryCount');
-  if (!summary || !count) return;
-  const update = () => { count.textContent = summary.value.length + ' / 600'; };
-  summary.addEventListener('input', update);
-  update();
-})();
-</script>
-{% endblock %}
+{% block title %}Profile & Work Preferences | Path2Work{% endblock %}
 
 {% block content %}
 <div class="p2w-profile-page mx-auto max-w-5xl space-y-8">
@@ -150,4 +140,14 @@
 
     </form>
 </div>
+<script>
+(function () {
+  const summary = document.getElementById('skills_summary');
+  const count = document.getElementById('skillsSummaryCount');
+  if (!summary || !count) return;
+  const update = () => { count.textContent = summary.value.length + ' / 600'; };
+  summary.addEventListener('input', update);
+  update();
+})();
+</script>
 {% endblock %}
