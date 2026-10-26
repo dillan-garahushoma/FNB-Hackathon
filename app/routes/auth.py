@@ -137,9 +137,10 @@ def register():
         flash("Account created successfully! Welcome to Path2Work.", "success")
         if user.role == "employer":
             return redirect(url_for("employer.dashboard"))
-        if session.get("needs_onboarding"):
-            return redirect(url_for("candidate.onboarding"))
-        return redirect(url_for("candidate.dashboard"))
+
+        # New candidates should complete (or explicitly skip) the short setup flow once.
+        session["needs_onboarding"] = True
+        return redirect(url_for("candidate.onboarding"))
 
     return render_template("auth/register.html")
 
