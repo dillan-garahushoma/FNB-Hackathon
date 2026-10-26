@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}Shortlist Board | Path2Work Employer{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <a href="{{ url_for('employer.dashboard') }}" class="text-xs font-bold text-slate-500 hover:text-ink">
+                    &larr; Back to Candidate Discovery
+                </a>
+            </div>
+            <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-ink">Employer Shortlist Board</h1>
+            <p class="mt-1 text-xs sm:text-sm text-slate-600">
+                Track candidate progression across your hiring pipeline stages.
+            </p>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="badge bg-slate-100 text-slate-700 text-xs font-semibold">
+                {{ total_shortlisted }} Candidates in Pipeline
+            </span>
+        </div>
+    </div>
+
+    <!-- 3-COLUMN KANBAN PIPELINE BOARD -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        
+        <!-- COLUMN 1: SHORTLISTED -->
+        <div class="rounded-2xl bg-slate-100/70 p-4 border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                <div class="flex items-center gap-2">
+                    <span class="h-2.5 w-2.5 rounded-full bg-match-dark"></span>
+                    <h2 class="font-display font-bold text-sm text-ink uppercase tracking-wider">Shortlisted</h2>
+                </div>
+                <span class="badge bg-white text-slate-700 font-mono text-xs font-bold shadow-xs">
+                    {{ board['shortlisted'] | length }}
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                {% for item in board['shortlisted'] %}
+                    {% set cand = item.user %}
+                    {% set passport = item.passport %}
+                    {% set sub = item.best_submission %}
+                    {% set sl = item.shortlist %}
+
+                    <div class="card p-4 border-slate-200 bg-white hover:shadow-md transition-all space-y-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <h3 class="font-display font-bold text-sm text-ink">{{ cand.full_name }}</h3>
+                                <p class="text-[11px] text-slate-500">{{ cand.institution }}</p>
+                            </div>
+                            <span class="badge bg-prove-soft text-prove-dark text-[10px] font-bold">
+                                {{ passport.readiness_score }} pts
+                            </span>
+                        </div>
+
+                        {% if sl.notes %}
+                            <div class="rounded-lg bg-amber-50/70 border border-amber-200/80 p-2 text-[11px] text-amber-900 italic">
+                                “{{ sl.notes }}”
+                            </div>
+                        {% endif %}
+
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                            <span class="text-[10px] font-mono text-slate-400">L{{ passport.highest_trust_level }} Verified</span>
+                            <a href="{{ url_for('employer.candidate_evidence', user_id=cand.id) }}" class="font-bold text-match-dark hover:underline">
+                                Review &rarr;
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-300 rounded-xl">
+                        No candidates currently shortlisted.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- COLUMN 2: INVITED TO INTERVIEW -->
+        <div class="rounded-2xl bg-prove-soft/30 p-4 border border-prove/30 space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-prove/20">
+                <div class="flex items-center gap-2">
+                    <span class="h-2.5 w-2.5 rounded-full bg-prove-dark"></span>
+                    <h2 class="font-display font-bold text-sm text-ink uppercase tracking-wider">Invited to Interview</h2>
+                </div>
+                <span class="badge bg-white text-prove-dark font-mono text-xs font-bold shadow-xs">
+                    {{ board['invited'] | length }}
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                {% for item in board['invited'] %}
+                    {% set cand = item.user %}
+                    {% set passport = item.passport %}
+                    {% set sub = item.best_submission %}
+                    {% set sl = item.shortlist %}
+
+                    <div class="card p-4 border-prove/40 bg-white hover:shadow-md transition-all space-y-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <h3 class="font-display font-bold text-sm text-ink">{{ cand.full_name }}</h3>
+                                <p class="text-[11px] text-slate-500">{{ cand.institution }}</p>
+                            </div>
+                            <span class="badge bg-prove-soft text-prove-dark text-[10px] font-bold">
+                                Level {{ passport.highest_trust_level }}
+                            </span>
+                        </div>
+
+                        {% if sl.notes %}
+                            <div class="rounded-lg bg-teal-50 border border-teal-200 p-2 text-[11px] text-teal-900 italic">
+                                “{{ sl.notes }}”
+                            </div>
+                        {% endif %}
+
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                            <span class="text-[10px] text-slate-400">{{ cand.location or 'South Africa' }}</span>
+                            <a href="{{ url_for('employer.candidate_evidence', user_id=cand.id) }}" class="font-bold text-prove-dark hover:underline">
+                                Inspect Evidence &rarr;
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-300 rounded-xl">
+                        No candidates invited yet.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- COLUMN 3: NOT A FIT -->
+        <div class="rounded-2xl bg-slate-100/50 p-4 border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                <div class="flex items-center gap-2">
+                    <span class="h-2.5 w-2.5 rounded-full bg-slate-400"></span>
+                    <h2 class="font-display font-bold text-sm text-slate-600 uppercase tracking-wider">Archived / Not a Fit</h2>
+                </div>
+                <span class="badge bg-white text-slate-600 font-mono text-xs font-bold shadow-xs">
+                    {{ board['rejected'] | length }}
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                {% for item in board['rejected'] %}
+                    {% set cand = item.user %}
+                    {% set passport = item.passport %}
+                    {% set sl = item.shortlist %}
+
+                    <div class="card p-4 border-slate-200 bg-white opacity-75 hover:opacity-100 transition-all space-y-2">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <h3 class="font-display font-bold text-sm text-slate-700">{{ cand.full_name }}</h3>
+                                <p class="text-[11px] text-slate-400">{{ cand.institution }}</p>
+                            </div>
+                            <span class="badge bg-slate-100 text-slate-600 text-[10px]">
+                                {{ passport.readiness_score }} pts
+                            </span>
+                        </div>
+                        {% if sl.notes %}
+                            <p class="text-[11px] text-slate-500 italic">“{{ sl.notes }}”</p>
+                        {% endif %}
+                        <div class="pt-2 text-right">
+                            <a href="{{ url_for('employer.candidate_evidence', user_id=cand.id) }}" class="text-[11px] text-slate-500 hover:underline">
+                                Re-open
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-300 rounded-xl">
+                        No archived candidates.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -2,180 +2,308 @@
 {% block title %}WorkProof: {{ challenge.title }} | Path2Work{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto space-y-6">
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <a href="{{ url_for('candidate.dashboard') }}" class="text-xs font-semibold text-slate-500 hover:text-slate-800">
-                ← Back to Candidate Dashboard
-            </a>
-            <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-indigo-50 text-build border border-indigo-200">
-                {{ challenge.pathway.title }} • Passing Score: {{ challenge.passing_score }}/100
+<div class="max-w-5xl mx-auto space-y-8">
+    
+    <!-- TOP BREADCRUMB & CHALLENGE META -->
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <a href="{{ url_for('candidate.dashboard') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-ink">
+            <i class="ph-bold ph-arrow-left" aria-hidden="true"></i> Back to Candidate Dashboard
+        </a>
+        <div class="flex items-center gap-2">
+            <span class="badge bg-build-soft text-build-dark font-mono text-xs">
+                {{ challenge.pathway.title }}
+            </span>
+            <span class="badge bg-prove-soft text-prove-dark font-mono text-xs">
+                Passing Benchmark: {{ challenge.passing_score }}/100
             </span>
         </div>
+    </div>
 
+    <!-- CHALLENGE OVERVIEW & PRODUCTION BRIEF -->
+    <div class="card p-6 sm:p-8 border-slate-200 bg-white space-y-4">
         <div>
-            <h1 class="text-2xl font-extrabold text-slate-900">{{ challenge.title }}</h1>
-            <div class="mt-3 p-4 rounded-xl bg-slate-900 text-slate-100 text-sm leading-relaxed">
-                <span class="text-xs font-bold uppercase tracking-wider text-teal-300 block mb-1">Production Scenario Brief</span>
-                {{ challenge.scenario }}
-            </div>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Authentic Workplace Challenge</span>
+            <h1 class="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-ink">{{ challenge.title }}</h1>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 pt-2">
-            <button type="button" onclick="showStep(1)" id="tab-1"
-                class="step-tab text-left p-3 rounded-xl border-2 border-build bg-build/5 transition">
-                <div class="text-xs font-bold uppercase tracking-wider text-build">Step 1 • 40% Weight</div>
-                <div class="text-sm font-extrabold text-slate-900">1. BUILD</div>
-                <div class="text-xs text-slate-500">Repo &amp; Working Code</div>
+        <div class="rounded-xl bg-ink p-5 text-slate-100 text-sm leading-relaxed">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="h-2 w-2 rounded-full bg-prove"></span>
+                <span class="font-display text-xs font-bold uppercase tracking-wider text-teal-300">Production Scenario Brief</span>
+            </div>
+            <p class="text-slate-200">{{ challenge.scenario }}</p>
+        </div>
+
+        <!-- 3-STAGE PROGRESS RAIL (STEPPER) -->
+        <div class="grid grid-cols-3 gap-3 pt-3" role="tablist" aria-label="WorkProof Stages">
+            <button type="button" onclick="showStep(1)" id="tab-1" role="tab" aria-selected="true"
+                class="step-tab text-left p-4 rounded-xl border-2 border-build bg-build-soft/40 transition-all">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-build-dark">Stage 1 · 40%</span>
+                    <span id="tab-1-status" class="text-xs font-bold text-build-dark">
+                        {% if submission and submission.build_code_snippet %}✓ Filled{% else %}Active{% endif %}
+                    </span>
+                </div>
+                <div class="font-display font-extrabold text-base text-ink mt-1">1. BUILD</div>
+                <div class="text-xs text-slate-500 mt-0.5">Repo & Working Code</div>
             </button>
-            <button type="button" onclick="showStep(2)" id="tab-2"
-                class="step-tab text-left p-3 rounded-xl border-2 border-slate-200 hover:border-prove/60 transition">
-                <div class="text-xs font-bold uppercase tracking-wider text-prove">Step 2 • 30% Weight</div>
-                <div class="text-sm font-extrabold text-slate-900">2. EXPLAIN</div>
-                <div class="text-xs text-slate-500">Trade-offs &amp; Reasoning</div>
+
+            <button type="button" onclick="showStep(2)" id="tab-2" role="tab" aria-selected="false"
+                class="step-tab text-left p-4 rounded-xl border-2 border-slate-200 hover:border-prove/50 bg-white transition-all">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-prove-dark">Stage 2 · 30%</span>
+                    <span id="tab-2-status" class="text-xs font-bold text-slate-400">
+                        {% if submission and submission.explain_notes %}✓ Filled{% else %}Pending{% endif %}
+                    </span>
+                </div>
+                <div class="font-display font-extrabold text-base text-ink mt-1">2. EXPLAIN</div>
+                <div class="text-xs text-slate-500 mt-0.5">Trade-offs & Reasoning</div>
             </button>
-            <button type="button" onclick="showStep(3)" id="tab-3"
-                class="step-tab text-left p-3 rounded-xl border-2 border-slate-200 hover:border-match/60 transition">
-                <div class="text-xs font-bold uppercase tracking-wider text-match">Step 3 • 30% Weight</div>
-                <div class="text-sm font-extrabold text-slate-900">3. ADAPT</div>
-                <div class="text-xs text-slate-500">Handle Change Request</div>
+
+            <button type="button" onclick="showStep(3)" id="tab-3" role="tab" aria-selected="false"
+                class="step-tab text-left p-4 rounded-xl border-2 border-slate-200 hover:border-match/50 bg-white transition-all">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-match-dark">Stage 3 · 30%</span>
+                    <span id="tab-3-status" class="text-xs font-bold text-slate-400">
+                        {% if submission and submission.adapt_solution %}✓ Filled{% else %}Pending{% endif %}
+                    </span>
+                </div>
+                <div class="font-display font-extrabold text-base text-ink mt-1">3. ADAPT</div>
+                <div class="text-xs text-slate-500 mt-0.5">Requirement Evolution</div>
             </button>
         </div>
     </div>
 
-    <form method="POST" action="{{ url_for('assessment.submit_workproof', challenge_id=challenge.id) }}" class="space-y-6">
-        <div id="step-1" class="bg-white rounded-2xl border-2 border-build/40 p-6 shadow-sm space-y-5">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+    <!-- MAIN STEPPER FORM -->
+    <form method="POST" action="{{ url_for('assessment.submit_workproof', challenge_id=challenge.id) }}" id="workproof-form" class="space-y-6">
+        
+        <!-- ================= STAGE 1: BUILD ================= -->
+        <div id="step-1" class="card p-6 sm:p-8 border-2 border-build/40 bg-white shadow-sm space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
-                    <span class="px-2.5 py-1 rounded text-xs font-bold uppercase bg-build text-white">Stage 1 of 3: BUILD (40%)</span>
-                    <h2 class="text-lg font-bold text-slate-900 mt-2">Implement &amp; Attach Source Evidence</h2>
+                    <span class="badge bg-build-dark text-white font-mono text-[11px]">STAGE 1 OF 3 · 40% SCORE</span>
+                    <h2 class="mt-2 font-display text-xl font-bold text-ink">Implement Working Solution & Attach Code</h2>
+                </div>
+                <button type="submit" name="action" value="save_draft" class="btn btn-secondary text-xs">
+                    <i class="ph-bold ph-floppy-disk" aria-hidden="true"></i> Save Draft Progress
+                </button>
+            </div>
+
+            <!-- Stage 1 Callout -->
+            <div class="rounded-xl border border-build/20 bg-build-soft/50 p-4 text-sm text-slate-800">
+                <div class="flex items-center gap-1.5 font-display text-xs font-bold uppercase tracking-wider text-build-dark mb-1">
+                    <i class="ph-bold ph-terminal-window" aria-hidden="true"></i> Build Prompt & Requirements:
+                </div>
+                <p class="leading-relaxed">{{ challenge.build_prompt }}</p>
+            </div>
+
+            <!-- Repo URL Input -->
+            <div>
+                <label for="build_repo_url" class="field-label">GitHub or GitLab Repository URL (Optional but Recommended)</label>
+                <input id="build_repo_url" type="url" name="build_repo_url"
+                       value="{{ submission.build_repo_url if submission and submission.build_repo_url else '' }}"
+                       placeholder="https://github.com/your-username/path2work-solution"
+                       class="field font-mono text-xs">
+                <span class="field-hint">Attaching a valid public repository unlocks Level 2 (Evidence Attached) and Level 3 (Source Verified).</span>
+            </div>
+
+            <!-- Code Editor Box -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="build_code_snippet" class="field-label mb-0">Core Code / Query / Configuration Script</label>
+                    <span id="build-line-count" class="font-mono text-[11px] text-slate-500">0 lines</span>
+                </div>
+                <div class="relative rounded-xl border border-slate-700 bg-slate-950 overflow-hidden shadow-inner">
+                    <div class="flex items-center justify-between bg-slate-900 px-4 py-2 border-b border-slate-800 text-xs text-slate-400 font-mono">
+                        <span>main_solution.py / script / schema</span>
+                        <span>UTF-8 Monospace</span>
+                    </div>
+                    <textarea id="build_code_snippet" name="build_code_snippet" rows="12"
+                              oninput="updateCodeMetrics()"
+                              placeholder="# Paste your complete implementation script, SQL queries, or configuration logic here..."
+                              class="w-full bg-transparent p-4 font-mono text-xs text-emerald-300 placeholder:text-slate-600 focus:outline-none focus:ring-0 resize-y leading-relaxed">{{ submission.build_code_snippet if submission and submission.build_code_snippet else '' }}</textarea>
                 </div>
             </div>
 
-            <div class="p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 text-sm text-slate-800">
-                <strong class="block text-xs uppercase tracking-wider text-build mb-1">Build Prompt:</strong>
-                {{ challenge.build_prompt }}
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    GitHub / GitLab Repository URL
-                </label>
-                <input type="url" name="build_repo_url"
-                    value="{{ submission.build_repo_url if submission and submission.build_repo_url else '' }}"
-                    placeholder="https://github.com/your-username/path2work-solution"
-                    class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-build">
-                <p class="text-xs text-slate-500 mt-1">Valid repository URLs unlock Level 2 (Evidence Attached) &amp; Level 3 (Source Verified).</p>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Core Implementation Code / Script Snippet
-                </label>
-                <textarea name="build_code_snippet" rows="11"
-                    placeholder="Paste your core implementation function, SQL pipeline, or Bash diagnostic script here..."
-                    class="w-full rounded-lg border border-slate-300 p-3.5 text-xs font-mono bg-slate-900 text-emerald-300 focus:outline-none focus:ring-2 focus:ring-build">{{ submission.build_code_snippet if submission and submission.build_code_snippet else '' }}</textarea>
-            </div>
-
-            <div class="flex justify-end">
-                <button type="button" onclick="showStep(2)"
-                    class="px-5 py-2.5 rounded-lg bg-build hover:bg-indigo-600 text-white text-sm font-semibold shadow">
-                    Next: Step 2 [EXPLAIN] →
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                <span class="text-xs text-slate-500">Drafts are kept safe when saved.</span>
+                <button type="button" onclick="showStep(2)" class="btn btn-primary px-5 py-2.5">
+                    Next: Step 2 [EXPLAIN] &rarr;
                 </button>
             </div>
         </div>
 
-        <div id="step-2" class="hidden bg-white rounded-2xl border-2 border-prove/40 p-6 shadow-sm space-y-5">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <!-- ================= STAGE 2: EXPLAIN ================= -->
+        <div id="step-2" class="hidden card p-6 sm:p-8 border-2 border-prove/40 bg-white shadow-sm space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
-                    <span class="px-2.5 py-1 rounded text-xs font-bold uppercase bg-prove text-white">Stage 2 of 3: EXPLAIN (30%)</span>
-                    <h2 class="text-lg font-bold text-slate-900 mt-2">Defend Your Technical Decisions &amp; Trade-Offs</h2>
+                    <span class="badge bg-prove-dark text-white font-mono text-[11px]">STAGE 2 OF 3 · 30% SCORE</span>
+                    <h2 class="mt-2 font-display text-xl font-bold text-ink">Defend Technical Decisions & Architectural Trade-offs</h2>
                 </div>
+                <button type="submit" name="action" value="save_draft" class="btn btn-secondary text-xs">
+                    <i class="ph-bold ph-floppy-disk" aria-hidden="true"></i> Save Draft Progress
+                </button>
             </div>
 
-            <div class="p-4 rounded-xl bg-teal-50/70 border border-teal-200 text-sm text-slate-800">
-                <strong class="block text-xs uppercase tracking-wider text-prove mb-1">Explain Prompt:</strong>
-                {{ challenge.explain_prompt }}
+            <!-- Stage 2 Callout -->
+            <div class="rounded-xl border border-prove/20 bg-prove-soft/50 p-4 text-sm text-slate-800">
+                <div class="flex items-center gap-1.5 font-display text-xs font-bold uppercase tracking-wider text-prove-dark mb-1">
+                    <i class="ph-bold ph-chat-centered-text" aria-hidden="true"></i> Explain Prompt:
+                </div>
+                <p class="leading-relaxed">{{ challenge.explain_prompt }}</p>
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Your Engineering Reasoning &amp; Justification
-                </label>
-                <textarea name="explain_notes" rows="8"
-                    placeholder="Explain why you chose specific data structures, status codes, imputation methods, or security rules, and what edge cases you guarded against..."
-                    class="w-full rounded-lg border border-slate-300 p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-prove">{{ submission.explain_notes if submission and submission.explain_notes else '' }}</textarea>
-                <p class="text-xs text-slate-500 mt-1">Tip: Employers read this section to verify you truly understand the code you wrote (anti-AI-copy-paste check).</p>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="explain_notes" class="field-label mb-0">Your Engineering Reasoning & Defense</label>
+                    <span id="explain-word-count" class="font-mono text-[11px] text-slate-500">0 words</span>
+                </div>
+                <textarea id="explain_notes" name="explain_notes" rows="9"
+                          oninput="checkExplainLength()"
+                          placeholder="Explain why you chose specific data structures, indexing, error handling routines, or security protocols. Discuss the alternatives you considered and why you rejected them..."
+                          class="field font-sans text-sm leading-relaxed">{{ submission.explain_notes if submission and submission.explain_notes else '' }}</textarea>
+                <div id="explain-warning" class="hidden mt-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center gap-2">
+                    <i class="ph-bold ph-warning text-amber-700" aria-hidden="true"></i>
+                    <span>This response is brief (&lt; 40 words). The AI evaluation penalises thin explanations. Aim for 75&ndash;150 words detailing specific trade-offs.</span>
+                </div>
             </div>
 
-            <div class="flex items-center justify-between">
-                <button type="button" onclick="showStep(1)"
-                    class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50">
-                    ← Back to Step 1 [BUILD]
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                <button type="button" onclick="showStep(1)" class="btn btn-secondary text-xs">
+                    &larr; Back to Step 1 [BUILD]
                 </button>
-                <button type="button" onclick="showStep(3)"
-                    class="px-5 py-2.5 rounded-lg bg-prove hover:bg-teal-700 text-white text-sm font-semibold shadow">
-                    Next: Step 3 [ADAPT] →
+                <button type="button" onclick="showStep(3)" class="btn btn-prove px-5 py-2.5">
+                    Next: Step 3 [ADAPT] &rarr;
                 </button>
             </div>
         </div>
 
-        <div id="step-3" class="hidden bg-white rounded-2xl border-2 border-match/40 p-6 shadow-sm space-y-5">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <!-- ================= STAGE 3: ADAPT ================= -->
+        <div id="step-3" class="hidden card p-6 sm:p-8 border-2 border-match/40 bg-white shadow-sm space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
-                    <span class="px-2.5 py-1 rounded text-xs font-bold uppercase bg-match text-white">Stage 3 of 3: ADAPT (30%)</span>
-                    <h2 class="text-lg font-bold text-slate-900 mt-2">Respond to Production Requirement Change</h2>
+                    <span class="badge bg-match-dark text-white font-mono text-[11px]">STAGE 3 OF 3 · 30% SCORE</span>
+                    <h2 class="mt-2 font-display text-xl font-bold text-ink">Pivot Solution to Dynamic Constraint Change</h2>
                 </div>
+                <button type="submit" name="action" value="save_draft" class="btn btn-secondary text-xs">
+                    <i class="ph-bold ph-floppy-disk" aria-hidden="true"></i> Save Draft Progress
+                </button>
             </div>
 
-            <div class="p-4 rounded-xl bg-orange-50/80 border border-orange-200 text-sm text-slate-800">
-                <strong class="block text-xs uppercase tracking-wider text-match mb-1">Dynamic Change Request:</strong>
-                {{ challenge.adapt_prompt }}
+            <!-- Stage 3 Callout -->
+            <div class="rounded-xl border border-match/20 bg-match-soft/50 p-4 text-sm text-slate-800">
+                <div class="flex items-center gap-1.5 font-display text-xs font-bold uppercase tracking-wider text-match-dark mb-1">
+                    <i class="ph-bold ph-arrows-clockwise" aria-hidden="true"></i> Dynamic Production Change Request:
+                </div>
+                <p class="leading-relaxed">{{ challenge.adapt_prompt }}</p>
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Adapted Solution / Code Modification &amp; Scaling Strategy
-                </label>
-                <textarea name="adapt_solution" rows="8"
-                    placeholder="Write the updated logic, query, or architectural modification that satisfies the new constraint..."
-                    class="w-full rounded-lg border border-slate-300 p-3.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-match">{{ submission.adapt_solution if submission and submission.adapt_solution else '' }}</textarea>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="adapt_solution" class="field-label mb-0">Adapted Solution & Modification Diff</label>
+                    <span id="adapt-word-count" class="font-mono text-[11px] text-slate-500">0 words</span>
+                </div>
+                <textarea id="adapt_solution" name="adapt_solution" rows="9"
+                          oninput="checkAdaptLength()"
+                          placeholder="Detail your modified code, additional guards, offline sync logic, or performance tuning that addresses the new constraint..."
+                          class="field font-mono text-xs leading-relaxed">{{ submission.adapt_solution if submission and submission.adapt_solution else '' }}</textarea>
+                <div id="adapt-warning" class="hidden mt-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center gap-2">
+                    <i class="ph-bold ph-warning text-amber-700" aria-hidden="true"></i>
+                    <span>This response is brief (&lt; 35 words). Provide code modification diffs or clear technical steps for full points.</span>
+                </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-                <button type="button" onclick="showStep(2)"
-                    class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50">
-                    ← Back to Step 2 [EXPLAIN]
+            <!-- Scoring Confirmation Box -->
+            <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 text-xs text-slate-600 space-y-2">
+                <div class="font-bold text-ink flex items-center gap-1.5">
+                    <i class="ph-bold ph-info text-build-dark" aria-hidden="true"></i> Ready to submit for verification?
+                </div>
+                <p>
+                    Your submission will be scored out of 100 points: <strong class="text-ink">Build (40%)</strong>, <strong class="text-ink">Explain (30%)</strong>, and <strong class="text-ink">Adapt (30%)</strong>. Achieving <strong>70+ points</strong> unlocks Trust Level 4 (Path2Work Assessed) on your public Skills Passport.
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                <button type="button" onclick="showStep(2)" class="btn btn-secondary text-xs">
+                    &larr; Back to Step 2 [EXPLAIN]
                 </button>
 
-                <div class="flex items-center space-x-3">
-                    <button type="submit" name="action" value="save_draft"
-                        class="px-4 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold">
-                        Save Draft
+                <div class="flex flex-wrap items-center gap-3">
+                    <button type="submit" name="action" value="save_draft" class="btn btn-secondary text-xs">
+                        Save as Draft
                     </button>
-                    <button type="submit" name="action" value="submit"
-                        class="px-6 py-2.5 rounded-lg bg-gradient-to-r from-build via-prove to-match text-white text-sm font-bold shadow-md hover:opacity-95 transition">
-                        Submit WorkProof for Verification ✓
+                    <button type="submit" name="action" value="submit" class="btn btn-accent px-6 py-2.5 text-sm font-bold shadow-md">
+                        Submit WorkProof for AI Verification &check;
                     </button>
                 </div>
             </div>
         </div>
+
     </form>
 </div>
 
 <script>
 function showStep(stepNum) {
     [1, 2, 3].forEach(function(n) {
-        const panel = document.getElementById('step-' + n);
-        const tab = document.getElementById('tab-' + n);
+        var panel = document.getElementById('step-' + n);
+        var tab = document.getElementById('tab-' + n);
+        if (!panel || !tab) return;
+        
         if (n === stepNum) {
             panel.classList.remove('hidden');
-            tab.classList.add('ring-2', 'ring-offset-1', 'ring-slate-900', 'bg-slate-50');
+            tab.setAttribute('aria-selected', 'true');
+            tab.classList.add('border-ink', 'bg-slate-50', 'shadow-xs');
+            tab.classList.remove('border-slate-200', 'bg-white');
         } else {
             panel.classList.add('hidden');
-            tab.classList.remove('ring-2', 'ring-offset-1', 'ring-slate-900', 'bg-slate-50');
+            tab.setAttribute('aria-selected', 'false');
+            tab.classList.remove('border-ink', 'bg-slate-50', 'shadow-xs');
+            tab.classList.add('border-slate-200', 'bg-white');
         }
     });
 }
+
+function updateCodeMetrics() {
+    var code = document.getElementById('build_code_snippet').value;
+    var lines = code ? code.split('\n').length : 0;
+    document.getElementById('build-line-count').textContent = lines + (lines === 1 ? ' line' : ' lines');
+    var status = document.getElementById('tab-1-status');
+    if (status) status.textContent = code.trim().length > 20 ? '✓ Ready' : 'In Progress';
+}
+
+function checkExplainLength() {
+    var text = document.getElementById('explain_notes').value.trim();
+    var words = text ? text.split(/\s+/).length : 0;
+    document.getElementById('explain-word-count').textContent = words + (words === 1 ? ' word' : ' words');
+    var warning = document.getElementById('explain-warning');
+    if (words > 0 && words < 40) {
+        warning.classList.remove('hidden');
+    } else {
+        warning.classList.add('hidden');
+    }
+    var status = document.getElementById('tab-2-status');
+    if (status) status.textContent = words >= 40 ? '✓ Ready' : (words > 0 ? 'Thin' : 'Pending');
+}
+
+function checkAdaptLength() {
+    var text = document.getElementById('adapt_solution').value.trim();
+    var words = text ? text.split(/\s+/).length : 0;
+    document.getElementById('adapt-word-count').textContent = words + (words === 1 ? ' word' : ' words');
+    var warning = document.getElementById('adapt-warning');
+    if (words > 0 && words < 35) {
+        warning.classList.remove('hidden');
+    } else {
+        warning.classList.add('hidden');
+    }
+    var status = document.getElementById('tab-3-status');
+    if (status) status.textContent = words >= 35 ? '✓ Ready' : (words > 0 ? 'Thin' : 'Pending');
+}
+
+// Initialise metrics on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateCodeMetrics();
+    checkExplainLength();
+    checkAdaptLength();
+});
 </script>
 {% endblock %}

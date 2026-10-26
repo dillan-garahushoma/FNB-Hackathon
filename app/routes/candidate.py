@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app import db
 from app.models import (
     User,
@@ -41,6 +41,38 @@ def dashboard():
         pathways=pathways,
         submissions_by_challenge=submissions_by_challenge,
         latest_submission=latest_submission,
+    )
+
+
+@candidate_bp.route("/candidate/profile", methods=["GET", "POST"])
+@candidate_required
+def profile():
+    user = db.get_or_404(User, session["user_id"])
+    passport = SkillsPassport.query.filter_by(user_id=user.id).first()
+
+    if request.method == "POST":
+        institution = (request.form.get("institution") or "").strip()
+        location = (request.form.get("location") or "").strip()
+        grad_year_raw = request.form.get("graduation_year")
+        is_open_to_work = request.form.get("is_open_to_work") == "on"
+
+        if institution:
+            user.institution = institution
+        if location:
+            user.location = location
+        user.is_open_to_work = is_open_to_work
+
+        if grad_year_raw and grad_year_raw.isdigit():
+            user.graduation_year = int(grad_year_raw)
+
+        db.session.commit()
+        flash("Readiness preferences and profile details successfully saved.", "success")
+        return redirect(url_for("candidate.profile"))
+
+    return render_template(
+        "candidate/profile.html",
+        user=user,
+        passport=passport,
     )
 
 

@@ -1,0 +1,16 @@
+{# Component: Employer KPI Tile #}
+{# parameters: label, value, caption, icon, color_class #}
+<div class="card p-5 border-slate-200 hover:border-slate-300 transition-all">
+    <div class="flex items-center justify-between gap-2">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ label }}</span>
+        {% if icon %}
+            <span class="p-2 rounded-lg {{ color_class | default('bg-slate-100 text-slate-700') }}">
+                <i class="ph-bold {{ icon }} text-lg" aria-hidden="true"></i>
+            </span>
+        {% endif %}
+    </div>
+    <div class="mt-2 font-display text-3xl font-extrabold text-ink tracking-tight">{{ value }}</div>
+    {% if caption %}
+        <p class="mt-1 text-xs text-slate-500">{{ caption }}</p>
+    {% endif %}
+</div>

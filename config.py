@@ -9,3 +9,4 @@ class Config:
         "DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'path2work.db')}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    DEMO_MODE = os.environ.get("DEMO_MODE", "true").lower() in ("true", "1", "yes")

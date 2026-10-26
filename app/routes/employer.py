@@ -55,9 +55,12 @@ def dashboard():
             prequalified_count += 1
 
         # Filtering logic
-        if passport.highest_trust_level < min_trust_int: continue
-        if passport.readiness_score < min_score_int: continue
-        if only_open and not cand.is_open_to_work: continue
+        if passport.highest_trust_level < min_trust_int:
+            continue
+        if passport.readiness_score < min_score_int:
+            continue
+        if only_open and not cand.is_open_to_work:
+            continue
         
         if location_filter and (not cand.location or location_filter not in cand.location.lower()):
             continue
@@ -67,12 +70,12 @@ def dashboard():
                 s.challenge and s.challenge.pathway and s.challenge.pathway.slug == selected_pathway
                 for s in cand.submissions
             )
-            if not has_pathway_sub: continue
+            if not has_pathway_sub:
+                continue
 
         # Skill Search (Checks the JSON extracted skills)
         if search_skill:
             cand_skills = [s.lower() for s in passport.parsed_skills]
-            # Check if search term matches any extracted skill
             if not any(search_skill in s for s in cand_skills):
                 continue
 
@@ -102,12 +105,41 @@ def dashboard():
     )
 
 
+@employer_bp.route("/shortlist-board")
+@employer_required
+def shortlist_board():
+    employer_id = session["user_id"]
+    shortlists = EmployerShortlist.query.filter_by(employer_id=employer_id).all()
+    
+    board = {
+        "shortlisted": [],
+        "invited": [],
+        "rejected": []
+    }
+    
+    for s in shortlists:
+        cand = s.candidate_user
+        if cand and cand.passport:
+            target_bucket = s.status if s.status in board else "shortlisted"
+            best_sub = WorkProofSubmission.query.filter_by(user_id=cand.id).order_by(WorkProofSubmission.evidence_score.desc()).first()
+            board[target_bucket].append({
+                "shortlist": s,
+                "user": cand,
+                "passport": cand.passport,
+                "best_submission": best_sub,
+            })
+            
+    return render_template(
+        "employer/shortlist_board.html",
+        board=board,
+        total_shortlisted=len(shortlists)
+    )
+
+
 @employer_bp.route("/export/csv")
 @employer_required
 def export_csv():
-    """Exports the current filtered list of candidates to a CSV file."""
-    # Note: For simplicity, this exports all Level 3+ candidates. 
-    # In a full version, we would pass the query parameters here to match the dashboard.
+    """Exports candidates to a CSV file."""
     candidates = User.query.filter_by(role="candidate").all()
     
     output = io.StringIO()
@@ -179,10 +211,10 @@ def shortlist_candidate(candidate_id: int):
             passport.updated_at = datetime.now(timezone.utc)
         shortlist.status = "invited"
         db.session.commit()
-        flash(f"{candidate.full_name} endorsed to Trust Level 5!", "success")
+        flash(f"{candidate.full_name} has been verified and endorsed to Trust Level 5!", "success")
     else:
         db.session.commit()
-        flash(f"Candidate {candidate.full_name} updated.", "success")
+        flash(f"Candidate {candidate.full_name} shortlist status updated to '{status}'.", "success")
 
     next_url = request.form.get("next_url") or url_for("employer.candidate_evidence", user_id=candidate.id)
     return redirect(next_url)

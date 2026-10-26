@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Profile & Work Preferences | Path2Work{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-5xl space-y-8">
+    <div class="border-b border-slate-200 pb-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-ink">Candidate Readiness Profile</h1>
+                <p class="mt-1 text-sm text-slate-600">
+                    Maintain your location, availability, and institution credentials so verified hiring teams can discover you.
+                </p>
+            </div>
+            <a href="{{ url_for('candidate.skills_passport', user_id=user.id) }}" class="btn btn-secondary text-xs sm:text-sm">
+                <i class="ph-bold ph-identification-card" aria-hidden="true"></i> View Public Passport
+            </a>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('candidate.profile') }}" class="space-y-10">
+        
+        <!-- SECTION 1: Identity & Institutional Credential -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pt-2">
+            <div class="md:col-span-4">
+                <h2 class="font-display text-base font-bold text-ink">Institutional Identity</h2>
+                <p class="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                    Used to establish Level 3 Source Verification. Your educational domain confirms student or recent graduate standing.
+                </p>
+            </div>
+            <div class="md:col-span-8 card p-6 border-slate-200 bg-white space-y-5">
+                <div>
+                    <label class="field-label">Full Name</label>
+                    <input type="text" value="{{ user.full_name }}" disabled class="field bg-slate-50 text-slate-500 cursor-not-allowed">
+                    <span class="field-hint">Primary name matches institutional identity record.</span>
+                </div>
+
+                <div>
+                    <label class="field-label">Verified Email</label>
+                    <div class="flex items-center gap-2">
+                        <input type="email" value="{{ user.email }}" disabled class="field bg-slate-50 text-slate-500 cursor-not-allowed font-mono text-xs">
+                        {% if user.has_institutional_email %}
+                            <span class="badge bg-prove-soft text-prove-dark border border-prove/30 shrink-0">
+                                <i class="ph-bold ph-check-circle" aria-hidden="true"></i> .ac.za Verified
+                            </span>
+                        {% else %}
+                            <span class="badge bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                                Personal Email
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="sm:col-span-2">
+                        <label for="institution" class="field-label">University, TVET or Institution</label>
+                        <input id="institution" type="text" name="institution" value="{{ user.institution or '' }}" required class="field">
+                    </div>
+                    <div>
+                        <label for="graduation_year" class="field-label">Graduation Year</label>
+                        <input id="graduation_year" type="number" name="graduation_year" value="{{ user.graduation_year or 2026 }}" min="2020" max="2030" class="field">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-slate-200">
+
+        <!-- SECTION 2: Work Readiness & Location -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div class="md:col-span-4">
+                <h2 class="font-display text-base font-bold text-ink">Availability & Location</h2>
+                <p class="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                    Employer talent pipelines filter directly by location and Open-to-Work status. Keep this accurate for recruitment outreach.
+                </p>
+            </div>
+            <div class="md:col-span-8 card p-6 border-slate-200 bg-white space-y-6">
+                <div>
+                    <label for="location" class="field-label">Primary Metro / Province</label>
+                    <select id="location" name="location" class="field">
+                        {% set locs = ['Johannesburg, Gauteng', 'Pretoria, Gauteng', 'Cape Town, Western Cape', 'Durban, KwaZulu-Natal', 'Gqeberha, Eastern Cape', 'Bloemfontein, Free State', 'Remote / Nationwide', 'South Africa'] %}
+                        {% for loc in locs %}
+                            <option value="{{ loc }}" {% if user.location == loc %}selected{% endif %}>{{ loc }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="field-hint">Employers can filter by candidates open to on-site, hybrid, or regional work.</span>
+                </div>
+
+                <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" name="is_open_to_work" {% if user.is_open_to_work %}checked{% endif %} class="mt-1 h-4 w-4 rounded border-slate-300 text-prove focus:ring-prove">
+                        <div>
+                            <span class="font-display font-bold text-sm text-ink block">Open to Work & Interview Opportunities</span>
+                            <span class="text-xs text-slate-500 block mt-0.5">
+                                When enabled, your verified Skills Passport displays an "Open to Work" status indicator on the employer screening board.
+                            </span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-slate-200">
+
+        <!-- SUBMIT BAR -->
+        <div class="flex items-center justify-end gap-3 pt-2">
+            <a href="{{ url_for('candidate.dashboard') }}" class="btn btn-secondary">
+                Cancel
+            </a>
+            <button type="submit" class="btn btn-primary px-6 py-2.5">
+                <i class="ph-bold ph-floppy-disk" aria-hidden="true"></i> Save Preferences
+            </button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

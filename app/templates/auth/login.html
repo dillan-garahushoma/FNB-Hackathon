@@ -1,159 +1,237 @@
 {% extends "base.html" %}
-{% block title %}Sign in | Path2Work{% endblock %}
+{% block title %}Sign in | Path2Work — Prove Before Hire{% endblock %}
 
 {% block content %}
-{# Demo accounts are for local testing and demos only. Set DEMO_MODE = False in your production Flask config to hide them. #}
 {% set show_demo = config.get('DEMO_MODE', True) %}
 
 {% set demo_employers = [
-    ('talent@paystack-sa.co.za', 'Nomsa Dlamini', 'PayFlow FinTech SA', '3 shortlisted'),
-    ('careers@cloudsmiths.co.za', 'Gareth Naidoo', 'CloudSmiths South Africa', ''),
+    ('talent@paystack-sa.co.za', 'Nomsa Dlamini', 'PayFlow FinTech SA', 'Active hiring partner'),
+    ('careers@cloudsmiths.co.za', 'Gareth Naidoo', 'CloudSmiths South Africa', 'Cloud infrastructure lead'),
+    ('tech@takealot.com', 'David Okafor', 'Takealot Engineering', 'High-volume logistics team'),
+    ('graduates@standardbank.co.za', 'Kgomotso Phiri', 'Standard Bank CIB', 'Graduate technology pipeline')
 ] %}
+
 {% set demo_candidates = [
     ('sipho.dlamini@richfield.ac.za', 'Sipho Dlamini', 'Richfield', 5, 94, 'Software Dev + Cloud, employer verified'),
     ('zanele.khumalo@wits.ac.za', 'Zanele Khumalo', 'Wits', 4, 89, 'Junior Data Analyst, verified'),
     ('thabo.nkosi@uct.ac.za', 'Thabo Nkosi', 'UCT', 4, 86, 'Junior Software Developer, verified'),
     ('pieter.vdm@sun.ac.za', 'Pieter van der Merwe', 'SUN', 4, 82, 'IT Support / Cloud, verified'),
     ('ayanda.zulu@dut.ac.za', 'Ayanda Zulu', 'DUT', 4, 78, 'Junior Software Developer, verified'),
-    ('amahle.ndlovu@ukzn.ac.za', 'Amahle Ndlovu', 'UKZN', 3, 64, 'Data Analyst, needs 6 points to reach Level 4'),
+    ('amahle.ndlovu@ukzn.ac.za', 'Amahle Ndlovu', 'UKZN', 3, 64, 'Data Analyst, needs 6 pts to reach Level 4'),
     ('kabelo.mahlangu@uj.ac.za', 'Kabelo Mahlangu', 'UJ', 2, 52, 'IT Support / Cloud, evidence attached'),
-    ('lerato.mokoena@tut.ac.za', 'Lerato Mokoena', 'TUT', 1, 20, 'New candidate, self-declared'),
+    ('lerato.mokoena@tut.ac.za', 'Lerato Mokoena', 'TUT', 1, 20, 'New candidate, self-declared')
 ] %}
 
 <div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-12 lg:items-start">
 
-    {# Sign-in form comes first on mobile, second (right) on desktop #}
+    <!-- SIGN-IN FORM: Mobile first, sticky right on desktop -->
     <section aria-labelledby="signin-title" class="order-1 lg:order-2 lg:col-span-5 lg:sticky lg:top-24">
-        <div class="card p-6 shadow-lg sm:p-8">
-            <h2 id="signin-title" class="text-2xl font-bold">Sign in</h2>
-            <p class="mt-1 text-sm text-slate-600">Welcome back. Pick up where you left off.</p>
-
-            <form method="POST" action="{{ url_for('auth.login') }}" class="mt-6 space-y-5">
+        <div class="card p-6 sm:p-8 shadow-md border-slate-200">
+            <div class="flex items-center justify-between">
                 <div>
-                    <label for="emailInput" class="field-label">Email address</label>
-                    <input id="emailInput" type="email" name="email" required autocomplete="email" inputmode="email"
-                           placeholder="you@university.ac.za" class="field">
+                    <h1 id="signin-title" class="font-display text-2xl font-bold text-ink">Sign in</h1>
+                    <p class="mt-1 text-xs sm:text-sm text-slate-600">Access your candidate dashboard or employer pipeline.</p>
                 </div>
+                <div class="h-10 w-10 rounded-xl bg-ink text-white flex items-center justify-center font-display font-extrabold text-sm">
+                    P2W
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.login') }}" id="login-form" class="mt-6 space-y-4">
                 <div>
-                    <label for="passwordInput" class="field-label">Password</label>
+                    <label for="email" class="field-label">Email address</label>
+                    <input id="email" type="email" name="email" required autocomplete="email" inputmode="email"
+                           placeholder="you@institution.ac.za or company.co.za" class="field">
+                    <span class="field-hint">Institutional (.ac.za) emails automatically unlock Source Verification.</span>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="password" class="field-label mb-0">Password</label>
+                        <button type="button" onclick="alert('Password reset is currently managed by institutional administration or demo reset.');" class="text-xs font-semibold text-build-dark hover:underline">
+                            Forgot password?
+                        </button>
+                    </div>
                     <div class="relative">
-                        <input id="passwordInput" type="password" name="password" required autocomplete="current-password"
-                               placeholder="Your password" class="field pr-12">
-                        <button type="button" id="togglePassword" aria-controls="passwordInput" aria-pressed="false"
-                                class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-lg text-slate-600 hover:text-ink"
+                        <input id="password" type="password" name="password" required autocomplete="current-password"
+                               placeholder="Enter your password" class="field pr-11">
+                        <button type="button" id="togglePassword" aria-controls="password" aria-pressed="false"
+                                onclick="togglePasswordVisibility()"
+                                class="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 hover:text-ink focus:outline-none"
                                 aria-label="Show password">
-                            <i class="ph ph-eye text-lg" aria-hidden="true"></i>
+                            <i id="passwordEyeIcon" class="ph-bold ph-eye text-base" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
-                <button type="submit" id="signinButton" class="btn btn-primary w-full py-3 text-base">Sign in</button>
+
+                <button type="submit" id="signinButton" class="btn btn-primary w-full py-3 text-sm font-semibold shadow-xs">
+                    Sign in to Path2Work <i class="ph-bold ph-arrow-right" aria-hidden="true"></i>
+                </button>
             </form>
 
-            <p class="mt-6 border-t border-slate-100 pt-5 text-center text-sm text-slate-600">
-                New to Path2Work?
-                <a href="{{ url_for('auth.register') }}" class="font-semibold text-build-dark underline underline-offset-2 hover:text-ink">
-                    Create a candidate or employer account
+            <div class="mt-6 border-t border-slate-100 pt-5 text-center text-xs text-slate-600">
+                Don't have an account yet?
+                <a href="{{ url_for('auth.register') }}" class="font-bold text-build-dark hover:underline ml-1">
+                    Register as candidate or employer &rarr;
                 </a>
-            </p>
+            </div>
         </div>
     </section>
 
-    <section class="order-2 space-y-10 lg:order-1 lg:col-span-7">
-        <div class="space-y-4">
-            <h1 class="max-w-2xl font-display text-4xl font-extrabold leading-[1.1] sm:text-5xl">
-                A CV says what you know. Path2Work shows what you can do.
-            </h1>
-            <p class="max-w-xl text-lg leading-relaxed text-slate-600">
-                South African IT students and graduates prove job readiness with real work. Employers see the evidence before they interview.
-            </p>
+    <!-- LEFT PANEL: Context, Visual Auth Banner & Demo Accounts -->
+    <section class="order-2 space-y-8 lg:order-1 lg:col-span-7">
+        
+        <!-- Auth Visual Image Card -->
+        <div class="relative overflow-hidden rounded-2xl bg-ink text-white shadow-md">
+            <div class="absolute inset-0 z-0">
+                <img src="{{ url_for('static', filename='images/path2work-auth.webp') }}" 
+                     alt="Path2Work Candidate at work desk" 
+                     class="h-full w-full object-cover object-center opacity-30 mix-blend-luminosity"
+                     onerror="this.style.display='none'">
+                <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-transparent"></div>
+            </div>
+            
+            <div class="relative z-10 p-6 sm:p-8">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200">
+                    <i class="ph-bold ph-shield-check text-prove" aria-hidden="true"></i> Authenticated Proof Platform
+                </span>
+                <h2 class="mt-3 font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+                    Prove your readiness before interview day.
+                </h2>
+                <p class="mt-2 text-sm text-slate-300 leading-relaxed max-w-lg">
+                    Submit verified code, explain your engineering choices, and adapt when requirements shift. Trusted by leading South African hiring teams.
+                </p>
+            </div>
         </div>
 
-        <ol class="grid gap-4 sm:grid-cols-3" aria-label="How a WorkProof challenge works">
-            <li class="border-t-4 border-build pt-3">
-                <p class="font-display text-lg font-bold text-ink">1. Build</p>
-                <p class="mt-1 text-sm leading-relaxed text-slate-600">Solve a realistic problem and attach your code. Worth 40% of your score.</p>
-            </li>
-            <li class="border-t-4 border-prove pt-3">
-                <p class="font-display text-lg font-bold text-ink">2. Explain</p>
-                <p class="mt-1 text-sm leading-relaxed text-slate-600">Say why you made each decision. Worth 30%.</p>
-            </li>
-            <li class="border-t-4 border-match pt-3">
-                <p class="font-display text-lg font-bold text-ink">3. Adapt</p>
-                <p class="mt-1 text-sm leading-relaxed text-slate-600">Handle a change request, the way you would on the job. Worth 30%.</p>
-            </li>
-        </ol>
+        <!-- 3-Step WorkProof Micro-Explainer -->
+        <div class="grid gap-4 sm:grid-cols-3" aria-label="How a WorkProof challenge works">
+            <div class="card p-4 border-t-3 border-t-build bg-white">
+                <div class="font-display text-sm font-bold text-ink">1. Build (40%)</div>
+                <p class="mt-1 text-xs text-slate-600">Deliver working code or configurations answering a production brief.</p>
+            </div>
+            <div class="card p-4 border-t-3 border-t-prove bg-white">
+                <div class="font-display text-sm font-bold text-ink">2. Explain (30%)</div>
+                <p class="mt-1 text-xs text-slate-600">Defend architectural decisions, trade-offs, and security principles.</p>
+            </div>
+            <div class="card p-4 border-t-3 border-t-match bg-white">
+                <div class="font-display text-sm font-bold text-ink">3. Adapt (30%)</div>
+                <p class="mt-1 text-xs text-slate-600">Safely modify your solution when constraints unexpectedly shift.</p>
+            </div>
+        </div>
 
+        <!-- DEMO ACCOUNTS DISCLOSURE -->
         {% if show_demo %}
-        <details class="card group p-5">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-3">
-                <span>
-                    <span class="block font-display text-base font-bold text-ink">Try a demo account</span>
-                    <span class="block text-sm text-slate-600">Select one to fill in the form. Password for all: <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[13px] text-ink">password123</code></span>
-                </span>
-                <i class="ph-bold ph-caret-down text-slate-600 transition group-open:rotate-180" aria-hidden="true"></i>
+        <details class="card group p-5 border-slate-200 bg-white" open>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-display">
+                <div>
+                    <span class="block text-sm font-bold text-ink">
+                        <i class="ph-bold ph-key text-build-dark mr-1" aria-hidden="true"></i> Evaluator Demo Accounts
+                    </span>
+                    <span class="block text-xs text-slate-500 mt-0.5">
+                        Click any account to auto-fill. Password for all: <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[12px] font-bold text-slate-800">password123</code>
+                    </span>
+                </div>
+                <i class="ph-bold ph-caret-down text-slate-500 transition group-open:rotate-180" aria-hidden="true"></i>
             </summary>
 
-            <div class="mt-5 space-y-5">
+            <div class="mt-5 space-y-6 border-t border-slate-100 pt-4">
+                
+                <!-- Employer Accounts -->
                 <div>
-                    <h3 class="mb-2 text-sm font-bold text-slate-800">Employers</h3>
-                    <div class="grid gap-2 sm:grid-cols-2">
+                    <div class="flex items-center gap-2 mb-2.5">
+                        <span class="badge bg-match-soft text-match-dark text-[11px]">Employers / Hiring Leads</span>
+                        <span class="text-xs text-slate-400">Screen candidate talent pipelines</span>
+                    </div>
+                    <div class="grid gap-2.5 sm:grid-cols-2">
                         {% for email, name, company, note in demo_employers %}
-                            <button type="button" data-demo-email="{{ email }}"
-                                    class="rounded-xl border border-match/40 bg-match-soft p-3 text-left transition hover:border-match-dark">
-                                <span class="block text-sm font-bold text-ink">{{ name }}</span>
-                                <span class="block text-sm text-match-dark">{{ company }}{% if note %}, {{ note }}{% endif %}</span>
-                                <span class="block truncate text-xs text-slate-600">{{ email }}</span>
-                            </button>
+                        <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-3 hover:border-match/50 hover:bg-white transition-all">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <div class="font-display font-bold text-xs text-ink">{{ name }}</div>
+                                    <div class="text-[11px] text-slate-500">{{ company }}</div>
+                                </div>
+                                <span class="badge bg-slate-200 text-slate-700 text-[10px]">Employer</span>
+                            </div>
+                            <div class="mt-2 flex items-center justify-between text-[11px] text-slate-600 pt-2 border-t border-slate-200/60">
+                                <span class="font-mono text-[10px] text-slate-500 truncate mr-2 select-all">{{ email }}</span>
+                                <button type="button" 
+                                        onclick="fillAccount('{{ email }}', 'password123')"
+                                        class="font-bold text-match-dark hover:underline shrink-0">
+                                    Fill &rarr;
+                                </button>
+                            </div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
 
+                <!-- Candidate Accounts -->
                 <div>
-                    <h3 class="mb-2 text-sm font-bold text-slate-800">Candidates, from Level 5 down to Level 1</h3>
-                    <div class="grid gap-2 sm:grid-cols-2">
-                        {% for email, name, school, level, score, note in demo_candidates %}
-                            <button type="button" data-demo-email="{{ email }}"
-                                    class="rounded-xl border p-3 text-left transition
-                                    {% if level >= 4 %}border-prove/40 bg-prove-soft hover:border-prove-dark
-                                    {% elif level == 3 %}border-build/40 bg-build-soft hover:border-build-dark
-                                    {% else %}border-slate-300 bg-slate-50 hover:border-slate-500{% endif %}">
-                                <span class="flex items-baseline justify-between gap-2">
-                                    <span class="text-sm font-bold text-ink">{{ name }} ({{ school }})</span>
-                                    <span class="shrink-0 text-xs font-semibold text-slate-700">Level {{ level }}, {{ score }}%</span>
+                    <div class="flex items-center gap-2 mb-2.5">
+                        <span class="badge bg-prove-soft text-prove-dark text-[11px]">Candidates & Graduates</span>
+                        <span class="text-xs text-slate-400">View assessed Skills Passports across trust tiers</span>
+                    </div>
+                    <div class="grid gap-2.5 sm:grid-cols-2">
+                        {% for email, name, institution, level, score, note in demo_candidates %}
+                        <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-3 hover:border-prove/50 hover:bg-white transition-all">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <div class="font-display font-bold text-xs text-ink">{{ name }}</div>
+                                    <div class="text-[11px] text-slate-500">{{ institution }} · {{ note }}</div>
+                                </div>
+                                <span class="badge {% if level >= 4 %}bg-prove-soft text-prove-dark{% else %}bg-slate-200 text-slate-700{% endif %} text-[10px] shrink-0">
+                                    L{{ level }} · {{ score }} pts
                                 </span>
-                                <span class="mt-0.5 block text-sm text-slate-600">{{ note }}</span>
-                            </button>
+                            </div>
+                            <div class="mt-2 flex items-center justify-between text-[11px] text-slate-600 pt-2 border-t border-slate-200/60">
+                                <span class="font-mono text-[10px] text-slate-500 truncate mr-2 select-all">{{ email }}</span>
+                                <button type="button" 
+                                        onclick="fillAccount('{{ email }}', 'password123')"
+                                        class="font-bold text-build-dark hover:underline shrink-0">
+                                    Fill &rarr;
+                                </button>
+                            </div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
+
             </div>
         </details>
         {% endif %}
+
     </section>
+
 </div>
 
 <script>
-(function () {
-    var email = document.getElementById('emailInput');
-    var password = document.getElementById('passwordInput');
-    var toggle = document.getElementById('togglePassword');
+function fillAccount(email, password) {
+    var emailField = document.getElementById('email');
+    var passwordField = document.getElementById('password');
+    if (emailField && passwordField) {
+        emailField.value = email;
+        passwordField.value = password;
+        emailField.focus();
+    }
+}
 
-    document.querySelectorAll('[data-demo-email]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            email.value = btn.getAttribute('data-demo-email');
-            password.value = 'password123';
-            document.getElementById('signinButton').focus();
-            window.scrollTo({ top: 0 });
-        });
-    });
-
-    toggle.addEventListener('click', function () {
-        var show = password.type === 'password';
-        password.type = show ? 'text' : 'password';
-        toggle.setAttribute('aria-pressed', String(show));
-        toggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
-        toggle.querySelector('i').className = 'ph ' + (show ? 'ph-eye-slash' : 'ph-eye') + ' text-lg';
-    });
-})();
+function togglePasswordVisibility() {
+    var passwordField = document.getElementById('password');
+    var btn = document.getElementById('togglePassword');
+    var icon = document.getElementById('passwordEyeIcon');
+    if (!passwordField) return;
+    
+    var isPassword = passwordField.type === 'password';
+    passwordField.type = isPassword ? 'text' : 'password';
+    btn.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+    btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+    
+    if (isPassword) {
+        icon.className = 'ph-bold ph-eye-slash text-base text-ink';
+    } else {
+        icon.className = 'ph-bold ph-eye text-base text-slate-500';
+    }
+}
 </script>
 {% endblock %}

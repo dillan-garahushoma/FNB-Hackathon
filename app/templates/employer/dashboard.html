@@ -1,26 +1,99 @@
 {% extends "base.html" %}
-{% block title %}Talent pipeline | Path2Work{% endblock %}
+{% block title %}Talent Pipeline | Path2Work Employer{% endblock %}
 
 {% block content %}
 {% set status_labels = {'shortlisted': 'Shortlisted', 'invited': 'Invited to interview', 'rejected': 'Not a fit'} %}
 
 <div class="space-y-8">
+    
+    <!-- TOP HEADER -->
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div class="space-y-2">
-            <h1 class="text-3xl font-extrabold sm:text-4xl">Verified early-career IT candidates</h1>
-            <p class="max-w-2xl text-base text-slate-600">Read real Build, Explain and Adapt evidence before you invite anyone to your ATS or a technical interview.</p>
+        <div>
+            <div class="inline-flex items-center gap-1.5 rounded-full bg-match-soft px-3 py-1 text-xs font-bold text-match-dark mb-2">
+                <i class="ph-bold ph-shield-check" aria-hidden="true"></i> Verified Early-Career IT Pipeline
+            </div>
+            <h1 class="font-display text-2xl sm:text-4xl font-extrabold text-ink">Verified Candidate Discovery</h1>
+            <p class="max-w-2xl text-xs sm:text-sm text-slate-600 mt-1">
+                Inspect authentic Build, Explain, and Adapt evidence before you schedule interview slots.
+            </p>
         </div>
-        <a href="{{ url_for('employer.export_csv') }}" class="btn btn-secondary whitespace-nowrap">
-            <i class="ph-bold ph-download-simple" aria-hidden="true"></i> Export CSV
-        </a>
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ url_for('employer.shortlist_board') }}" class="btn btn-secondary text-xs sm:text-sm">
+                <i class="ph-bold ph-kanban" aria-hidden="true"></i> Shortlist Board ({{ shortlisted_count }})
+            </a>
+            <a href="{{ url_for('employer.export_csv') }}" class="btn btn-primary text-xs sm:text-sm shadow-xs">
+                <i class="ph-bold ph-download-simple" aria-hidden="true"></i> Export CSV
+            </a>
+        </div>
     </header>
 
-    <!-- Filters -->
-    <form method="GET" action="{{ url_for('employer.dashboard') }}" class="card grid items-end gap-4 p-5 md:grid-cols-2 lg:grid-cols-4">
+    <!-- KPI ROW (Previously computed but unrendered) -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4" aria-label="Pipeline Metrics">
+        <div class="card p-5 border-slate-200">
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span>Total Pool</span>
+                <i class="ph-bold ph-users text-slate-400 text-base" aria-hidden="true"></i>
+            </div>
+            <div class="mt-2 font-display text-3xl font-black text-ink">{{ total_applicants }}</div>
+            <p class="mt-1 text-[11px] text-slate-500">Registered IT students & graduates</p>
+        </div>
+
+        <div class="card p-5 border-slate-200">
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span>WorkProof Completed</span>
+                <i class="ph-bold ph-code text-build text-base" aria-hidden="true"></i>
+            </div>
+            <div class="mt-2 font-display text-3xl font-black text-build-dark">{{ workproof_completed_count }}</div>
+            <p class="mt-1 text-[11px] text-slate-500">Submitted 3-stage technical proof</p>
+        </div>
+
+        <div class="card p-5 border-2 border-prove bg-prove-soft/20 shadow-xs">
+            <div class="flex items-center justify-between text-xs font-bold text-prove-dark uppercase tracking-wider">
+                <span>Pre-Qualified (70+)</span>
+                <i class="ph-bold ph-seal-check text-prove-dark text-base" aria-hidden="true"></i>
+            </div>
+            <div class="mt-2 font-display text-3xl font-black text-prove-dark">{{ prequalified_count }}</div>
+            <p class="mt-1 text-[11px] text-slate-600">Level 4+ benchmark passed</p>
+        </div>
+
+        <div class="card p-5 border-slate-200">
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span>Your Shortlist</span>
+                <i class="ph-bold ph-star text-match text-base" aria-hidden="true"></i>
+            </div>
+            <div class="mt-2 font-display text-3xl font-black text-match-dark">{{ shortlisted_count }}</div>
+            <p class="mt-1 text-[11px] text-slate-500">Bookmarked for interviews</p>
+        </div>
+    </section>
+
+    <!-- OPTIONAL TALENT CONTEXT BANNER -->
+    <div class="card overflow-hidden border-slate-200 bg-ink text-white shadow-xs">
+        <div class="flex flex-col md:flex-row items-center justify-between">
+            <div class="p-6 md:p-8 max-w-xl">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-teal-200 mb-2">
+                    <i class="ph-bold ph-lightning" aria-hidden="true"></i> Evidence-Led Tech Hiring
+                </span>
+                <h2 class="font-display text-xl sm:text-2xl font-bold text-white">Cut screening cycles from 3 weeks to 48 hours</h2>
+                <p class="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    Filter by verified technical competencies and examine real candidate code diffs before conducting technical rounds.
+                </p>
+            </div>
+            <div class="hidden md:block w-72 h-36 relative overflow-hidden shrink-0">
+                <img src="{{ url_for('static', filename='images/path2work-employer-talent.webp') }}" 
+                     alt="Diverse African tech talent collaboration" 
+                     class="w-full h-full object-cover opacity-60"
+                     onerror="this.style.display='none'">
+                <div class="absolute inset-0 bg-gradient-to-r from-ink to-transparent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <form method="GET" action="{{ url_for('employer.dashboard') }}" class="card p-6 border-slate-200 bg-white grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-end shadow-xs">
         <div>
-            <label for="pathway" class="field-label">Role pathway</label>
-            <select id="pathway" name="pathway" class="field">
-                <option value="">All pathways</option>
+            <label for="pathway" class="field-label">Role Pathway</label>
+            <select id="pathway" name="pathway" class="field text-xs sm:text-sm">
+                <option value="">All Career Pathways</option>
                 {% for p in pathways %}
                     <option value="{{ p.slug }}" {% if selected_pathway == p.slug %}selected{% endif %}>{{ p.title }}</option>
                 {% endfor %}
@@ -28,108 +101,148 @@
         </div>
         
         <div>
-            <label for="search_skill" class="field-label">Tech Stack / Skill</label>
-            <input type="text" id="search_skill" name="search_skill" value="{{ search_skill }}" placeholder="e.g. Python, Docker, SQL" class="field">
+            <label for="search_skill" class="field-label">Tech Stack or Verified Skill</label>
+            <input type="text" id="search_skill" name="search_skill" value="{{ search_skill }}" placeholder="e.g. Python, SQL, Docker, Linux" class="field text-xs sm:text-sm">
         </div>
 
         <div>
-            <label for="location" class="field-label">Location</label>
-            <input type="text" id="location" name="location" value="{{ location_filter }}" placeholder="e.g. Johannesburg, Remote" class="field">
+            <label for="location" class="field-label">Metro Location</label>
+            <input type="text" id="location" name="location" value="{{ location_filter }}" placeholder="e.g. Johannesburg, Cape Town, Remote" class="field text-xs sm:text-sm">
         </div>
 
         <div>
-            <label for="min_trust" class="field-label">Trust level</label>
-            <select id="min_trust" name="min_trust" class="field">
-                <option value="1" {% if min_trust == 1 %}selected{% endif %}>Level 1+</option>
-                <option value="2" {% if min_trust == 2 %}selected{% endif %}>Level 2+</option>
-                <option value="3" {% if min_trust == 3 %}selected{% endif %}>Level 3+</option>
-                <option value="4" {% if min_trust == 4 %}selected{% endif %}>Level 4+ (Assessed)</option>
-                <option value="5" {% if min_trust == 5 %}selected{% endif %}>Level 5 (Employer)</option>
+            <label for="min_trust" class="field-label">Minimum Evidence Trust Level</label>
+            <select id="min_trust" name="min_trust" class="field text-xs sm:text-sm">
+                <option value="1" {% if min_trust == 1 %}selected{% endif %}>Level 1+ (Any Registered)</option>
+                <option value="2" {% if min_trust == 2 %}selected{% endif %}>Level 2+ (Evidence Attached)</option>
+                <option value="3" {% if min_trust == 3 %}selected{% endif %}>Level 3+ (Source Verified)</option>
+                <option value="4" {% if min_trust == 4 %}selected{% endif %}>Level 4+ (Path2Work Assessed >= 70%)</option>
+                <option value="5" {% if min_trust == 5 %}selected{% endif %}>Level 5 (Employer Verified)</option>
             </select>
         </div>
 
         <div class="lg:col-span-2">
-            <label class="flex items-center gap-2 cursor-pointer mt-4">
-                <input type="checkbox" name="only_open" {% if only_open %}checked{% endif %} class="rounded border-slate-300 text-build focus:ring-build">
-                <span class="text-sm font-semibold text-slate-700">Show only candidates Open to Work</span>
+            <label class="flex items-center gap-2 cursor-pointer pt-2">
+                <input type="checkbox" name="only_open" {% if only_open %}checked{% endif %} class="rounded border-slate-300 text-prove focus:ring-prove h-4 w-4">
+                <span class="text-xs sm:text-sm font-semibold text-slate-700">Only candidates actively Open to Work</span>
             </label>
         </div>
 
-        <div class="flex gap-2 lg:col-span-2 justify-end">
-            <button type="submit" class="btn btn-primary">Apply filters</button>
-            <a href="{{ url_for('employer.dashboard') }}" class="btn btn-secondary">Reset</a>
+        <div class="flex gap-2 lg:col-span-2 justify-end pt-2">
+            <a href="{{ url_for('employer.dashboard') }}" class="btn btn-secondary text-xs sm:text-sm">Reset</a>
+            <button type="submit" class="btn btn-primary text-xs sm:text-sm px-5">Apply Screening Filters</button>
         </div>
     </form>
 
+    <!-- CANDIDATE RESULTS LIST -->
     <section aria-labelledby="results-title" class="space-y-4">
-        <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 id="results-title" class="text-2xl font-bold">{{ candidates | length }} matching candidate{{ '' if candidates | length == 1 else 's' }}</h2>
-            <p class="text-sm text-slate-600">Highest verified readiness score first</p>
+        <div class="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200 pb-3">
+            <h2 id="results-title" class="font-display text-xl sm:text-2xl font-bold text-ink">
+                {{ candidates | length }} Verified Candidate{{ '' if candidates | length == 1 else 's' }}
+            </h2>
+            <span class="text-xs text-slate-500 font-medium">Ranked by verified readiness score</span>
         </div>
 
         {% if candidates %}
-            <ul class="grid gap-4">
+            <ul class="grid gap-4" role="list">
                 {% for item in candidates %}
                     {% set cand = item.user %}
                     {% set passport = item.passport %}
                     {% set sub = item.best_submission %}
                     {% set sl = item.shortlist %}
 
-                    <li class="card p-5 transition hover:border-slate-300 hover:shadow-md sm:p-6">
+                    <li class="card p-5 sm:p-6 border-slate-200 hover:border-slate-300 hover:shadow-md transition-all bg-white">
                         <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                            
+                            <!-- Left: Profile & Credentials -->
                             <div class="min-w-0 flex-1 space-y-3">
-                                <div class="flex items-start justify-between">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
                                     <div>
-                                        <h3 class="text-xl font-bold">{{ cand.full_name }}</h3>
-                                        <p class="text-sm text-slate-600">{{ cand.institution }}{% if cand.location %} • {{ cand.location }}{% endif %}</p>
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="font-display text-lg sm:text-xl font-bold text-ink">{{ cand.full_name }}</h3>
+                                            {% if cand.is_open_to_work %}
+                                                <span class="badge bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px]">
+                                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-600"></span> Open to Work
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <p class="text-xs text-slate-500 mt-0.5">
+                                            {{ cand.institution }}{% if cand.graduation_year %}, Class of {{ cand.graduation_year }}{% endif %}
+                                            {% if cand.location %} · <span class="font-medium text-slate-700">{{ cand.location }}</span>{% endif %}
+                                        </p>
                                     </div>
-                                    {% if cand.is_open_to_work %}
-                                        <span class="badge bg-emerald-100 text-emerald-800"><i class="ph-bold ph-check-circle"></i> Open to Work</span>
+
+                                    {% if sl %}
+                                        <span class="badge {% if sl.status == 'invited' %}bg-prove-soft text-prove-dark border border-prove/30{% elif sl.status == 'rejected' %}bg-slate-100 text-slate-600{% else %}bg-match-soft text-match-dark border border-match/30{% endif %} text-xs font-bold">
+                                            {{ status_labels.get(sl.status, sl.status) }}
+                                        </span>
                                     {% endif %}
                                 </div>
 
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <span class="badge {% if passport.highest_trust_level >= 4 %}bg-prove-soft text-prove-dark{% else %}bg-slate-100 text-slate-700{% endif %}">
+                                    <span class="badge {% if passport.highest_trust_level >= 4 %}bg-prove-soft text-prove-dark border border-prove/30 font-bold{% else %}bg-slate-100 text-slate-700{% endif %} text-xs">
                                         {{ passport.trust_level_label }}
                                     </span>
                                     {% if sub and sub.challenge %}
-                                        <span class="badge bg-slate-100 text-slate-700">{{ sub.challenge.pathway.title }}</span>
+                                        <span class="badge bg-slate-100 text-slate-700 text-xs font-mono">
+                                            {{ sub.challenge.pathway.title }}
+                                        </span>
                                     {% endif %}
+                                    <span class="text-xs text-slate-400 font-mono">
+                                        ID: P2W-ZA-{{ "%04d" | format(cand.id) }}
+                                    </span>
                                 </div>
 
-                                <!-- Extracted Skills -->
+                                <!-- Verified Extracted Skills Chips -->
                                 {% if passport.parsed_skills %}
-                                <div class="flex flex-wrap gap-1.5 mt-2">
-                                    {% for skill in passport.parsed_skills[:5] %}
-                                        <span class="inline-flex items-center rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 border border-slate-200">{{ skill }}</span>
-                                    {% endfor %}
-                                </div>
+                                    <div class="flex flex-wrap gap-1.5 pt-1">
+                                        {% for sk in passport.parsed_skills[:6] %}
+                                            <span class="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
+                                                <i class="ph-bold ph-check text-prove-dark text-[10px]" aria-hidden="true"></i> {{ sk }}
+                                            </span>
+                                        {% endfor %}
+                                        {% if passport.parsed_skills | length > 6 %}
+                                            <span class="text-[11px] text-slate-400 self-center">+{{ passport.parsed_skills | length - 6 }} more</span>
+                                        {% endif %}
+                                    </div>
                                 {% endif %}
                             </div>
 
-                            <div class="flex shrink-0 flex-col gap-4 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between lg:w-72 lg:flex-col lg:items-end lg:border-t-0 lg:pt-0">
-                                <div class="sm:text-left lg:text-right">
-                                    <p class="text-sm text-slate-600">Role-fit score</p>
-                                    <p class="font-display text-4xl font-extrabold {% if passport.readiness_score >= 70 %}text-prove-dark{% else %}text-slate-700{% endif %}">
-                                        {{ passport.readiness_score }}<span class="text-base font-semibold text-slate-500">/100</span>
-                                    </p>
+                            <!-- Right: Score Block & Action CTA -->
+                            <div class="flex items-center justify-between lg:flex-col lg:items-end gap-4 border-t border-slate-100 pt-4 lg:border-t-0 lg:pt-0 shrink-0">
+                                <div class="text-left lg:text-right">
+                                    <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Readiness Score</span>
+                                    <span class="font-display text-3xl sm:text-4xl font-black {% if passport.readiness_score >= 70 %}text-prove-dark{% else %}text-ink{% endif %}">
+                                        {{ passport.readiness_score }}<span class="text-sm font-semibold text-slate-400">/100</span>
+                                    </span>
                                 </div>
 
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <a href="{{ url_for('employer.candidate_evidence', user_id=cand.id) }}" class="btn btn-primary">Review evidence</a>
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ url_for('employer.candidate_evidence', user_id=cand.id) }}" class="btn btn-primary text-xs px-4 py-2 font-semibold">
+                                        Review Evidence &rarr;
+                                    </a>
                                 </div>
                             </div>
+
                         </div>
                     </li>
                 {% endfor %}
             </ul>
         {% else %}
-            <div class="card p-10 text-center">
-                <h3 class="text-lg font-bold">No candidates match these filters</h3>
-                <p class="mx-auto mt-2 max-w-md text-base text-slate-600">Try lowering the minimum trust level or clearing the skill search.</p>
-                <a href="{{ url_for('employer.dashboard') }}" class="btn btn-secondary mt-5">Reset filters</a>
+            <div class="card p-12 text-center border-slate-200">
+                <i class="ph-bold ph-magnifying-glass text-4xl text-slate-300 mx-auto" aria-hidden="true"></i>
+                <h3 class="mt-3 font-display text-lg font-bold text-ink">No candidates match these specific filters</h3>
+                <p class="mt-1 text-sm text-slate-500 max-w-md mx-auto">
+                    Try broadening your search criteria, reducing the minimum trust level, or resetting the filters.
+                </p>
+                <div class="mt-5">
+                    <a href="{{ url_for('employer.dashboard') }}" class="btn btn-secondary text-xs">
+                        Reset All Filters
+                    </a>
+                </div>
             </div>
         {% endif %}
     </section>
+
 </div>
 {% endblock %}

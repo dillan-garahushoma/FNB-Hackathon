@@ -1,0 +1,49 @@
+{# Component: Trust Ladder (compact or full) #}
+{# parameters: current_level (1-5), is_compact (bool) #}
+{% set lvl = current_level | default(1) | int %}
+{% set tiers = [
+    (1, "Self-Declared", "Profile registered & declared target IT pathway", "ph-user"),
+    (2, "Evidence Attached", "GitHub repository, diagnostic script, or project attached", "ph-paperclip"),
+    (3, "Source Verified", "Institutional (.ac.za) identity & repository validated", "ph-check-circle"),
+    (4, "Path2Work Assessed", "Controlled 3-stage WorkProof passed with >= 70%", "ph-seal-check"),
+    (5, "Employer Verified", "Technical evidence reviewed and endorsed by employer", "ph-medal")
+] %}
+
+{% if is_compact %}
+<div class="space-y-1.5" role="group" aria-label="Evidence trust level ladder">
+    <div class="flex items-center justify-between text-xs font-semibold">
+        <span class="text-slate-600">Trust Level</span>
+        <span class="font-bold text-ink">Level {{ lvl }} of 5 · {{ tiers[lvl - 1][1] }}</span>
+    </div>
+    <div class="grid grid-cols-5 gap-1.5 h-2.5 rounded-full bg-slate-100 p-0.5" role="progressbar" aria-valuenow="{{ lvl }}" aria-valuemin="1" aria-valuemax="5" aria-valuetext="Level {{ lvl }} of 5">
+        {% for t_num, t_name, t_desc, t_icon in tiers %}
+            <div class="rounded-full transition-all {% if t_num <= lvl %}bg-prove-dark{% else %}bg-slate-200{% endif %}" title="Level {{ t_num }}: {{ t_name }}"></div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="space-y-3" role="list" aria-label="Five-level evidence trust ladder">
+    <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+        {% for t_num, t_name, t_desc, t_icon in tiers %}
+            {% set reached = t_num <= lvl %}
+            {% set is_current = t_num == lvl %}
+            <div class="rounded-xl border p-3 text-left transition-all {% if is_current %}border-prove-dark bg-prove-soft/50 ring-2 ring-prove-dark/20 shadow-sm{% elif reached %}border-emerald-200 bg-white{% else %}border-slate-200 bg-slate-50/60 opacity-65{% endif %}">
+                <div class="flex items-center justify-between gap-1 mb-1">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold {% if reached %}bg-prove-dark text-white{% else %}bg-slate-200 text-slate-600{% endif %}">
+                        {{ t_num }}
+                    </span>
+                    {% if is_current %}
+                        <span class="rounded bg-prove-dark text-[10px] font-bold text-white px-1.5 py-0.5">CURRENT</span>
+                    {% elif reached %}
+                        <span class="text-prove-dark text-xs font-bold"><i class="ph-bold ph-check" aria-hidden="true"></i></span>
+                    {% else %}
+                        <span class="text-slate-400 text-xs"><i class="ph-bold ph-lock" aria-hidden="true"></i></span>
+                    {% endif %}
+                </div>
+                <div class="font-display text-xs font-bold text-ink truncate">{{ t_name }}</div>
+                <p class="text-[11px] text-slate-500 line-clamp-2 mt-0.5">{{ t_desc }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}

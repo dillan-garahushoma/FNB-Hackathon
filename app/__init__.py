@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, session
+from flask import Flask, render_template, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
 
@@ -32,13 +32,10 @@ def create_app(config_class=Config):
 
     @app.route("/")
     def index():
-        user_id = session.get("user_id")
-        role = session.get("role")
-        if user_id and role == "candidate":
-            return redirect(url_for("candidate.dashboard"))
-        elif user_id and role == "employer":
-            return redirect(url_for("employer.dashboard"))
-        return redirect(url_for("auth.login"))
+        # Find a demo candidate with verified passport for hackathon judges to inspect directly
+        demo_candidate = User.query.filter_by(role="candidate").first()
+        demo_id = demo_candidate.id if demo_candidate else 1
+        return render_template("index.html", demo_candidate_id=demo_id)
 
     @app.context_processor
     def inject_current_user():

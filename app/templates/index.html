@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+
+{% block title %}Path2Work | Prove Before Hire — Verified IT Talent Platform{% endblock %}
+
+{% block content %}
+<div class="space-y-16 sm:space-y-24">
+
+    <!-- HERO SECTION -->
+    <section class="relative overflow-hidden rounded-3xl bg-ink text-white shadow-xl">
+        <!-- Hero Background Image with Gradient Overlay -->
+        <div class="absolute inset-0 z-0">
+            <img src="{{ url_for('static', filename='images/path2work-hero.webp') }}" 
+                 alt="Path2Work early career IT professional" 
+                 class="h-full w-full object-cover object-right opacity-45 mix-blend-luminosity"
+                 onerror="this.style.display='none'">
+            <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/90 to-transparent"></div>
+        </div>
+
+        <div class="relative z-10 max-w-3xl px-6 py-16 sm:px-12 sm:py-24">
+            <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-semibold text-slate-200 backdrop-blur-sm">
+                <span class="h-2 w-2 rounded-full bg-prove"></span>
+                South Africa Early-Career IT Readiness
+            </div>
+
+            <h1 class="mt-6 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                A CV says what you know. <span class="text-transparent bg-clip-text bg-gradient-to-r from-build-soft via-white to-match-soft">Path2Work shows what you can do.</span>
+            </h1>
+
+            <p class="mt-6 text-lg sm:text-xl text-slate-300 leading-relaxed font-normal">
+                Final-year IT students and recent graduates solve authentic workplace challenges across <strong class="text-white font-semibold">Build &rarr; Explain &rarr; Adapt</strong>. Earn a verifiable Skills Passport before you interview.
+            </p>
+
+            <div class="mt-8 flex flex-wrap items-center gap-4">
+                {% if current_user %}
+                    {% if current_user.role == 'candidate' %}
+                        <a href="{{ url_for('candidate.dashboard') }}" class="btn btn-accent text-base px-6 py-3 shadow-md">
+                            Go to Candidate Dashboard <i class="ph-bold ph-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('employer.dashboard') }}" class="btn btn-accent text-base px-6 py-3 shadow-md">
+                            Open Talent Pipeline <i class="ph-bold ph-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-accent text-base px-6 py-3 shadow-md">
+                        Get verified for free <i class="ph-bold ph-arrow-right" aria-hidden="true"></i>
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary text-base px-6 py-3 bg-white/10 border-white/30 text-white hover:bg-white/20">
+                        Sign in
+                    </a>
+                {% endif %}
+
+                <a href="{{ url_for('candidate.skills_passport', user_id=demo_candidate_id) }}" class="btn btn-secondary text-base px-5 py-3 border-white/20 text-white bg-slate-900/60 hover:bg-slate-900/90 backdrop-blur-xs">
+                    <i class="ph-bold ph-seal-check text-prove" aria-hidden="true"></i>
+                    Inspect Live Skills Passport
+                </a>
+            </div>
+
+            <!-- Stats strip -->
+            <div class="mt-12 grid grid-cols-3 gap-6 border-t border-white/15 pt-8 text-slate-300">
+                <div>
+                    <div class="font-display text-2xl sm:text-3xl font-extrabold text-white">R0</div>
+                    <div class="text-xs text-slate-400 mt-0.5">Free for SA Students</div>
+                </div>
+                <div>
+                    <div class="font-display text-2xl sm:text-3xl font-extrabold text-white">40/30/30</div>
+                    <div class="text-xs text-slate-400 mt-0.5">Build · Explain · Adapt</div>
+                </div>
+                <div>
+                    <div class="font-display text-2xl sm:text-3xl font-extrabold text-white">Level 1&ndash;5</div>
+                    <div class="text-xs text-slate-400 mt-0.5">Rigorous Trust Tiers</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3-STAGE WORKPROOF FRAMEWORK -->
+    <section class="space-y-6">
+        <div class="text-center max-w-2xl mx-auto">
+            <span class="text-xs font-bold uppercase tracking-wider text-build-dark">The Assessment Method</span>
+            <h2 class="mt-2 font-display text-3xl sm:text-4xl font-extrabold text-ink">
+                Proof of understanding beats multiple-choice quizzes
+            </h2>
+            <p class="mt-3 text-sm sm:text-base text-slate-600">
+                Anyone can copy a coding tutorial or ask an LLM. Path2Work evaluates genuine competence through three progressive stages:
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Stage 1: Build -->
+            <div class="card p-6 border-t-4 border-t-build hover:shadow-md transition-all">
+                <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-build-soft font-display font-black text-build-dark text-sm">1</span>
+                    <span class="badge bg-build-soft text-build-dark font-mono font-bold">40% Weight</span>
+                </div>
+                <h3 class="mt-4 font-display text-xl font-bold text-ink">Build Phase</h3>
+                <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                    Write functional, working code or diagnostic configuration answering a real business brief. Attach a public repository URL or direct implementation.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100 text-xs font-semibold text-build-dark flex items-center gap-1.5">
+                    <i class="ph-bold ph-code" aria-hidden="true"></i> Can they deliver working execution?
+                </div>
+            </div>
+
+            <!-- Stage 2: Explain -->
+            <div class="card p-6 border-t-4 border-t-prove hover:shadow-md transition-all">
+                <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-prove-soft font-display font-black text-prove-dark text-sm">2</span>
+                    <span class="badge bg-prove-soft text-prove-dark font-mono font-bold">30% Weight</span>
+                </div>
+                <h3 class="mt-4 font-display text-xl font-bold text-ink">Explain Phase</h3>
+                <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                    Articulate architecture decisions, technical trade-offs, and security choices in plain English. Prove you understand the <em>why</em>, not just the copy-paste.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100 text-xs font-semibold text-prove-dark flex items-center gap-1.5">
+                    <i class="ph-bold ph-chat-text" aria-hidden="true"></i> Can they explain their reasoning?
+                </div>
+            </div>
+
+            <!-- Stage 3: Adapt -->
+            <div class="card p-6 border-t-4 border-t-match hover:shadow-md transition-all">
+                <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-match-soft font-display font-black text-match-dark text-sm">3</span>
+                    <span class="badge bg-match-soft text-match-dark font-mono font-bold">30% Weight</span>
+                </div>
+                <h3 class="mt-4 font-display text-xl font-bold text-ink">Adapt Phase</h3>
+                <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                    Requirements shift in real jobs: sudden load surges, schema revisions, or offline constraints. Adapt the solution to handle the unexpected.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100 text-xs font-semibold text-match-dark flex items-center gap-1.5">
+                    <i class="ph-bold ph-arrows-clockwise" aria-hidden="true"></i> Can they pivot when conditions change?
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FIVE-LEVEL TRUST LADDER EXPLAINER -->
+    <section class="card p-6 sm:p-10 border-slate-200 bg-white">
+        <div class="max-w-2xl">
+            <span class="text-xs font-bold uppercase tracking-wider text-prove-dark">Verifiable Credentials</span>
+            <h2 class="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-ink">The 5-Tier Evidence Trust Ladder</h2>
+            <p class="mt-2 text-sm text-slate-600">
+                Every badge states clearly what was actually examined. We never imply higher trust than the data supports.
+            </p>
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                <div class="font-mono text-xs font-bold text-slate-500">LEVEL 1</div>
+                <div class="mt-1 font-display font-bold text-ink text-sm">Self-Declared</div>
+                <p class="mt-2 text-xs text-slate-600">Candidate registers their profile, target pathway, and academic history.</p>
+            </div>
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                <div class="font-mono text-xs font-bold text-slate-500">LEVEL 2</div>
+                <div class="mt-1 font-display font-bold text-ink text-sm">Evidence Attached</div>
+                <p class="mt-2 text-xs text-slate-600">Public GitHub repository or practical project artifact linked for review.</p>
+            </div>
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                <div class="font-mono text-xs font-bold text-slate-500">LEVEL 3</div>
+                <div class="mt-1 font-display font-bold text-ink text-sm">Source Verified</div>
+                <p class="mt-2 text-xs text-slate-600">Institutional email (.ac.za) authenticated; code repository structure inspected.</p>
+            </div>
+            <div class="p-4 rounded-xl border-2 border-prove bg-prove-soft/30 shadow-xs">
+                <div class="font-mono text-xs font-bold text-prove-dark">LEVEL 4</div>
+                <div class="mt-1 font-display font-bold text-ink text-sm">Path2Work Assessed</div>
+                <p class="mt-2 text-xs text-slate-600">Passed controlled 3-stage WorkProof with evidence score of 70% or higher.</p>
+            </div>
+            <div class="p-4 rounded-xl border-2 border-match bg-match-soft/30 shadow-xs">
+                <div class="font-mono text-xs font-bold text-match-dark">LEVEL 5</div>
+                <div class="mt-1 font-display font-bold text-ink text-sm">Employer Verified</div>
+                <p class="mt-2 text-xs text-slate-600">Verified evidence inspected, approved, and endorsed by a hiring engineering team.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- EMPLOYER SCREENING FUNNEL -->
+    <section class="card p-6 sm:p-10 border-slate-200 bg-gradient-to-br from-slate-900 to-ink text-white">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            <div class="max-w-xl">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200">
+                    <i class="ph-bold ph-funnel" aria-hidden="true"></i> For Hiring Partners & Tech Recruiters
+                </span>
+                <h2 class="mt-4 font-display text-2xl sm:text-4xl font-extrabold tracking-tight">
+                    Cut screening time by 75% with pre-qualified evidence
+                </h2>
+                <p class="mt-3 text-slate-300 text-sm sm:text-base leading-relaxed">
+                    Stop drowning in hundreds of unverified PDF resumes. Path2Work filters high-volume early-career applications down to candidates who have proven real technical execution.
+                </p>
+                <div class="mt-6 flex flex-wrap gap-4">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-accent text-sm px-5 py-2.5 shadow-sm">
+                        Access Employer Talent Pipeline &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Illustrative Funnel Display -->
+            <div class="w-full lg:w-96 rounded-2xl bg-white/5 border border-white/15 p-6 backdrop-blur-md">
+                <div class="flex items-center justify-between text-xs text-slate-400 pb-3 border-b border-white/10">
+                    <span class="font-semibold text-slate-200 uppercase tracking-wider">Hiring Funnel Impact</span>
+                    <span class="italic text-[11px] text-slate-400">Illustrative model</span>
+                </div>
+                <div class="mt-4 space-y-3">
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-medium text-slate-300">
+                            <span>Traditional Inbound CVs</span>
+                            <span class="font-mono font-bold text-white">500</span>
+                        </div>
+                        <div class="h-2 w-full rounded-full bg-white/10">
+                            <div class="h-full rounded-full bg-slate-400 w-full"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-medium text-slate-300">
+                            <span>Eligible Final-Year IT</span>
+                            <span class="font-mono font-bold text-white">220 (44%)</span>
+                        </div>
+                        <div class="h-2 w-full rounded-full bg-white/10">
+                            <div class="h-full rounded-full bg-build w-[44%]"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-medium text-slate-300">
+                            <span>Completed WorkProof</span>
+                            <span class="font-mono font-bold text-white">95 (19%)</span>
+                        </div>
+                        <div class="h-2 w-full rounded-full bg-white/10">
+                            <div class="h-full rounded-full bg-prove w-[19%]"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-bold text-emerald-400">
+                            <span>Pre-Qualified for Interview (70%+)</span>
+                            <span class="font-mono font-bold text-emerald-300">60 High-Fit</span>
+                        </div>
+                        <div class="h-2.5 w-full rounded-full bg-white/10">
+                            <div class="h-full rounded-full bg-emerald-400 w-[12%]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEMO ACCOUNTS FOR HACKATHON EVALUATION -->
+    {% if config['DEMO_MODE'] %}
+    <section class="card p-6 sm:p-8 border-slate-200 bg-slate-50/80">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+            <div>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-build-soft px-3 py-1 text-xs font-bold text-build-dark">
+                    <i class="ph-bold ph-key" aria-hidden="true"></i> Hackathon Judge & Evaluator Accounts
+                </span>
+                <h2 class="mt-2 font-display text-xl sm:text-2xl font-bold text-ink">Instant Demo Logins (Password: <code class="font-mono text-build-dark bg-white px-2 py-0.5 rounded border border-slate-300">demo1234</code>)</h2>
+                <p class="text-xs sm:text-sm text-slate-600 mt-1">Select an account below to explore the candidate or employer perspective:</p>
+            </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Candidate 1: Level 5 Verified -->
+            <div class="card p-4 bg-white border-prove-dark/40 shadow-xs">
+                <div class="flex items-center justify-between">
+                    <span class="badge bg-prove-soft text-prove-dark">Level 5 · 92 pts</span>
+                    <span class="text-xs font-mono text-slate-400">Candidate</span>
+                </div>
+                <div class="mt-2 font-display font-bold text-sm text-ink">Sipho Dlamini</div>
+                <div class="text-xs text-slate-500">Richfield Graduate · Software Dev</div>
+                <div class="mt-3 font-mono text-[11px] text-slate-500 truncate">sipho.dlamini@richfield.ac.za</div>
+                <div class="mt-3 flex items-center justify-between pt-2 border-t border-slate-100">
+                    <a href="{{ url_for('candidate.skills_passport', user_id=demo_candidate_id) }}" class="text-xs font-semibold text-prove-dark hover:underline">
+                        View Passport
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary text-xs px-2.5 py-1">
+                        Sign in
+                    </a>
+                </div>
+            </div>
+
+            <!-- Candidate 2: In-Progress -->
+            <div class="card p-4 bg-white">
+                <div class="flex items-center justify-between">
+                    <span class="badge bg-build-soft text-build-dark">Level 2 · 45 pts</span>
+                    <span class="text-xs font-mono text-slate-400">Candidate</span>
+                </div>
+                <div class="mt-2 font-display font-bold text-sm text-ink">Thabo Molefe</div>
+                <div class="text-xs text-slate-500">UJ Student · IT Support</div>
+                <div class="mt-3 font-mono text-[11px] text-slate-500 truncate">thabo.molefe@uj.ac.za</div>
+                <div class="mt-3 flex items-center justify-end pt-2 border-t border-slate-100">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary text-xs px-2.5 py-1">
+                        Sign in
+                    </a>
+                </div>
+            </div>
+
+            <!-- Candidate 3: Data Analyst -->
+            <div class="card p-4 bg-white">
+                <div class="flex items-center justify-between">
+                    <span class="badge bg-amber-50 text-amber-800 border border-amber-200">Level 4 · 78 pts</span>
+                    <span class="text-xs font-mono text-slate-400">Candidate</span>
+                </div>
+                <div class="mt-2 font-display font-bold text-sm text-ink">Nomvula Khumalo</div>
+                <div class="text-xs text-slate-500">Wits Graduate · Junior Data Analyst</div>
+                <div class="mt-3 font-mono text-[11px] text-slate-500 truncate">nomvula.khumalo@students.wits.ac.za</div>
+                <div class="mt-3 flex items-center justify-end pt-2 border-t border-slate-100">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary text-xs px-2.5 py-1">
+                        Sign in
+                    </a>
+                </div>
+            </div>
+
+            <!-- Employer 1: Paystack SA -->
+            <div class="card p-4 bg-white border-match-dark/40 shadow-xs">
+                <div class="flex items-center justify-between">
+                    <span class="badge bg-match-soft text-match-dark">Hiring Lead</span>
+                    <span class="text-xs font-mono text-slate-400">Employer</span>
+                </div>
+                <div class="mt-2 font-display font-bold text-sm text-ink">Paystack SA Talent</div>
+                <div class="text-xs text-slate-500">Fintech Hiring Partner</div>
+                <div class="mt-3 font-mono text-[11px] text-slate-500 truncate">talent@paystack-sa.co.za</div>
+                <div class="mt-3 flex items-center justify-end pt-2 border-t border-slate-100">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary text-xs px-2.5 py-1">
+                        Sign in as Employer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- FAQ & KEY OBJECTIONS -->
+    <section class="space-y-6">
+        <div class="text-center max-w-xl mx-auto">
+            <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-ink">Frequently Addressed Questions</h2>
+            <p class="mt-2 text-sm text-slate-600">Addressing core technical and practical assumptions for early-career IT.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card p-6">
+                <h3 class="font-display font-bold text-base text-ink">Which IT roles are supported first?</h3>
+                <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                    We lead with the highest South African entry-level demand: Junior Software Developer, Junior Data Analyst, and Cloud / IT Support Specialist.
+                </p>
+            </div>
+            <div class="card p-6">
+                <h3 class="font-display font-bold text-base text-ink">What proof do employers actually trust?</h3>
+                <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                    Employers inspect raw evidence: real repository code commits, technical explanation notes, and adaptation diffs rather than self-reported resume bullet points.
+                </p>
+            </div>
+            <div class="card p-6">
+                <h3 class="font-display font-bold text-base text-ink">How do you prevent plagiarism or AI fraud?</h3>
+                <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                    The Adapt stage forces candidates to change architecture rules on short notice. Thin responses are scored down and flagged, and Level 5 requires direct employer review.
+                </p>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

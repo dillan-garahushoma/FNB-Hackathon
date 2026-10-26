@@ -1,0 +1,187 @@
+/* Path2Work Design System Tokens & Stylesheet */
+:root {
+  --color-ink: #0F1B2D;
+  --color-build: #635BFF;
+  --color-build-dark: #4B43D6;
+  --color-build-soft: #EEEDFF;
+  
+  --color-prove: #14967F;
+  --color-prove-dark: #0E6F5E;
+  --color-prove-soft: #E6F5F1;
+  
+  --color-match: #E66C37;
+  --color-match-dark: #B24616;
+  --color-match-soft: #FDEFE7;
+  
+  --color-bg: #F7F8FC;
+  --color-surface: #FFFFFF;
+  --color-text-main: #172033;
+  --color-text-muted: #687386;
+  --color-border: #E5E9F0;
+  
+  --font-display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text-main);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-build-dark);
+  outline-offset: 2px;
+}
+
+/* Custom UI Components */
+.card {
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  box-shadow: 0 1px 3px 0 rgba(15, 27, 45, 0.05);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-primary {
+  background-color: var(--color-ink);
+  color: #FFFFFF;
+}
+.btn-primary:hover {
+  background-color: #1e2e45;
+}
+
+.btn-secondary {
+  border: 1px solid #CBD5E1;
+  background-color: #FFFFFF;
+  color: var(--color-text-main);
+}
+.btn-secondary:hover {
+  background-color: #F8FAFC;
+}
+
+.btn-accent {
+  background-color: var(--color-match-dark);
+  color: #FFFFFF;
+}
+.btn-accent:hover {
+  background-color: #8c320d;
+}
+
+.btn-prove {
+  background-color: var(--color-prove-dark);
+  color: #FFFFFF;
+}
+.btn-prove:hover {
+  background-color: #0b5548;
+}
+
+.field {
+  display: block;
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #CBD5E1;
+  background-color: #FFFFFF;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  color: #0F172A;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.field:focus {
+  border-color: var(--color-build);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.25);
+}
+
+.field-label {
+  margin-bottom: 0.375rem;
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.field-hint {
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.code-block {
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  background-color: #020617;
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: #F8FAFC;
+}
+
+/* Print Enhancements */
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 11pt;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+  .card {
+    border: 1px solid #CCCCCC !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  .btn, button {
+    display: none !important;
+  }
+  a[href]:after {
+    content: none !important;
+  }
+  header, footer {
+    display: none !important;
+  }
+}
