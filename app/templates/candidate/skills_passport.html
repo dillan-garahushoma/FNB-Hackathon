@@ -60,6 +60,15 @@
         </div>
     </section>
 
+    {% if preferences and (preferences.target_pathway or preferences.skills_summary) %}
+    <section class="p2w-candidate-context" aria-labelledby="candidate-context-title">
+        <span>Candidate profile · self-described</span>
+        {% if preferences.target_pathway %}<h2 id="candidate-context-title">Target role: {{ preferences.target_pathway.title }} <small>Candidate-selected</small></h2>{% endif %}
+        {% if preferences.skills_summary %}<p>{{ preferences.skills_summary }}</p>{% endif %}
+        <small>This section reflects the candidate’s own description. It is not an assessed or verified skill record.</small>
+    </section>
+    {% endif %}
+
     <section class="card p-6 sm:p-8" aria-labelledby="trust-title">
         <h2 id="trust-title" class="text-2xl font-bold">How this candidate was verified</h2>
         <p class="mt-1 text-base text-slate-600">Five levels show employers exactly how far each claim has been checked.</p>
