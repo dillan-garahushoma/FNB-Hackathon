@@ -6,7 +6,7 @@
 {% set can_see_contact = current_user and (current_user.role == 'employer' or current_user.id == candidate.id) %}
 {% set is_owner = current_user and current_user.id == candidate.id %}
 
-<div class="mx-auto max-w-5xl space-y-8">
+<div class="p2w-passport-page mx-auto max-w-5xl space-y-8">
 
     {% if is_owner %}
     <div class="flex items-center gap-3 rounded-xl border border-build/30 bg-build-soft px-4 py-3 text-sm text-slate-800 print:hidden">
