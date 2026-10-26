@@ -2,7 +2,7 @@
 {% block title %}Profile & Work Preferences | Path2Work{% endblock %}
 
 {% block content %}
-<div class="mx-auto max-w-5xl space-y-8">
+<div class="p2w-profile-page mx-auto max-w-5xl space-y-8">
     <div class="border-b border-slate-200 pb-5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -29,15 +29,15 @@
             </div>
             <div class="md:col-span-8 card p-6 border-slate-200 bg-white space-y-5">
                 <div>
-                    <label class="field-label">Full Name</label>
-                    <input type="text" value="{{ user.full_name }}" disabled class="field bg-slate-50 text-slate-500 cursor-not-allowed">
+                    <label class="field-label" for="profileFullName">Full Name</label>
+                    <input id="profileFullName" type="text" value="{{ user.full_name }}" disabled class="field bg-slate-50 text-slate-500 cursor-not-allowed">
                     <span class="field-hint">Primary name matches institutional identity record.</span>
                 </div>
 
                 <div>
-                    <label class="field-label">Verified Email</label>
+                    <label class="field-label" for="profileEmail">Verified Email</label>
                     <div class="flex items-center gap-2">
-                        <input type="email" value="{{ user.email }}" disabled class="field bg-slate-50 text-slate-500 cursor-not-allowed font-mono text-xs">
+                        <input id="profileEmail" type="email" value="{{ user.email }}" disabled class="field bg-slate-50 text-slate-500 cursor-not-allowed font-mono text-xs">
                         {% if user.has_institutional_email %}
                             <span class="badge bg-prove-soft text-prove-dark border border-prove/30 shrink-0">
                                 <i class="ph-bold ph-check-circle" aria-hidden="true"></i> .ac.za Verified
