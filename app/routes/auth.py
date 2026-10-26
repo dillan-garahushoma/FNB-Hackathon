@@ -72,13 +72,9 @@ def login():
             flash(f"Welcome back, {user.full_name}!", "success")
             if user.role == "employer":
                 return redirect(url_for("employer.dashboard"))
-            preferences = CandidatePreferences.query.filter_by(user_id=user.id).first()
-            if preferences and not preferences.onboarding_completed:
-                session["needs_onboarding"] = True
-                return redirect(url_for("candidate.onboarding"))
             return redirect(url_for("candidate.dashboard"))
         else:
-            flash("Invalid email or password. Try one of the demo accounts below.", "error")
+            flash("Invalid email or password. Please check your credentials.", "error")
 
     return render_template("auth/login.html")
 
@@ -149,9 +145,7 @@ def register():
         if user.role == "employer":
             return redirect(url_for("employer.dashboard"))
 
-        # New candidates should complete (or explicitly skip) the short setup flow once.
-        session["needs_onboarding"] = True
-        return redirect(url_for("candidate.onboarding"))
+        return redirect(url_for("candidate.dashboard"))
 
     return render_template("auth/register.html")
 

@@ -4,7 +4,15 @@ Ensures platforms deployed on ephemeral hosting (e.g. Render, Railway) always
 have active pathways and challenges without requiring manual shell execution.
 """
 from app import db
-from app.models import Pathway, WorkProofChallenge
+from app.models import (
+    Pathway,
+    WorkProofChallenge,
+    User,
+    SkillsPassport,
+    CandidatePreferences,
+    WorkProofSubmission,
+    EmployerShortlist,
+)
 
 DEFAULT_PATHWAYS = [
     {
@@ -170,4 +178,133 @@ def ensure_default_pathways():
         pathways.append(p)
 
     db.session.commit()
+    ensure_default_users()
     return Pathway.query.order_by(Pathway.market_share_pct.desc()).all()
+
+
+def ensure_default_users():
+    """Ensure baseline demo candidate, passport, and employer exist (idempotent)."""
+    # 1. Candidate Sipho Dlamini
+    sipho = User.query.filter_by(email="sipho.dlamini@richfield.ac.za").first()
+    dev_pathway = Pathway.query.filter_by(slug="junior-software-developer").first()
+    dev_challenge = WorkProofChallenge.query.filter_by(pathway_id=dev_pathway.id).first() if dev_pathway else None
+
+    if not sipho:
+        sipho = User(
+            email="sipho.dlamini@richfield.ac.za",
+            full_name="Sipho Dlamini",
+            role="candidate",
+            institution="Richfield Graduate Institute of Technology",
+            graduation_year=2026,
+            location="Johannesburg, Gauteng",
+            is_open_to_work=True,
+        )
+        sipho.set_password("password123")
+        db.session.add(sipho)
+        db.session.flush()
+
+        passport = SkillsPassport(
+            user_id=sipho.id,
+            readiness_score=82,
+            highest_trust_level=4,
+            verified_skills_json='["Python", "Flask", "REST APIs", "Error Handling", "Idempotency"]',
+        )
+        db.session.add(passport)
+
+        prefs = CandidatePreferences(
+            user_id=sipho.id,
+            target_pathway_id=dev_pathway.id if dev_pathway else None,
+            skills_summary="Full-stack Python & Flask developer. Strong interest in payment API resilience.",
+            onboarding_completed=True,
+        )
+        db.session.add(prefs)
+
+        if dev_challenge:
+            sub = WorkProofSubmission(
+                user_id=sipho.id,
+                challenge_id=dev_challenge.id,
+                build_repo_url="https://github.com/sipho-dlamini/voucher-disbursement-api",
+                build_code_snippet='''@app.route("/api/v1/vouchers/redeem", methods=["POST"])
+def redeem_voucher():
+    data = request.get_json() or {}
+    voucher_code = data.get("voucher_code")
+    user_id = data.get("user_id")
+    amount = data.get("amount_zar")
+    if not voucher_code or not user_id or amount is None:
+        return jsonify({"error": "Missing required fields"}), 400
+    voucher = Voucher.query.filter_by(code=voucher_code).with_for_update().first()
+    if not voucher:
+        return jsonify({"error": "Voucher not found"}), 404
+    if voucher.is_redeemed:
+        return jsonify({"error": "Voucher already redeemed"}), 409
+    voucher.is_redeemed = True
+    voucher.redeemed_by = user_id
+    db.session.commit()
+    return jsonify({"status": "success", "amount_zar": amount}), 200''',
+                explain_notes="Used database row-level locking (with_for_update) to prevent race condition double-redemptions during concurrent requests. Returned HTTP 409 Conflict for already-redeemed vouchers.",
+                adapt_solution="Implemented Flask-Limiter for IP and API key rate limiting (60 req/min) and keyset cursor pagination on the voucher transaction history endpoint.",
+                status="verified",
+                evidence_score=82,
+                readiness_feedback="High-quality submission. Database row locking and HTTP 409 status code correctly model financial voucher redemption.",
+                next_best_action="Add automated unit and integration tests simulating concurrent requests to demonstrate thread-safety.",
+                feedback_status="ready",
+            )
+            db.session.add(sub)
+
+    # 2. Candidate Zanele Khumalo
+    zanele = User.query.filter_by(email="zanele.khumalo@wits.ac.za").first()
+    cloud_pathway = Pathway.query.filter_by(slug="it-support-cloud").first()
+    if not zanele:
+        zanele = User(
+            email="zanele.khumalo@wits.ac.za",
+            full_name="Zanele Khumalo",
+            role="candidate",
+            institution="University of the Witwatersrand",
+            graduation_year=2025,
+            location="Johannesburg, Gauteng",
+            is_open_to_work=True,
+        )
+        zanele.set_password("password123")
+        db.session.add(zanele)
+        db.session.flush()
+
+        passport_z = SkillsPassport(
+            user_id=zanele.id,
+            readiness_score=88,
+            highest_trust_level=4,
+            verified_skills_json='["Linux", "Bash", "UFW Firewall", "Cloud Security", "Diagnostics"]',
+        )
+        db.session.add(passport_z)
+
+        prefs_z = CandidatePreferences(
+            user_id=zanele.id,
+            target_pathway_id=cloud_pathway.id if cloud_pathway else None,
+            skills_summary="Systems administrator & Cloud engineer. Focus on Linux server automation and security hardening.",
+            onboarding_completed=True,
+        )
+        db.session.add(prefs_z)
+
+    # 3. Employer Nomsa Dlamini
+    nomsa = User.query.filter_by(email="talent@paystack-sa.co.za").first()
+    if not nomsa:
+        nomsa = User(
+            email="talent@paystack-sa.co.za",
+            full_name="Nomsa Dlamini",
+            role="employer",
+            institution="Paystack South Africa",
+            location="Cape Town, Western Cape",
+        )
+        nomsa.set_password("password123")
+        db.session.add(nomsa)
+        db.session.flush()
+
+        if sipho:
+            db.session.add(EmployerShortlist(
+                employer_id=nomsa.id,
+                candidate_id=sipho.id,
+                notes="Verified Level 4 voucher API challenge submission. Strong backend fundamentals.",
+                status="shortlisted",
+            ))
+
+    db.session.commit()
+

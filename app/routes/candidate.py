@@ -16,8 +16,6 @@ candidate_bp = Blueprint("candidate", __name__)
 @candidate_bp.route("/candidate/dashboard")
 @candidate_required
 def dashboard():
-    if session.get("needs_onboarding"):
-        return redirect(url_for("candidate.onboarding"))
     user = db.get_or_404(User, session["user_id"])
     preferences = CandidatePreferences.query.filter_by(user_id=user.id).first()
     passport = SkillsPassport.query.filter_by(user_id=user.id).first()

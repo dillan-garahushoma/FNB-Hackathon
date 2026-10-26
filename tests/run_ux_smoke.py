@@ -220,10 +220,10 @@ def main():
             },
             follow_redirects=True,
         )
-        assert response.status_code == 200 and b"Let's make your next step clear" in response.data, (
-            "New candidate signup should lead to the onboarding step."
+        assert response.status_code == 200 and (b"Pick the work you want to prove" in response.data or b"Overview" in response.data), (
+            "New candidate signup should open candidate workspace overview directly."
         )
-        print("PASS registration leads to candidate onboarding")
+        print("PASS registration leads directly to candidate overview")
         response = registration_client.post(
             "/candidate/onboarding",
             data={
@@ -237,14 +237,23 @@ def main():
             follow_redirects=True,
         )
         assert response.status_code == 200 and b"Pick the work you want to prove" in response.data, (
-            "Completing onboarding should open the candidate workspace."
+            "Completing optional onboarding should return to candidate workspace."
         )
         with app.app_context():
             registered = User.query.filter_by(email="new-candidate@example.ac.za").first()
             saved_preferences = CandidatePreferences.query.filter_by(user_id=registered.id).first()
             assert saved_preferences and saved_preferences.onboarding_completed
             assert saved_preferences.skills_summary == "Python and SQL"
-        print("PASS onboarding completion persists preferences and opens candidate workspace")
+        print("PASS optional onboarding persists preferences and returns to workspace")
+
+        # Test alias routes and custom 404 page
+        get_ok(candidate_client, "/overview", follow_redirects=True)
+        get_ok(candidate_client, "/dashboard", follow_redirects=True)
+        get_ok(candidate_client, "/candidate", follow_redirects=True)
+        get_ok(candidate_client, "/passport", follow_redirects=True)
+        not_found = candidate_client.get("/random-page-does-not-exist")
+        assert not_found.status_code == 404 and b"Navigation helper" in not_found.data
+        print("PASS navigation aliases and custom 404 page work seamlessly")
 
         # Release SQLite handles before TemporaryDirectory cleanup on Windows.
         with app.app_context():

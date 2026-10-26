@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Page not found | Path2Work{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl py-12 px-4 sm:py-20 text-center">
+    <div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 mb-6 border border-amber-200">
+        <i class="ph-bold ph-compass text-3xl" aria-hidden="true"></i>
+    </div>
+    
+    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">404 · Navigation helper</span>
+    <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl tracking-tight mb-4">
+        We couldn't find that page
+    </h1>
+    <p class="text-base text-slate-600 max-w-md mx-auto mb-8">
+        The link you followed may have moved or no longer exists. Let's get you back on track.
+    </p>
+
+    <div class="flex flex-wrap items-center justify-center gap-3">
+        {% if current_user %}
+            {% if current_user.role == 'employer' %}
+                <a href="{{ url_for('employer.dashboard') }}" class="btn btn-primary">
+                    <i class="ph-bold ph-users-three" aria-hidden="true"></i> Go to Talent Discovery
+                </a>
+            {% else %}
+                <a href="{{ url_for('candidate.dashboard') }}" class="btn btn-primary">
+                    <i class="ph-bold ph-squares-four" aria-hidden="true"></i> Go to Overview
+                </a>
+            {% endif %}
+        {% else %}
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="ph-bold ph-house" aria-hidden="true"></i> Go to Home
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">
+                <i class="ph-bold ph-sign-in" aria-hidden="true"></i> Sign In
+            </a>
+        {% endif %}
+        <button type="button" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='{{ url_for('index') }}'; }" class="btn btn-secondary">
+            <i class="ph-bold ph-arrow-left" aria-hidden="true"></i> Previous page
+        </button>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-slate-200 text-xs text-slate-500">
+        <span>Looking for something specific? </span>
+        <a href="{{ url_for('index') }}" class="text-build-dark font-semibold hover:underline">Path2Work Home</a>
+        <span class="mx-1.5">·</span>
+        <a href="{{ url_for('auth.settings') if current_user else url_for('auth.login') }}" class="text-build-dark font-semibold hover:underline">Account Settings</a>
+    </div>
+</div>
+{% endblock %}

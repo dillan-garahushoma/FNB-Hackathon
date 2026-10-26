@@ -44,6 +44,42 @@ def create_app(config_class=Config):
         demo_id = demo_candidate.id if demo_candidate else 1
         return render_template("index.html", demo_candidate_id=demo_id)
 
+    @app.route("/dashboard")
+    @app.route("/overview")
+    def generic_dashboard():
+        if session.get("user_id"):
+            if session.get("role") == "employer":
+                return redirect(url_for("employer.dashboard"))
+            return redirect(url_for("candidate.dashboard"))
+        return redirect(url_for("auth.login"))
+
+    @app.route("/candidate")
+    @app.route("/candidate/overview")
+    def candidate_redirect():
+        return redirect(url_for("candidate.dashboard"))
+
+    @app.route("/employer")
+    @app.route("/employer/overview")
+    def employer_redirect():
+        return redirect(url_for("employer.dashboard"))
+
+    @app.route("/onboarding")
+    def generic_onboarding():
+        return redirect(url_for("candidate.onboarding"))
+
+    @app.route("/passport")
+    def generic_passport():
+        if session.get("user_id"):
+            return redirect(url_for("candidate.skills_passport", user_id=session["user_id"]))
+        demo = User.query.filter_by(role="candidate").first()
+        if demo:
+            return redirect(url_for("candidate.skills_passport", user_id=demo.id))
+        return redirect(url_for("auth.login"))
+
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template("errors/404.html"), 404
+
     @app.context_processor
     def inject_current_user():
         user = None
