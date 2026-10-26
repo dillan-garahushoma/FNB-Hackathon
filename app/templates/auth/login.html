@@ -5,10 +5,10 @@
 {% set show_demo = config.get('DEMO_MODE', True) %}
 
 {% set demo_employers = [
-    ('talent@paystack-sa.co.za', 'Nomsa Dlamini', 'PayFlow FinTech SA', 'Active hiring partner'),
-    ('careers@cloudsmiths.co.za', 'Gareth Naidoo', 'CloudSmiths South Africa', 'Cloud infrastructure lead'),
-    ('tech@takealot.com', 'David Okafor', 'Takealot Engineering', 'High-volume logistics team'),
-    ('graduates@standardbank.co.za', 'Kgomotso Phiri', 'Standard Bank CIB', 'Graduate technology pipeline')
+    ('talent@paystack-sa.co.za', 'Nomsa Dlamini (Tech Recruiter)', 'PayFlow FinTech SA', 'Active hiring partner'),
+    ('careers@cloudsmiths.co.za', 'Gareth Naidoo (Engineering Manager)', 'CloudSmiths South Africa', 'Cloud infrastructure lead'),
+    ('techjobs@takealot.com', 'Sarah Jenkins', 'Takealot', 'High-volume logistics team'),
+    ('careers@standardbank.co.za', 'Thabo Mokoena', 'Standard Bank', 'Graduate technology pipeline')
 ] %}
 
 {% set demo_candidates = [
@@ -29,8 +29,8 @@
         <div class="card p-6 sm:p-8 shadow-md border-slate-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 id="signin-title" class="font-display text-2xl font-bold text-ink">Sign in</h1>
-                    <p class="mt-1 text-xs sm:text-sm text-slate-600">Access your candidate dashboard or employer pipeline.</p>
+                    <h1 id="signin-title" class="font-display text-2xl font-bold text-ink">Welcome back.</h1>
+                    <p class="mt-1 text-xs sm:text-sm text-slate-600">Sign in to continue building proof or reviewing early-career talent.</p>
                 </div>
                 <div class="h-10 w-10 rounded-xl bg-ink text-white flex items-center justify-center font-display font-extrabold text-sm">
                     P2W
@@ -48,8 +48,8 @@
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <label for="password" class="field-label mb-0">Password</label>
-                        <button type="button" onclick="alert('Password reset is currently managed by institutional administration or demo reset.');" class="text-xs font-semibold text-build-dark hover:underline">
-                            Forgot password?
+                        <button type="button" onclick="alert('Password reset is not available in this demo yet. Please use your registered account credentials.');" class="text-xs font-semibold text-build-dark hover:underline">
+                            Password help
                         </button>
                     </div>
                     <div class="relative">
