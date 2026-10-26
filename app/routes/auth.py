@@ -137,6 +137,8 @@ def register():
         flash("Account created successfully! Welcome to Path2Work.", "success")
         if user.role == "employer":
             return redirect(url_for("employer.dashboard"))
+        if session.get("needs_onboarding"):
+            return redirect(url_for("candidate.onboarding"))
         return redirect(url_for("candidate.dashboard"))
 
     return render_template("auth/register.html")
@@ -147,3 +149,29 @@ def logout():
     session.clear()
     flash("You have been signed out.", "info")
     return redirect(url_for("auth.login"))
+
+@auth_bp.route("/settings", methods=["GET", "POST"])
+@login_required
+def settings():
+    """Account settings with a real password-change workflow."""
+    user = db.get_or_404(User, session["user_id"])
+    if request.method == "POST":
+        current_password = request.form.get("current_password") or ""
+        new_password = request.form.get("new_password") or ""
+        confirm_password = request.form.get("confirm_password") or ""
+
+        if not user.check_password(current_password):
+            flash("Your current password was not correct. Nothing has been changed.", "error")
+        elif len(new_password) < 8:
+            flash("Choose a new password with at least 8 characters.", "error")
+        elif new_password != confirm_password:
+            flash("The new passwords do not match.", "error")
+        elif user.check_password(new_password):
+            flash("Choose a password different from your current one.", "warning")
+        else:
+            user.set_password(new_password)
+            db.session.commit()
+            flash("Your password has been updated.", "success")
+            return redirect(url_for("auth.settings"))
+
+    return render_template("auth/settings.html", user=user)
