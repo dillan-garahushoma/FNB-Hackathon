@@ -1,248 +1,62 @@
 {% extends "base.html" %}
-{% block title %}Talent Pipeline | Path2Work Employer{% endblock %}
-
+{% block title %}Talent discovery | Path2Work{% endblock %}
 {% block content %}
-{% set status_labels = {'shortlisted': 'Shortlisted', 'invited': 'Invited to interview', 'rejected': 'Not a fit'} %}
-
-<div class="space-y-8">
-    
-    <!-- TOP HEADER -->
-    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-            <div class="inline-flex items-center gap-1.5 rounded-full bg-match-soft px-3 py-1 text-xs font-bold text-match-dark mb-2">
-                <i class="ph-bold ph-shield-check" aria-hidden="true"></i> Verified Early-Career IT Pipeline
-            </div>
-            <h1 class="font-display text-2xl sm:text-4xl font-extrabold text-ink">Verified Candidate Discovery</h1>
-            <p class="max-w-2xl text-xs sm:text-sm text-slate-600 mt-1">
-                Inspect authentic Build, Explain, and Adapt evidence before you schedule interview slots.
-            </p>
-        </div>
-        <div class="flex flex-wrap items-center gap-3">
-            <a href="{{ url_for('employer.shortlist_board') }}" class="btn btn-secondary text-xs sm:text-sm">
-                <i class="ph-bold ph-kanban" aria-hidden="true"></i> Shortlist Board ({{ shortlisted_count }})
-            </a>
-            <a href="{{ url_for('employer.export_csv') }}" class="btn btn-primary text-xs sm:text-sm shadow-xs">
-                <i class="ph-bold ph-download-simple" aria-hidden="true"></i> Export CSV
-            </a>
-        </div>
+{% set status_labels = {'shortlisted':'Shortlisted','invited':'Interview invited','rejected':'Not a fit'} %}
+<div class="p2w-workspace">
+    <header class="page-intro">
+        <div><span class="page-eyebrow">Employer workspace · Evidence-first hiring</span><h1>Find people by what they can do.</h1><p>Search the talent pool, inspect real WorkProof evidence, and make a more informed shortlist before the interview.</p></div>
+        <div class="p2w-intro-actions"><a href="{{ url_for('employer.shortlist_board') }}" class="p2w-button p2w-button-quiet"><i class="ph-bold ph-kanban" aria-hidden="true"></i> Shortlist board</a><a href="{{ url_for('employer.export_csv') }}" class="p2w-button p2w-button-primary"><i class="ph-bold ph-download-simple" aria-hidden="true"></i> Export CSV</a></div>
     </header>
 
-    <!-- KPI ROW (Previously computed but unrendered) -->
-    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4" aria-label="Pipeline Metrics">
-        <div class="card p-5 border-slate-200">
-            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                <span>Total Pool</span>
-                <i class="ph-bold ph-users text-slate-400 text-base" aria-hidden="true"></i>
-            </div>
-            <div class="mt-2 font-display text-3xl font-black text-ink">{{ total_applicants }}</div>
-            <p class="mt-1 text-[11px] text-slate-500">Registered IT students & graduates</p>
-        </div>
-
-        <div class="card p-5 border-slate-200">
-            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                <span>WorkProof Completed</span>
-                <i class="ph-bold ph-code text-build text-base" aria-hidden="true"></i>
-            </div>
-            <div class="mt-2 font-display text-3xl font-black text-build-dark">{{ workproof_completed_count }}</div>
-            <p class="mt-1 text-[11px] text-slate-500">Submitted 3-stage technical proof</p>
-        </div>
-
-        <div class="card p-5 border-2 border-prove bg-prove-soft/20 shadow-xs">
-            <div class="flex items-center justify-between text-xs font-bold text-prove-dark uppercase tracking-wider">
-                <span>Pre-Qualified (70+)</span>
-                <i class="ph-bold ph-seal-check text-prove-dark text-base" aria-hidden="true"></i>
-            </div>
-            <div class="mt-2 font-display text-3xl font-black text-prove-dark">{{ prequalified_count }}</div>
-            <p class="mt-1 text-[11px] text-slate-600">Level 4+ benchmark passed</p>
-        </div>
-
-        <div class="card p-5 border-slate-200">
-            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                <span>Your Shortlist</span>
-                <i class="ph-bold ph-star text-match text-base" aria-hidden="true"></i>
-            </div>
-            <div class="mt-2 font-display text-3xl font-black text-match-dark">{{ shortlisted_count }}</div>
-            <p class="mt-1 text-[11px] text-slate-500">Bookmarked for interviews</p>
-        </div>
+    <section class="p2w-employer-metrics" aria-label="Talent pool overview">
+        <article class="p2w-metric-card"><span><i class="ph-bold ph-users-three" aria-hidden="true"></i> Total candidates</span><strong>{{ total_applicants }}</strong><small>Registered candidates</small></article>
+        <article class="p2w-metric-card"><span><i class="ph-bold ph-code" aria-hidden="true"></i> WorkProof completed</span><strong>{{ workproof_completed_count }}</strong><small>Submitted or verified work</small></article>
+        <article class="p2w-metric-card p2w-metric-highlight"><span><i class="ph-bold ph-seal-check" aria-hidden="true"></i> Pre-qualified</span><strong>{{ prequalified_count }}</strong><small>Level 4+ and score 70+</small></article>
+        <article class="p2w-metric-card"><span><i class="ph-bold ph-bookmark-simple" aria-hidden="true"></i> In your shortlist</span><strong>{{ shortlisted_count }}</strong><small>Saved for review</small></article>
     </section>
 
-    <!-- OPTIONAL TALENT CONTEXT BANNER -->
-    <div class="card overflow-hidden border-slate-200 bg-ink text-white shadow-xs">
-        <div class="flex flex-col md:flex-row items-center justify-between">
-            <div class="p-6 md:p-8 max-w-xl">
-                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-teal-200 mb-2">
-                    <i class="ph-bold ph-lightning" aria-hidden="true"></i> Evidence-Led Tech Hiring
-                </span>
-                <h2 class="font-display text-xl sm:text-2xl font-bold text-white">Cut screening cycles from 3 weeks to 48 hours</h2>
-                <p class="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    Filter by verified technical competencies and examine real candidate code diffs before conducting technical rounds.
-                </p>
-            </div>
-            <div class="hidden md:block w-72 h-36 relative overflow-hidden shrink-0">
-                <img src="{{ url_for('static', filename='images/path2work-employer-talent.jpg') }}" 
-                     alt="Diverse African tech talent collaboration" 
-                     class="w-full h-full object-cover opacity-60"
-                     onerror="this.style.display='none'">
-                <div class="absolute inset-0 bg-gradient-to-r from-ink to-transparent"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FILTER BAR -->
-    <form method="GET" action="{{ url_for('employer.dashboard') }}" class="card p-6 border-slate-200 bg-white grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-end shadow-xs">
-        <div>
-            <label for="pathway" class="field-label">Role Pathway</label>
-            <select id="pathway" name="pathway" class="field text-xs sm:text-sm">
-                <option value="">All Career Pathways</option>
-                {% for p in pathways %}
-                    <option value="{{ p.slug }}" {% if selected_pathway == p.slug %}selected{% endif %}>{{ p.title }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <div>
-            <label for="search_skill" class="field-label">Tech Stack or Verified Skill</label>
-            <input type="text" id="search_skill" name="search_skill" value="{{ search_skill }}" placeholder="e.g. Python, SQL, Docker, Linux" class="field text-xs sm:text-sm">
-        </div>
-
-        <div>
-            <label for="location" class="field-label">Metro Location</label>
-            <input type="text" id="location" name="location" value="{{ location_filter }}" placeholder="e.g. Johannesburg, Cape Town, Remote" class="field text-xs sm:text-sm">
-        </div>
-
-        <div>
-            <label for="min_trust" class="field-label">Minimum Evidence Trust Level</label>
-            <select id="min_trust" name="min_trust" class="field text-xs sm:text-sm">
-                <option value="1" {% if min_trust == 1 %}selected{% endif %}>Level 1+ (Any Registered)</option>
-                <option value="2" {% if min_trust == 2 %}selected{% endif %}>Level 2+ (Evidence Attached)</option>
-                <option value="3" {% if min_trust == 3 %}selected{% endif %}>Level 3+ (Source Verified)</option>
-                <option value="4" {% if min_trust == 4 %}selected{% endif %}>Level 4+ (Path2Work Assessed >= 70%)</option>
-                <option value="5" {% if min_trust == 5 %}selected{% endif %}>Level 5 (Employer Verified)</option>
-            </select>
-        </div>
-
-        <div class="lg:col-span-2">
-            <label class="flex items-center gap-2 cursor-pointer pt-2">
-                <input type="checkbox" name="only_open" {% if only_open %}checked{% endif %} class="rounded border-slate-300 text-prove focus:ring-prove h-4 w-4">
-                <span class="text-xs sm:text-sm font-semibold text-slate-700">Only candidates actively Open to Work</span>
-            </label>
-        </div>
-
-        <div class="flex gap-2 lg:col-span-2 justify-end pt-2">
-            <a href="{{ url_for('employer.dashboard') }}" class="btn btn-secondary text-xs sm:text-sm">Reset</a>
-            <button type="submit" class="btn btn-primary text-xs sm:text-sm px-5">Apply Screening Filters</button>
-        </div>
-    </form>
-
-    <!-- CANDIDATE RESULTS LIST -->
-    <section aria-labelledby="results-title" class="space-y-4">
-        <div class="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200 pb-3">
-            <h2 id="results-title" class="font-display text-xl sm:text-2xl font-bold text-ink">
-                {{ candidates | length }} Verified Candidate{{ '' if candidates | length == 1 else 's' }}
-            </h2>
-            <span class="text-xs text-slate-500 font-medium">Ranked by verified readiness score</span>
-        </div>
-
-        {% if candidates %}
-            <ul class="grid gap-4" role="list">
-                {% for item in candidates %}
-                    {% set cand = item.user %}
-                    {% set passport = item.passport %}
-                    {% set sub = item.best_submission %}
-                    {% set sl = item.shortlist %}
-
-                    <li class="card p-5 sm:p-6 border-slate-200 hover:border-slate-300 hover:shadow-md transition-all bg-white">
-                        <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                            
-                            <!-- Left: Profile & Credentials -->
-                            <div class="min-w-0 flex-1 space-y-3">
-                                <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <h3 class="font-display text-lg sm:text-xl font-bold text-ink">{{ cand.full_name }}</h3>
-                                            {% if cand.is_open_to_work %}
-                                                <span class="badge bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px]">
-                                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-600"></span> Open to Work
-                                                </span>
-                                            {% endif %}
-                                        </div>
-                                        <p class="text-xs text-slate-500 mt-0.5">
-                                            {{ cand.institution }}{% if cand.graduation_year %}, Class of {{ cand.graduation_year }}{% endif %}
-                                            {% if cand.location %} · <span class="font-medium text-slate-700">{{ cand.location }}</span>{% endif %}
-                                        </p>
-                                    </div>
-
-                                    {% if sl %}
-                                        <span class="badge {% if sl.status == 'invited' %}bg-prove-soft text-prove-dark border border-prove/30{% elif sl.status == 'rejected' %}bg-slate-100 text-slate-600{% else %}bg-match-soft text-match-dark border border-match/30{% endif %} text-xs font-bold">
-                                            {{ status_labels.get(sl.status, sl.status) }}
-                                        </span>
-                                    {% endif %}
-                                </div>
-
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <span class="badge {% if passport.highest_trust_level >= 4 %}bg-prove-soft text-prove-dark border border-prove/30 font-bold{% else %}bg-slate-100 text-slate-700{% endif %} text-xs">
-                                        {{ passport.trust_level_label }}
-                                    </span>
-                                    {% if sub and sub.challenge %}
-                                        <span class="badge bg-slate-100 text-slate-700 text-xs font-mono">
-                                            {{ sub.challenge.pathway.title }}
-                                        </span>
-                                    {% endif %}
-                                    <span class="text-xs text-slate-400 font-mono">
-                                        ID: P2W-ZA-{{ "%04d" | format(cand.id) }}
-                                    </span>
-                                </div>
-
-                                <!-- Verified Extracted Skills Chips -->
-                                {% if passport.parsed_skills %}
-                                    <div class="flex flex-wrap gap-1.5 pt-1">
-                                        {% for sk in passport.parsed_skills[:6] %}
-                                            <span class="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
-                                                <i class="ph-bold ph-check text-prove-dark text-[10px]" aria-hidden="true"></i> {{ sk }}
-                                            </span>
-                                        {% endfor %}
-                                        {% if passport.parsed_skills | length > 6 %}
-                                            <span class="text-[11px] text-slate-400 self-center">+{{ passport.parsed_skills | length - 6 }} more</span>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <!-- Right: Score Block & Action CTA -->
-                            <div class="flex items-center justify-between lg:flex-col lg:items-end gap-4 border-t border-slate-100 pt-4 lg:border-t-0 lg:pt-0 shrink-0">
-                                <div class="text-left lg:text-right">
-                                    <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Readiness Score</span>
-                                    <span class="font-display text-3xl sm:text-4xl font-black {% if passport.readiness_score >= 70 %}text-prove-dark{% else %}text-ink{% endif %}">
-                                        {{ passport.readiness_score }}<span class="text-sm font-semibold text-slate-400">/100</span>
-                                    </span>
-                                </div>
-
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ url_for('employer.candidate_evidence', user_id=cand.id) }}" class="btn btn-primary text-xs px-4 py-2 font-semibold">
-                                        Review Evidence &rarr;
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <div class="card p-12 text-center border-slate-200">
-                <i class="ph-bold ph-magnifying-glass text-4xl text-slate-300 mx-auto" aria-hidden="true"></i>
-                <h3 class="mt-3 font-display text-lg font-bold text-ink">No candidates match these specific filters</h3>
-                <p class="mt-1 text-sm text-slate-500 max-w-md mx-auto">
-                    Try broadening your search criteria, reducing the minimum trust level, or resetting the filters.
-                </p>
-                <div class="mt-5">
-                    <a href="{{ url_for('employer.dashboard') }}" class="btn btn-secondary text-xs">
-                        Reset All Filters
-                    </a>
+    <section class="p2w-discovery-layout">
+        <div class="p2w-discovery-main">
+            <form method="GET" action="{{ url_for('employer.dashboard') }}" class="p2w-screening" aria-label="Search and filter candidates">
+                <div class="p2w-screening-heading"><div><span class="page-eyebrow">Talent search</span><h2>What do you need?</h2></div><span class="p2w-result-count">{{ candidates|length }} results</span></div>
+                <div class="p2w-screening-grid">
+                    <div class="p2w-search-control p2w-filter-full"><label for="search_skill">Skills, tools or keywords</label><div class="p2w-input-icon"><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i><input id="search_skill" type="search" name="search_skill" value="{{ search_skill }}" placeholder="Try Python, SQL, AWS, Linux…" class="field"></div></div>
+                    <div><label for="pathway">Target pathway</label><select id="pathway" name="pathway" class="field"><option value="">All pathways</option>{% for p in pathways %}<option value="{{ p.slug }}" {% if selected_pathway == p.slug %}selected{% endif %}>{{ p.title }}</option>{% endfor %}</select></div>
+                    <div><label for="location">Location</label><select id="location" name="location" class="field"><option value="">Anywhere in South Africa</option>{% for loc in ['Johannesburg','Cape Town','Durban','Pretoria','Gqeberha','Bloemfontein','Remote'] %}<option value="{{ loc }}" {% if location_filter == loc|lower %}selected{% endif %}>{{ loc }}</option>{% endfor %}</select></div>
+                    <div><label for="min_trust">Minimum trust level</label><select id="min_trust" name="min_trust" class="field"><option value="1" {% if min_trust == 1 %}selected{% endif %}>Level 1+ · All profiles</option><option value="2" {% if min_trust == 2 %}selected{% endif %}>Level 2+ · Evidence attached</option><option value="3" {% if min_trust == 3 %}selected{% endif %}>Level 3+ · Source verified</option><option value="4" {% if min_trust == 4 %}selected{% endif %}>Level 4+ · Assessed</option><option value="5" {% if min_trust == 5 %}selected{% endif %}>Level 5 · Employer verified</option></select></div>
+                    <div><label for="min_score">Minimum readiness score · <output id="minScoreOutput">{{ min_score }}</output></label><input type="range" id="min_score" name="min_score" min="0" max="100" step="5" value="{{ min_score }}" class="p2w-range"><div class="p2w-range-caption"><span>Any score</span><span>100 · highest</span></div></div>
                 </div>
-            </div>
-        {% endif %}
-    </section>
+                <div class="p2w-screening-footer"><label class="p2w-toggle-label"><input type="checkbox" name="only_open" {% if only_open %}checked{% endif %}><span class="p2w-toggle" aria-hidden="true"></span><span>Only candidates open to work</span></label><div class="p2w-screening-actions"><a href="{{ url_for('employer.dashboard') }}" class="p2w-text-button">Reset filters</a><button class="p2w-button p2w-button-primary" type="submit"><i class="ph-bold ph-funnel" aria-hidden="true"></i> Apply filters</button></div></div>
+            </form>
 
+            <section class="p2w-results" aria-labelledby="results-title">
+                <div class="p2w-results-header"><div><span class="page-eyebrow">Ranked by readiness score</span><h2 id="results-title">Candidates to explore <span>{{ candidates|length }}</span></h2><p>Review the work behind the score before making a decision.</p></div><span class="p2w-sort-note"><i class="ph-bold ph-sort-descending" aria-hidden="true"></i> Highest score first</span></div>
+                {% if candidates %}
+                <div class="p2w-candidate-list" role="list">
+                    {% for item in candidates %}
+                    {% set cand = item.user %}{% set passport = item.passport %}{% set sub = item.best_submission %}{% set sl = item.shortlist %}
+                    <article class="p2w-candidate-row" role="listitem">
+                        <div class="p2w-row-person"><div class="p2w-person-avatar">{{ cand.full_name[0]|upper }}</div><div class="p2w-person-detail"><h3>{{ cand.full_name }}</h3><p>{{ cand.institution or 'Institution not listed' }}{% if cand.graduation_year %} · Class of {{ cand.graduation_year }}{% endif %}</p><p><i class="ph-bold ph-map-pin" aria-hidden="true"></i> {{ cand.location or 'Location not provided' }}</p>{% if cand.is_open_to_work %}<span class="p2w-chip p2w-chip-teal"><i class="ph-fill ph-circle" aria-hidden="true"></i> Open to work</span>{% endif %}</div></div>
+                        <div class="row-evidence"><div class="p2w-row-badges"><span class="p2w-chip p2w-chip-teal"><i class="ph-bold ph-shield-check" aria-hidden="true"></i> {{ passport.trust_level_label }}</span>{% if sub and sub.challenge %}<span class="p2w-chip">{{ sub.challenge.pathway.title }}</span>{% endif %}{% if sl %}<span class="p2w-chip {% if sl.status == 'invited' %}p2w-chip-teal{% endif %}">{{ status_labels.get(sl.status,sl.status|title) }}</span>{% endif %}</div><p class="p2w-evidence-summary">{% if sub and sub.challenge %}<strong>Latest proof:</strong> {{ sub.challenge.title }}{% if sub.readiness_feedback %}<span>{{ sub.readiness_feedback|truncate(150,true,'…') }}</span>{% else %}<span>Open the evidence review to inspect the candidate’s Build, Explain and Adapt responses.</span>{% endif %}{% else %}<strong>No WorkProof submitted yet.</strong><span>This candidate has a profile but no completed assessment on record.</span>{% endif %}</p>{% if passport.parsed_skills %}<div class="p2w-skill-chips">{% for sk in passport.parsed_skills[:5] %}<span>{{ sk }}</span>{% endfor %}</div>{% endif %}</div>
+                        <div class="row-score-column"><div class="row-score">{{ passport.readiness_score }}<small>READINESS /100</small></div><div class="p2w-score-mini"><span style="width:{{ [passport.readiness_score,100]|min }}%"></span></div><a href="{{ url_for('employer.candidate_evidence', user_id=cand.id) }}" class="p2w-row-cta">Review evidence <i class="ph-bold ph-arrow-up-right" aria-hidden="true"></i></a></div>
+                    </article>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="p2w-empty-state"><i class="ph-bold ph-users" aria-hidden="true"></i><h3>No candidates match this search</h3><p>Widen the location or skill search, lower the minimum trust level, or reset your filters. The best match may be just outside the current criteria.</p><a href="{{ url_for('employer.dashboard') }}" class="p2w-button p2w-button-quiet">Clear all filters</a></div>
+                {% endif %}
+            </section>
+        </div>
+        <aside class="p2w-discovery-aside">
+            <section class="p2w-aside-card p2w-evidence-note"><span class="p2w-aside-icon"><i class="ph-bold ph-shield-check" aria-hidden="true"></i></span><span class="page-eyebrow">A better hiring signal</span><h2>Evidence before interviews.</h2><p>A score is a pointer, not a hiring decision. Inspect the actual submission and decide whether the work meets your requirements.</p><ul><li>Review the submitted artefact</li><li>Read how the candidate explains it</li><li>See how they handle changed requirements</li></ul></section>
+            <section class="p2w-aside-card"><div class="p2w-aside-title"><h2>Your shortlist</h2><a href="{{ url_for('employer.shortlist_board') }}">Open board <i class="ph-bold ph-arrow-up-right" aria-hidden="true"></i></a></div>{% if shortlisted_count %}<div class="p2w-shortlist-teaser"><span class="p2w-shortlist-number">{{ shortlisted_count }}</span><div><strong>candidate{{ '' if shortlisted_count == 1 else 's' }} saved</strong><p>Continue reviewing your shortlist and interview pipeline.</p></div></div><a href="{{ url_for('employer.shortlist_board') }}" class="p2w-button p2w-button-quiet p2w-button-full">Review shortlist <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a>{% else %}<p class="p2w-aside-muted">When you save a candidate from their evidence page, they will appear in your shortlist board here.</p>{% endif %}</section>
+        </aside>
+    </section>
 </div>
+<script>
+(function(){
+ const range=document.getElementById('min_score'), output=document.getElementById('minScoreOutput');
+ if(range&&output)range.addEventListener('input',()=>output.value=range.value);
+})();
+</script>
 {% endblock %}
