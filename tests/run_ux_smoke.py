@@ -5,7 +5,11 @@ Run with: python tests/run_ux_smoke.py
 """
 import json
 import os
+import sys
 import tempfile
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
 
 from config import Config
 from app import create_app, db
