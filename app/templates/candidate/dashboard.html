@@ -1,259 +1,98 @@
 {% extends "base.html" %}
-{% block title %}Candidate Dashboard | Path2Work{% endblock %}
-
+{% block title %}Your workspace | Path2Work{% endblock %}
 {% block content %}
-{% set score = passport.readiness_score %}
-{% set level = passport.highest_trust_level %}
+{% set score = passport.readiness_score | int %}
+{% set level = passport.highest_trust_level | int %}
+<div class="p2w-workspace">
+    <header class="page-intro">
+        <div><span class="page-eyebrow">Your candidate workspace</span><h1>Turn your skills into evidence, {{ user.full_name.split(' ')[0] }}.</h1><p>Choose the role you want to grow into, complete a practical WorkProof challenge, and let your work speak for you.</p></div>
+        <a href="{{ url_for('candidate.skills_passport', user_id=user.id) }}" class="p2w-button p2w-button-quiet"><i class="ph-bold ph-identification-card" aria-hidden="true"></i> View Skills Passport</a>
+    </header>
 
-<div class="space-y-10">
-
-    <!-- WELCOME & STATS ROW -->
-    <section class="grid gap-6 lg:grid-cols-12" aria-label="Candidate Progress Summary">
-        
-        <!-- Welcome Card with Trust Ladder -->
-        <div class="card p-6 sm:p-8 lg:col-span-7 flex flex-col justify-between border-slate-200">
-            <div>
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                        <i class="ph-bold ph-graduation-cap text-build-dark" aria-hidden="true"></i>
-                        {{ user.institution }}{% if user.graduation_year %}, Class of {{ user.graduation_year }}{% endif %}
-                    </span>
-                    {% if user.is_open_to_work %}
-                        <span class="badge bg-prove-soft text-prove-dark border border-prove/30">
-                            <span class="h-1.5 w-1.5 rounded-full bg-prove-dark animate-pulse"></span> Open to Work
-                        </span>
-                    {% endif %}
-                </div>
-
-                <h1 class="mt-4 font-display text-2xl sm:text-4xl font-extrabold text-ink tracking-tight">
-                    Welcome back, {{ user.full_name.split(' ')[0] }}
-                </h1>
-                <p class="mt-2 text-sm sm:text-base leading-relaxed text-slate-600">
-                    Prove your IT job readiness with structured WorkProof challenges. Each challenge elevates your score and attaches verified evidence to your Skills Passport.
-                </p>
-            </div>
-
-            <!-- Trust Level Compact Display -->
-            <div class="mt-6 pt-6 border-t border-slate-100">
-                {% set current_level = level %}
-                {% set is_compact = true %}
-                {% include "components/trust-ladder.html" %}
-            </div>
+    <section class="p2w-candidate-summary" aria-label="Your progress">
+        <div class="p2w-welcome-panel">
+            <span class="p2w-chip"><i class="ph-bold ph-graduation-cap" aria-hidden="true"></i> {{ user.institution or 'Your institution' }}{% if user.graduation_year %} · Class of {{ user.graduation_year }}{% endif %}</span>
+            <h2>Your work should open doors.</h2>
+            <p>Path2Work helps you build a shareable record of what you can actually do, not just what you list on a CV. Your next challenge is the most useful place to start.</p>
+            <div class="welcome-meta"><span><i class="ph-bold ph-check-circle" aria-hidden="true"></i> 3-stage assessment</span><span><i class="ph-bold ph-seal-check" aria-hidden="true"></i> 5 trust levels</span><span><i class="ph-bold ph-gift" aria-hidden="true"></i> Free for candidates</span></div>
         </div>
-
-        <!-- Readiness Score Card with 70 Threshold Marker -->
-        <div class="card p-6 sm:p-8 lg:col-span-5 flex flex-col justify-between border-slate-200 bg-white">
-            <div>
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Verified Readiness Score</span>
-                    <span class="badge bg-slate-100 text-slate-700 font-mono text-[11px]">Threshold: 70/100</span>
-                </div>
-
-                <div class="mt-2 flex items-baseline gap-2">
-                    <span class="font-display text-5xl sm:text-6xl font-black tracking-tight {% if score >= 70 %}text-prove-dark{% else %}text-ink{% endif %}">
-                        {{ score }}
-                    </span>
-                    <span class="text-lg font-bold text-slate-400">/ 100</span>
-                </div>
-
-                <!-- Score bar with 70 marker line -->
-                <div class="relative mt-4">
-                    <div class="h-3 w-full overflow-hidden rounded-full bg-slate-100">
-                        <div class="h-full rounded-full transition-all duration-500 {% if score >= 70 %}bg-gradient-to-r from-build to-prove-dark{% else %}bg-gradient-to-r from-amber-400 to-build{% endif %}"
-                             style="width: {{ [score, 100] | min }}%;"
-                             role="progressbar" aria-valuenow="{{ score }}" aria-valuemin="0" aria-valuemax="100">
-                        </div>
-                    </div>
-                    <!-- 70% benchmark line -->
-                    <div class="absolute -top-1 bottom-0 left-[70%] w-0.5 bg-slate-800" title="Passing threshold: 70 points">
-                        <span class="absolute -top-5 -translate-x-1/2 text-[10px] font-bold text-slate-700 bg-white px-1 rounded shadow-xs border border-slate-200">70</span>
-                    </div>
-                </div>
-
-                <p class="mt-4 text-xs leading-relaxed text-slate-600">
-                    {% if score >= 70 %}
-                        <strong class="text-prove-dark font-semibold">Ready for interview screening.</strong> Your verified proof meets employer quality requirements.
-                    {% else %}
-                        <strong class="text-amber-800 font-semibold">{{ 70 - score }} more points</strong> required to reach the verified interview benchmark.
-                    {% endif %}
-                </p>
-            </div>
-
-            <div class="mt-6 flex flex-wrap items-center gap-3">
-                <a href="{{ url_for('candidate.skills_passport', user_id=user.id) }}" class="btn btn-secondary text-xs sm:text-sm flex-1">
-                    <i class="ph-bold ph-identification-card text-build-dark" aria-hidden="true"></i> View Skills Passport
-                </a>
-                <a href="{{ url_for('candidate.profile') }}" class="btn btn-secondary text-xs sm:text-sm" title="Edit location & availability">
-                    <i class="ph-bold ph-gear" aria-hidden="true"></i> Preferences
-                </a>
-            </div>
+        <div class="p2w-score-panel">
+            <div class="p2w-score-top"><span class="page-eyebrow">Readiness score</span><span class="p2w-score-status {% if score >= 70 and level >= 4 %}is-ready{% else %}is-building{% endif %}">{% if score >= 70 and level >= 4 %}<i class="ph-fill ph-check-circle" aria-hidden="true"></i> Interview benchmark reached{% else %}<i class="ph-bold ph-trend-up" aria-hidden="true"></i> In progress{% endif %}</span></div>
+            <div class="p2w-score-number">{{ score }}<small> / 100</small></div>
+            <div class="p2w-score-track" role="progressbar" aria-label="Readiness score" aria-valuenow="{{ score }}" aria-valuemin="0" aria-valuemax="100"><span style="width: {{ [score,100] | min }}%"></span><i aria-hidden="true"></i></div>
+            <div class="p2w-score-scale"><span>0</span><strong>70 · Interview benchmark</strong><span>100</span></div>
+            <p class="p2w-score-description">{% if score >= 70 and level >= 4 %}Your evidence currently meets the Path2Work assessment benchmark. Keep strengthening your passport with more role-specific work.{% elif score >= 70 %}Your score is above 70, but the assessed trust level matters too. Complete and pass WorkProof to strengthen your evidence.{% else %}You need {{ 70 - score }} more points to reach the 70-point benchmark. Your next WorkProof challenge gives you a concrete way to improve.{% endif %}</p>
+            <div class="p2w-trust-inline"><div><strong>Trust level {{ level }} of 5</strong><span>{{ passport.trust_level_label }}</span></div><a href="{{ url_for('candidate.skills_passport', user_id=user.id) }}">How trust works <i class="ph-bold ph-arrow-up-right" aria-hidden="true"></i></a></div>
+            <div class="p2w-trust-mini" aria-label="Trust progress">{% for tier in range(1,6) %}<span class="{% if tier <= level %}is-reached{% endif %}"></span>{% endfor %}</div>
         </div>
     </section>
 
-    <!-- GUIDANCE & LATEST REVIEW ROW -->
-    <section class="grid gap-6 lg:grid-cols-12" aria-label="Next Step Guidance & Feedback">
-        
-        <!-- Next Best Action -->
-        <div class="rounded-2xl bg-ink p-6 sm:p-8 text-white lg:col-span-7 flex flex-col justify-between shadow-md">
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="h-2 w-2 rounded-full bg-prove"></span>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Action Recommendation</span>
-                </div>
-                <h2 class="mt-2 font-display text-xl sm:text-2xl font-bold text-white">Your Next Recommended Step</h2>
-                <p class="mt-3 text-sm sm:text-base leading-relaxed text-slate-300">
-                    {% if latest_submission and latest_submission.next_best_action %}
-                        {{ latest_submission.next_best_action }}
-                    {% else %}
-                        Complete the <strong>Build &rarr; Explain &rarr; Adapt</strong> challenge for either Junior Software Developer or IT Support to achieve Level 4 Path2Work Assessment.
-                    {% endif %}
-                </p>
-            </div>
-
-            <div class="mt-6">
-                <a href="#pathways" class="btn bg-white text-ink hover:bg-slate-200 text-xs sm:text-sm font-semibold">
-                    Explore Role Pathways <i class="ph-bold ph-arrow-down" aria-hidden="true"></i>
-                </a>
-            </div>
-        </div>
-
-        <!-- Latest AI Feedback Glance -->
-        <div class="card p-6 sm:p-8 lg:col-span-5 flex flex-col justify-between border-slate-200 bg-white">
-            <div>
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Latest Review Summary</span>
-                    <i class="ph-bold ph-sparkle text-build" aria-hidden="true"></i>
-                </div>
-                <h2 class="mt-2 font-display text-lg font-bold text-ink">WorkProof Review Feedback</h2>
-                
-                {% if latest_submission and latest_submission.readiness_feedback %}
-                    <p class="mt-2 text-xs sm:text-sm text-slate-700 leading-relaxed line-clamp-4">
-                        {{ latest_submission.readiness_feedback }}
-                    </p>
-                {% else %}
-                    <p class="mt-2 text-xs sm:text-sm text-slate-500 leading-relaxed">
-                        No submissions reviewed yet. Submit your first challenge to receive instant diagnostic feedback highlighting your strengths, architecture gaps, and score breakdown.
-                    </p>
-                {% endif %}
-            </div>
-
-            <div class="mt-6 pt-4 border-t border-slate-100">
-                {% if latest_submission %}
-                    <a href="{{ url_for('assessment.feedback', submission_id=latest_submission.id) }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-build-dark hover:underline">
-                        View Full Diagnostic Feedback <i class="ph-bold ph-arrow-right" aria-hidden="true"></i>
-                    </a>
-                {% else %}
-                    <span class="text-xs text-slate-400">Diagnostic report unlocks upon submission</span>
-                {% endif %}
-            </div>
-        </div>
+    <section class="p2w-next-step p2w-surface" aria-labelledby="next-step-title">
+        <div class="p2w-next-icon"><i class="ph-bold ph-compass-tool" aria-hidden="true"></i></div>
+        <div class="p2w-next-copy"><span class="page-eyebrow">Recommended next step</span><h2 id="next-step-title">{% if latest_submission and latest_submission.next_best_action %}Keep your momentum going{% else %}Choose a pathway and start your first WorkProof{% endif %}</h2><p>{% if latest_submission and latest_submission.next_best_action %}{{ latest_submission.next_best_action }}{% else %}Start with a role that matches your interests. You will build a solution, explain the reasoning behind it, then adapt it to a new requirement.{% endif %}</p></div>
+        <a class="p2w-button p2w-button-primary" href="#pathways">{% if latest_submission %}Choose your next challenge{% else %}Explore pathways{% endif %} <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a>
     </section>
 
-    <!-- ROLE PATHWAY CHOOSER WITH IMAGERY -->
-    <section id="pathways" aria-labelledby="pathways-title" class="scroll-mt-24 space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-build-dark">Industry Aligned Tracks</span>
-                <h2 id="pathways-title" class="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-ink">Choose your target role</h2>
-                <p class="mt-1 text-sm text-slate-600 max-w-2xl">
-                    Every pathway carries a production-realistic challenge scored across <span class="font-semibold text-build-dark">Build 40%</span>, <span class="font-semibold text-prove-dark">Explain 30%</span>, and <span class="font-semibold text-match-dark">Adapt 30%</span>.
-                </p>
-            </div>
-        </div>
+    {% if latest_submission %}
+    <section class="p2w-latest-review p2w-surface" aria-labelledby="latest-review-heading">
+        <div class="p2w-latest-mark"><i class="ph-bold ph-sparkle" aria-hidden="true"></i></div>
+        <div class="p2w-latest-copy"><span class="page-eyebrow">Latest WorkProof activity</span><h2 id="latest-review-heading">{{ latest_submission.challenge.title if latest_submission.challenge else 'Your latest submission' }}</h2><p>{% if latest_submission.readiness_feedback %}{{ latest_submission.readiness_feedback }}{% elif latest_submission.status == 'in_progress' %}You have a draft in progress. Pick up where you left off when you're ready.{% elif latest_submission.feedback_status == 'pending' %}Your work is saved and the review is in progress.{% else %}Your latest submission is saved. Open the review to see its current status and next steps.{% endif %}</p></div>
+        <div class="p2w-latest-actions">{% if latest_submission.feedback_status == 'ready' or latest_submission.readiness_feedback %}<a href="{{ url_for('assessment.feedback', submission_id=latest_submission.id) }}" class="p2w-inline-link">Open feedback <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a>{% elif latest_submission.challenge %}<a href="{{ url_for('assessment.start_or_resume', challenge_id=latest_submission.challenge_id) }}" class="p2w-inline-link">Continue work <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a>{% endif %}</div>
+    </section>
+    {% endif %}
 
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <section id="pathways" class="p2w-pathways-section" aria-labelledby="pathways-title">
+        <div class="p2w-section-title"><div><span class="page-eyebrow">Explore career pathways</span><h2 id="pathways-title">Pick the work you want to prove.</h2><p>Every pathway starts with a real-world scenario and the same consistent Build · Explain · Adapt assessment.</p></div><span class="p2w-pathway-count">{{ pathways | length }} pathways</span></div>
+        <div class="p2w-pathway-tools"><label class="p2w-search-field"><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i><input type="search" id="pathwaySearch" placeholder="Find a pathway…" aria-label="Filter pathways"></label><div class="p2w-pathway-filters" role="group" aria-label="Filter pathway cards"><button type="button" class="is-selected" data-pathway-filter="all">All pathways</button><button type="button" data-pathway-filter="priority">Popular starting points</button><button type="button" data-pathway-filter="started">In progress</button></div></div>
+        <div class="p2w-pathway-grid" id="pathwayGrid">
             {% for pathway in pathways %}
                 {% set challenge = pathway.challenges[0] if pathway.challenges else None %}
                 {% set sub = submissions_by_challenge.get(challenge.id) if challenge else None %}
-                {% set slug = pathway.slug %}
-                
-                <article class="card overflow-hidden flex flex-col justify-between border-slate-200 hover:border-slate-300 transition-all hover:shadow-md">
-                    
-                    <!-- Pathway Card Banner / Image -->
-                    <div class="relative h-44 w-full overflow-hidden bg-slate-900">
-                        {% if 'software' in slug or 'dev' in slug %}
-                            <img src="{{ url_for('static', filename='images/path2work-pathway-development.jpg') }}" 
-                                 alt="Software Development Pathway" 
-                                 class="h-full w-full object-cover opacity-80 hover:scale-105 transition-transform duration-500"
-                                 onerror="this.style.display='none'">
-                        {% elif 'support' in slug or 'cloud' in slug or 'infra' in slug %}
-                            <img src="{{ url_for('static', filename='images/path2work-pathway-support.jpg') }}" 
-                                 alt="IT Support Pathway" 
-                                 class="h-full w-full object-cover opacity-80 hover:scale-105 transition-transform duration-500"
-                                 onerror="this.style.display='none'">
-                        {% else %}
-                            <div class="h-full w-full bg-gradient-to-br from-ink via-slate-800 to-build-dark opacity-90 flex items-center justify-center">
-                                <i class="ph-bold ph-chart-line-up text-4xl text-white/40" aria-hidden="true"></i>
-                            </div>
+                {% set slug = pathway.slug | lower %}
+                {% set priority = ('software' in slug or 'developer' in slug or 'data' in slug or 'support' in slug or 'cloud' in slug) %}
+                <article class="p2w-pathway-card" data-pathway-name="{{ (pathway.title ~ ' ' ~ pathway.description) | lower }}" data-pathway-priority="{{ 'true' if priority else 'false' }}" data-pathway-started="{{ 'true' if sub else 'false' }}">
+                    <div class="p2w-pathway-art {% if 'software' in slug or 'dev' in slug %}p2w-art-code{% elif 'support' in slug or 'cloud' in slug or 'infra' in slug %}p2w-art-cloud{% elif 'data' in slug %}p2w-art-data{% else %}p2w-art-general{% endif %}">
+                        {% if 'software' in slug or 'dev' in slug %}<img src="{{ url_for('static', filename='images/path2work-pathway-development.jpg') }}" loading="lazy" alt="Software development pathway">
+                        {% elif 'support' in slug or 'cloud' in slug or 'infra' in slug %}<img src="{{ url_for('static', filename='images/path2work-pathway-support.jpg') }}" loading="lazy" alt="Cloud and IT support pathway">
                         {% endif %}
-
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent"></div>
-
-                        <div class="absolute top-3 left-3 right-3 flex items-center justify-between">
-                            <span class="badge bg-white/90 text-slate-800 text-[11px] backdrop-blur-xs font-bold">
-                                {{ pathway.market_share_pct }}% of SA Demand
-                            </span>
-                            {% if sub %}
-                                <span class="badge {% if sub.status == 'verified' %}bg-prove-dark text-white{% elif sub.status == 'submitted' %}bg-amber-400 text-slate-900{% else %}bg-build text-white{% endif %} text-[11px] font-bold shadow-xs">
-                                    {{ sub.status | replace('_', ' ') | title }} · {{ sub.evidence_score }} pts
-                                </span>
-                            {% else %}
-                                <span class="badge bg-black/60 text-slate-300 text-[11px] backdrop-blur-xs">
-                                    Not started
-                                </span>
-                            {% endif %}
-                        </div>
-
-                        <div class="absolute bottom-3 left-3 right-3">
-                            <h3 class="font-display font-extrabold text-lg text-white leading-tight drop-shadow-sm">
-                                {{ pathway.title }}
-                            </h3>
-                        </div>
+                        <span class="p2w-art-tag">{% if sub %}{{ sub.status | replace('_',' ') | title }}{% else %}WorkProof pathway{% endif %}</span>
+                        <span class="p2w-art-demand">{{ pathway.market_share_pct }}%<small>market demand</small></span>
+                        <div class="p2w-art-title"><span class="p2w-pathway-icon">{% if 'data' in slug %}<i class="ph-bold ph-chart-line-up" aria-hidden="true"></i>{% elif 'support' in slug or 'cloud' in slug or 'infra' in slug %}<i class="ph-bold ph-cloud" aria-hidden="true"></i>{% elif 'software' in slug or 'dev' in slug %}<i class="ph-bold ph-code" aria-hidden="true"></i>{% else %}<i class="ph-bold ph-briefcase" aria-hidden="true"></i>{% endif %}</span><h3>{{ pathway.title }}</h3></div>
                     </div>
-
-                    <!-- Pathway Body -->
-                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                        <div>
-                            <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">{{ pathway.description }}</p>
-
-                            {% if challenge %}
-                            <div class="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 p-3.5">
-                                <div class="flex items-center gap-1.5 text-xs font-bold text-ink mb-1">
-                                    <i class="ph-bold ph-briefcase text-build-dark" aria-hidden="true"></i>
-                                    {{ challenge.title }}
-                                </div>
-                                <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">
-                                    {{ challenge.scenario }}
-                                </p>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- CTA Actions -->
-                        <div class="pt-2">
-                            {% if challenge %}
-                                {% if sub and sub.status in ['verified', 'submitted'] %}
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <a href="{{ url_for('assessment.feedback', submission_id=sub.id) }}" class="btn btn-primary text-xs py-2 px-3">
-                                            View Review
-                                        </a>
-                                        <a href="{{ url_for('assessment.start_or_resume', challenge_id=challenge.id) }}" class="btn btn-secondary text-xs py-2 px-3">
-                                            Improve Code
-                                        </a>
-                                    </div>
-                                {% else %}
-                                    <a href="{{ url_for('assessment.start_or_resume', challenge_id=challenge.id) }}" class="btn btn-primary w-full text-xs py-2.5">
-                                        {% if sub %}Resume WorkProof &rarr;{% else %}Start Challenge &rarr;{% endif %}
-                                    </a>
-                                {% endif %}
-                            {% endif %}
-                        </div>
+                    <div class="p2w-pathway-card-body"><p>{{ pathway.description }}</p>
+                        {% if challenge %}<div class="p2w-challenge-preview"><span class="p2w-challenge-label"><i class="ph-bold ph-clipboard-text" aria-hidden="true"></i> First challenge</span><strong>{{ challenge.title }}</strong><p>{{ challenge.scenario }}</p></div>{% endif %}
+                        <div class="p2w-pathway-meta"><span><i class="ph-bold ph-hammer" aria-hidden="true"></i> Build 40%</span><span><i class="ph-bold ph-chat-text" aria-hidden="true"></i> Explain 30%</span><span><i class="ph-bold ph-arrows-clockwise" aria-hidden="true"></i> Adapt 30%</span></div>
+                        <div class="p2w-pathway-card-footer">{% if challenge %}{% if sub and sub.status in ['verified','submitted'] %}<a href="{{ url_for('assessment.feedback', submission_id=sub.id) }}" class="p2w-card-cta">View review <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a><a href="{{ url_for('assessment.start_or_resume', challenge_id=challenge.id) }}" class="p2w-card-secondary" aria-label="Improve {{ pathway.title }}">Improve</a>{% else %}<a href="{{ url_for('assessment.start_or_resume', challenge_id=challenge.id) }}" class="p2w-card-cta">{% if sub %}Resume challenge{% else %}Start challenge{% endif %} <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a>{% endif %}{% else %}<span class="p2w-card-secondary">Challenge coming soon</span>{% endif %}</div>
                     </div>
-
                 </article>
             {% endfor %}
         </div>
+        <div class="p2w-empty-state" id="pathwayEmpty" hidden><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i><h3>No pathways match</h3><p>Try a broader title or reset the filters to see every available pathway.</p><button class="p2w-button p2w-button-quiet" type="button" id="clearPathwaySearch">Clear filters</button></div>
     </section>
-
 </div>
+<script>
+(function(){
+ const search=document.getElementById('pathwaySearch'), grid=document.getElementById('pathwayGrid'), empty=document.getElementById('pathwayEmpty');
+ if(!grid)return;
+ let filter='all';
+ const cards=Array.from(grid.querySelectorAll('[data-pathway-name]'));
+ const buttons=Array.from(document.querySelectorAll('[data-pathway-filter]'));
+ function apply(){
+  let visible=0, term=(search?.value||'').trim().toLowerCase();
+  cards.forEach(card=>{
+   const matchName=card.dataset.pathwayName.includes(term);
+   const matchFilter=filter==='all'||(filter==='priority'&&card.dataset.pathwayPriority==='true')||(filter==='started'&&card.dataset.pathwayStarted==='true');
+   card.hidden=!(matchName&&matchFilter);if(!card.hidden)visible++;
+  });
+  if(empty)empty.hidden=visible>0;
+ }
+ search?.addEventListener('input',apply);
+ buttons.forEach(button=>button.addEventListener('click',()=>{
+  filter=button.dataset.pathwayFilter;
+  buttons.forEach(b=>{b.classList.toggle('is-selected',b===button);b.setAttribute('aria-pressed',b===button?'true':'false')});
+  apply();
+ }));
+ document.getElementById('clearPathwaySearch')?.addEventListener('click',()=>{if(search)search.value='';filter='all';buttons.forEach(b=>{b.classList.toggle('is-selected',b.dataset.pathwayFilter==='all');b.setAttribute('aria-pressed',b.dataset.pathwayFilter==='all'?'true':'false')});apply()});
+})();
+</script>
 {% endblock %}
