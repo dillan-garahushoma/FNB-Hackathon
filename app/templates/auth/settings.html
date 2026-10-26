@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Account settings | Path2Work{% endblock %}
+{% block content %}
+<div class="p2w-settings-page">
+  <header class="p2w-settings-heading">
+    <span class="page-eyebrow">YOUR ACCOUNT</span>
+    <h1>Account settings</h1>
+    <p>Manage the basics securely. Your profile and recruitment preferences live separately.</p>
+  </header>
+
+  <section class="p2w-settings-section">
+    <div class="p2w-settings-section-copy">
+      <h2>Account details</h2>
+      <p>Your account identity is shown here so you can confirm which profile you are using.</p>
+    </div>
+    <div class="p2w-settings-panel">
+      <div class="p2w-settings-identity">
+        <span class="p2w-settings-avatar">{{ user.full_name[0]|upper }}</span>
+        <div><strong>{{ user.full_name }}</strong><span>{{ user.role|capitalize }} account</span></div>
+      </div>
+      <div class="p2w-settings-fields">
+        <div><label class="field-label" for="account_name">Full name</label><input id="account_name" class="field" value="{{ user.full_name }}" disabled></div>
+        <div><label class="field-label" for="account_email">Email address</label><input id="account_email" class="field" type="email" value="{{ user.email }}" disabled><p class="field-hint">Email changes are not available in this version.</p></div>
+      </div>
+      {% if user.role == 'candidate' %}<a href="{{ url_for('candidate.profile') }}" class="p2w-settings-text-link">Update your profile and work preferences <i class="ph-bold ph-arrow-up-right" aria-hidden="true"></i></a>{% endif %}
+    </div>
+  </section>
+
+  <section class="p2w-settings-section">
+    <div class="p2w-settings-section-copy">
+      <h2>Change password</h2>
+      <p>Use your current password to confirm the change. Choose a different password with at least eight characters.</p>
+    </div>
+    <div class="p2w-settings-panel">
+      <form method="POST" action="{{ url_for('auth.settings') }}" class="p2w-settings-fields">
+        <div><label for="current_password" class="field-label">Current password</label><input id="current_password" name="current_password" type="password" class="field" autocomplete="current-password" required></div>
+        <div><label for="new_password" class="field-label">New password</label><input id="new_password" name="new_password" type="password" class="field" autocomplete="new-password" minlength="8" required><p class="field-hint">Use at least eight characters.</p></div>
+        <div><label for="confirm_password" class="field-label">Confirm new password</label><input id="confirm_password" name="confirm_password" type="password" class="field" autocomplete="new-password" minlength="8" required></div>
+        <div class="p2w-settings-actions"><button type="submit" class="p2w-button p2w-button-primary">Update password <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></button></div>
+      </form>
+    </div>
+  </section>
+
+  <section class="p2w-settings-signout">
+    <div><h2>Finished for now?</h2><p>Sign out when you are using a shared or public computer.</p></div>
+    <a class="p2w-button p2w-button-quiet" href="{{ url_for('auth.logout') }}"><i class="ph-bold ph-sign-out" aria-hidden="true"></i> Sign out</a>
+  </section>
+</div>
+{% endblock %}
