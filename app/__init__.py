@@ -32,7 +32,14 @@ def create_app(config_class=Config):
 
     @app.route("/")
     def index():
-        # Find a demo candidate with verified passport for hackathon judges to inspect directly
+        # Signed-in users should enter their workspace, not see the public marketing page
+        # inside an authenticated application shell.
+        if session.get("user_id"):
+            if session.get("role") == "employer":
+                return redirect(url_for("employer.dashboard"))
+            if session.get("role") == "candidate":
+                return redirect(url_for("candidate.dashboard"))
+        # Find a demo candidate with a public passport for signed-out visitors.
         demo_candidate = User.query.filter_by(role="candidate").first()
         demo_id = demo_candidate.id if demo_candidate else 1
         return render_template("index.html", demo_candidate_id=demo_id)
