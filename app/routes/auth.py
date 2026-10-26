@@ -9,7 +9,7 @@ from flask import (
     session,
 )
 from app import db
-from app.models import User, SkillsPassport
+from app.models import User, SkillsPassport, CandidatePreferences
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -72,6 +72,10 @@ def login():
             flash(f"Welcome back, {user.full_name}!", "success")
             if user.role == "employer":
                 return redirect(url_for("employer.dashboard"))
+            preferences = CandidatePreferences.query.filter_by(user_id=user.id).first()
+            if preferences and not preferences.onboarding_completed:
+                session["needs_onboarding"] = True
+                return redirect(url_for("candidate.onboarding"))
             return redirect(url_for("candidate.dashboard"))
         else:
             flash("Invalid email or password. Try one of the demo accounts below.", "error")
@@ -133,6 +137,7 @@ def register():
                 verified_skills_json="[]",
             )
             db.session.add(passport)
+            db.session.add(CandidatePreferences(user_id=user.id))
 
         db.session.commit()
 
