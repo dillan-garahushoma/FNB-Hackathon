@@ -89,7 +89,7 @@
                     <select id="location" name="location" class="field">
                         {% set locs = ['Johannesburg, Gauteng', 'Pretoria, Gauteng', 'Cape Town, Western Cape', 'Durban, KwaZulu-Natal', 'Gqeberha, Eastern Cape', 'Bloemfontein, Free State', 'Remote / Nationwide', 'South Africa'] %}
                         {% for loc in locs %}
-                            <option value="{{ loc }}" {% if user.location == loc %}selected{% endif %}>{{ loc }}</option>
+                            <option value="{{ loc }}" {% if user.location == loc or (user.location and loc.startswith(user.location ~ ',')) or (user.location and loc.startswith(user.location ~ ' /')) %}selected{% endif %}>{{ loc }}</option>
                         {% endfor %}
                     </select>
                     <span class="field-hint">Employers can filter by candidates open to on-site, hybrid, or regional work.</span>
