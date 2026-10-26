@@ -98,11 +98,15 @@ def create_app(db_path):
     auth.add_url_rule("/login", "login", lambda: "login")
     auth.add_url_rule("/register", "register", lambda: "register")
     auth.add_url_rule("/logout", "logout", lambda: "logout")
+    # The real shared workspace shell links to these endpoints on signed-in pages.
+    auth.add_url_rule("/settings", "settings", lambda: "settings")
     cand = Blueprint("candidate", __name__)
     cand.add_url_rule("/dashboard", "dashboard", lambda: "dash")
+    cand.add_url_rule("/profile", "profile", lambda: "profile")
     cand.add_url_rule("/passport/<int:user_id>", "skills_passport", lambda user_id: "passport")
     emp = Blueprint("employer", __name__)
     emp.add_url_rule("/pipeline", "dashboard", lambda: "pipeline")
+    emp.add_url_rule("/shortlist-board", "shortlist_board", lambda: "shortlist")
 
     assessment = Blueprint("assessment", __name__, url_prefix="/assessment")
     assessment.add_url_rule("/start/<int:challenge_id>", "start_or_resume", lambda challenge_id: "stepper")
