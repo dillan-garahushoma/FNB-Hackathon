@@ -42,14 +42,14 @@
     {% endif %}
 
     <section id="pathways" class="p2w-pathways-section" aria-labelledby="pathways-title">
-        <div class="p2w-section-title"><div><span class="page-eyebrow">Explore career pathways</span><h2 id="pathways-title">Pick the work you want to prove.</h2><p>Every pathway starts with a real-world scenario and the same consistent Build · Explain · Adapt assessment.</p></div><span class="p2w-pathway-count">{{ pathways | length }} pathways</span></div>
+        <div class="p2w-section-title"><div><span class="page-eyebrow">Explore career pathways</span><h2 id="pathways-title">Pick the work you want to prove.</h2><p>Every pathway starts with a real-world scenario and the same consistent Build · Explain · Adapt assessment.</p></div><div class="p2w-pathway-heading-meta">{% if preferences and preferences.target_pathway %}<span class="p2w-target-pill"><i class="ph-fill ph-target" aria-hidden="true"></i> Your target: {{ preferences.target_pathway.title }}</span>{% endif %}<span class="p2w-pathway-count">{{ pathways | length }} pathways</span></div></div>
         <div class="p2w-pathway-tools"><label class="p2w-search-field"><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i><input type="search" id="pathwaySearch" placeholder="Find a pathway…" aria-label="Filter pathways"></label><div class="p2w-pathway-filters" role="group" aria-label="Filter pathway cards"><button type="button" class="is-selected" data-pathway-filter="all">All pathways</button><button type="button" data-pathway-filter="priority">Popular starting points</button><button type="button" data-pathway-filter="started">In progress</button></div></div>
         <div class="p2w-pathway-grid" id="pathwayGrid">
             {% for pathway in pathways %}
                 {% set challenge = pathway.challenges[0] if pathway.challenges else None %}
                 {% set sub = submissions_by_challenge.get(challenge.id) if challenge else None %}
                 {% set slug = pathway.slug | lower %}
-                {% set priority = ('software' in slug or 'developer' in slug or 'data' in slug or 'support' in slug or 'cloud' in slug) %}
+                {% set priority = (preferences and preferences.target_pathway_id == pathway.id) or ('software' in slug or 'developer' in slug or 'data' in slug or 'support' in slug or 'cloud' in slug) %}
                 <article class="p2w-pathway-card" data-pathway-name="{{ (pathway.title ~ ' ' ~ pathway.description) | lower }}" data-pathway-priority="{{ 'true' if priority else 'false' }}" data-pathway-started="{{ 'true' if sub else 'false' }}">
                     <div class="p2w-pathway-art {% if 'software' in slug or 'dev' in slug %}p2w-art-code{% elif 'support' in slug or 'cloud' in slug or 'infra' in slug %}p2w-art-cloud{% elif 'data' in slug %}p2w-art-data{% else %}p2w-art-general{% endif %}">
                         {% if 'software' in slug or 'dev' in slug %}<img src="{{ url_for('static', filename='images/path2work-pathway-development.jpg') }}" loading="lazy" alt="Software development pathway">
