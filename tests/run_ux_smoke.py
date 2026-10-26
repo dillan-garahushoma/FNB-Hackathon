@@ -15,8 +15,8 @@ from config import Config
 from app import create_app, db
 
 
-def get_ok(client, path):
-    response = client.get(path)
+def get_ok(client, path, follow_redirects=False):
+    response = client.get(path, follow_redirects=follow_redirects)
     assert response.status_code == 200, f"GET {path}: expected 200, got {response.status_code}"
     print(f"PASS GET {path} -> 200")
     return response
@@ -129,7 +129,7 @@ def main():
         )
         assert response.status_code == 200, f"Candidate sign in failed: {response.status_code}"
         print("PASS candidate sign in")
-        get_ok(candidate_client, "/")
+        get_ok(candidate_client, "/", follow_redirects=True)
         get_ok(candidate_client, "/candidate/dashboard")
         get_ok(candidate_client, "/candidate/profile")
         get_ok(candidate_client, "/candidate/onboarding")
@@ -162,7 +162,7 @@ def main():
         )
         assert response.status_code == 200, f"Employer sign in failed: {response.status_code}"
         print("PASS employer sign in")
-        get_ok(employer_client, "/")
+        get_ok(employer_client, "/", follow_redirects=True)
         get_ok(employer_client, "/employer/dashboard")
         get_ok(employer_client, f"/employer/dashboard?pathway={pathway_slug}&min_trust=3&min_score=70&location=Durban&only_open=on")
         get_ok(employer_client, "/employer/shortlist-board")
