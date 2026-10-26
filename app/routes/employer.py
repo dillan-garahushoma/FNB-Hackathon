@@ -3,7 +3,7 @@ import csv
 from datetime import datetime, timezone
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, Response
 from app import db
-from app.models import User, Pathway, WorkProofSubmission, SkillsPassport, EmployerShortlist
+from app.models import User, Pathway, WorkProofSubmission, SkillsPassport, EmployerShortlist, CandidatePreferences
 from app.routes.auth import employer_required
 
 employer_bp = Blueprint("employer", __name__, url_prefix="/employer")
@@ -32,6 +32,7 @@ def dashboard():
 
     all_candidates = User.query.filter_by(role="candidate").order_by(User.created_at.desc()).all()
     pathways = Pathway.query.order_by(Pathway.market_share_pct.desc()).all()
+    selected_pathway_id = Pathway.query.filter_by(slug=selected_pathway).with_entities(Pathway.id).scalar() if selected_pathway else None
 
     total_applicants = len(all_candidates)
     workproof_completed_count = 0
@@ -46,6 +47,7 @@ def dashboard():
         passport = cand.passport
         if not passport:
             continue
+        preferences = CandidatePreferences.query.filter_by(user_id=cand.id).first()
 
         best_sub = WorkProofSubmission.query.filter_by(user_id=cand.id).order_by(WorkProofSubmission.evidence_score.desc()).first()
 
@@ -66,7 +68,7 @@ def dashboard():
             continue
 
         if selected_pathway:
-            has_pathway_sub = any(
+            has_pathway_sub = bool(preferences and preferences.target_pathway_id == selected_pathway_id) or any(
                 s.challenge and s.challenge.pathway and s.challenge.pathway.slug == selected_pathway
                 for s in cand.submissions
             )
@@ -76,7 +78,8 @@ def dashboard():
         # Skill Search (Checks the JSON extracted skills)
         if search_skill:
             cand_skills = [s.lower() for s in passport.parsed_skills]
-            if not any(search_skill in s for s in cand_skills):
+            self_described = (preferences.skills_summary or "").lower() if preferences else ""
+            if not any(search_skill in s for s in cand_skills) and search_skill not in self_described:
                 continue
 
         filtered_candidates.append({
@@ -84,6 +87,7 @@ def dashboard():
             "passport": passport,
             "best_submission": best_sub,
             "shortlist": shortlist_by_candidate.get(cand.id),
+            "preferences": preferences,
         })
 
     filtered_candidates.sort(key=lambda item: item["passport"].readiness_score, reverse=True)
@@ -174,6 +178,7 @@ def candidate_evidence(user_id: int):
     passport = SkillsPassport.query.filter_by(user_id=candidate.id).first()
     submissions = WorkProofSubmission.query.filter_by(user_id=candidate.id).order_by(WorkProofSubmission.evidence_score.desc()).all()
     shortlist = EmployerShortlist.query.filter_by(employer_id=employer_id, candidate_id=candidate.id).first()
+    preferences = CandidatePreferences.query.filter_by(user_id=candidate.id).first()
 
     return render_template(
         "employer/candidate_evidence.html",
@@ -181,6 +186,7 @@ def candidate_evidence(user_id: int):
         passport=passport,
         submissions=submissions,
         shortlist=shortlist,
+        preferences=preferences,
     )
 
 
