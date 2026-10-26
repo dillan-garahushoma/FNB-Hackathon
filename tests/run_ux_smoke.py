@@ -33,7 +33,7 @@ def main():
 
         app = create_app(SmokeConfig)
 
-        from app.models import User, Pathway, WorkProofChallenge, WorkProofSubmission, SkillsPassport, EmployerShortlist
+        from app.models import User, Pathway, WorkProofChallenge, WorkProofSubmission, SkillsPassport, EmployerShortlist, CandidatePreferences
 
         with app.app_context():
             candidate = User(
@@ -133,6 +133,43 @@ def main():
         get_ok(candidate_client, "/candidate/dashboard")
         get_ok(candidate_client, "/candidate/profile")
         get_ok(candidate_client, "/candidate/onboarding")
+        profile_response = candidate_client.post(
+            "/candidate/profile",
+            data={
+                "institution": "Demo University",
+                "graduation_year": "2026",
+                "location": "Durban",
+                "is_open_to_work": "on",
+                "target_pathway": pathway_slug,
+                "skills_summary": "Python, SQL and API validation",
+            },
+            follow_redirects=True,
+        )
+        assert profile_response.status_code == 200 and b"successfully saved" in profile_response.data, (
+            "Saving candidate preferences should return a success confirmation."
+        )
+        with app.app_context():
+            saved_preferences = CandidatePreferences.query.filter_by(user_id=candidate_id).first()
+            assert saved_preferences and saved_preferences.target_pathway_id is not None
+            assert saved_preferences.skills_summary == "Python, SQL and API validation"
+        print("PASS candidate profile preferences persist")
+
+        password_response = candidate_client.post(
+            "/settings",
+            data={
+                "current_password": "password123",
+                "new_password": "fresh-secure-password",
+                "confirm_password": "fresh-secure-password",
+            },
+            follow_redirects=True,
+        )
+        assert password_response.status_code == 200 and b"Your password has been updated" in password_response.data, (
+            "Changing the password should show a success confirmation."
+        )
+        with app.app_context():
+            reloaded_candidate = db.session.get(User, candidate_id)
+            assert reloaded_candidate.check_password("fresh-secure-password")
+        print("PASS account password change persists")
         get_ok(candidate_client, f"/candidate/workproof/{challenge_id}")
         get_ok(candidate_client, f"/assessment/submission/{submission_id}/feedback")
         get_ok(candidate_client, f"/passport/{candidate_id}")
@@ -202,7 +239,12 @@ def main():
         assert response.status_code == 200 and b"Pick the work you want to prove" in response.data, (
             "Completing onboarding should open the candidate workspace."
         )
-        print("PASS onboarding completion opens candidate workspace")
+        with app.app_context():
+            registered = User.query.filter_by(email="new-candidate@example.ac.za").first()
+            saved_preferences = CandidatePreferences.query.filter_by(user_id=registered.id).first()
+            assert saved_preferences and saved_preferences.onboarding_completed
+            assert saved_preferences.skills_summary == "Python and SQL"
+        print("PASS onboarding completion persists preferences and opens candidate workspace")
 
         print("\nAll Path2Work UX route smoke checks passed.")
 
