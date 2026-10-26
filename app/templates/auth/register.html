@@ -67,7 +67,7 @@
             <div>
                 <label for="password" class="field-label">Password</label>
                 <div class="relative">
-                    <input id="password" type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters" class="field pr-12" aria-describedby="pwHint" oninput="updatePasswordStrength(this.value)">
+                    <input id="password" type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters" class="field pr-12" aria-describedby="pwHint" oninput="updatePasswordStrength(this.value)">
                     <button type="button" id="togglePassword" aria-controls="password" aria-pressed="false" aria-label="Show password"
                             onclick="togglePasswordVisibility()"
                             class="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-slate-500 hover:text-ink focus:outline-none">
@@ -75,7 +75,7 @@
                     </button>
                 </div>
                 <div class="mt-2 flex items-center justify-between text-xs text-slate-500" id="pwHint">
-                    <span>Use at least 6 characters (mix letters and numbers).</span>
+                    <span>Use at least 8 characters. Avoid using a password you use elsewhere.</span>
                     <span id="strengthIndicator" class="font-semibold text-slate-400">Strength: Fair</span>
                 </div>
             </div>
