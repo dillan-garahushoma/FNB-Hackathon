@@ -3,14 +3,14 @@
 {% block content %}
 <div class="p2w-onboarding">
   <div class="p2w-onboarding-heading">
-    <a href="{{ url_for('candidate.dashboard') }}" class="p2w-inline-link"><i class="ph-bold ph-arrow-left" aria-hidden="true"></i> Skip for now</a>
+    <button type="submit" form="candidate-onboarding-form" name="action" value="skip" formnovalidate class="p2w-inline-link"><i class="ph-bold ph-arrow-left" aria-hidden="true"></i> Do this later</button>
     <div class="p2w-onboarding-progress" aria-label="First-time setup"><span class="is-done"></span><span class="is-current"></span><span></span></div>
     <span class="page-eyebrow">YOUR FIRST FEW MINUTES</span>
     <h1>Let's make your next step clear.</h1>
     <p>Set a direction for your profile. You can change these details later, and your answers do not count as verified evidence.</p>
   </div>
 
-  <form method="POST" action="{{ url_for('candidate.onboarding') }}" class="p2w-onboarding-form">
+  <form id="candidate-onboarding-form" method="POST" action="{{ url_for('candidate.onboarding') }}" class="p2w-onboarding-form">
     <section class="p2w-onboarding-section">
       <div class="p2w-onboarding-number">01</div>
       <div class="p2w-onboarding-section-copy">
