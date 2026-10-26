@@ -45,6 +45,12 @@
                 <p class="text-sm">
                     <a href="mailto:{{ candidate.email }}" class="font-mono text-build-dark underline underline-offset-2">{{ candidate.email }}</a>
                 </p>
+                {% if preferences and preferences.target_pathway %}
+                <p class="text-sm text-slate-600"><strong class="text-ink">Target pathway:</strong> {{ preferences.target_pathway.title }} <span class="text-slate-400">· candidate-selected</span></p>
+                {% endif %}
+                {% if preferences and preferences.skills_summary %}
+                <div class="p2w-candidate-context"><span>Candidate profile · self-described</span><p>{{ preferences.skills_summary }}</p><small>This summary is provided by the candidate and has not been independently assessed.</small></div>
+                {% endif %}
             </div>
 
             <dl class="flex items-stretch gap-6 rounded-xl bg-slate-50 p-4">
