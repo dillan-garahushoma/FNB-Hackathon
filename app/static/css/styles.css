@@ -859,3 +859,57 @@ body:has(.space-y-8 > .border-b.pb-5) .space-y-8 > .grid > div { min-width:0; }
 @keyframes p2w-panel-in { from { opacity:.65; transform:translateY(3px); } to { opacity:1; transform:translateY(0); } }
 @media(max-width:760px) { .p2w-register-page { gap:15px; } .p2w-register-aside { padding:22px; } .p2w-register-aside ul { gap:10px; margin-top:17px; padding-top:15px; } }
 @media(prefers-reduced-motion:reduce) { #workproof-form #step-1:not(.hidden),#workproof-form #step-2:not(.hidden),#workproof-form #step-3:not(.hidden){animation:none;} }
+
+/* Secondary journeys: profile, passport, evidence review and shortlist */
+.p2w-profile-page > .border-b { border-color:#e2e7f0; padding-bottom:22px; }
+.p2w-profile-page h1 { font:800 clamp(28px,3.2vw,39px)/1.05 'Bricolage Grotesque',sans-serif; letter-spacing:-.05em; }
+.p2w-profile-page .md\\:col-span-4 h2 { color:#24314b; font:750 17px 'Bricolage Grotesque',sans-serif; }
+.p2w-profile-page .md\\:col-span-8.card { padding:clamp(18px,2.5vw,28px); border-radius:16px; }
+.p2w-profile-page hr { border-color:#e4e8f0; }
+.p2w-profile-page input:disabled { opacity:1; color:#67748b; background:#f7f8fc; }
+.p2w-profile-page .rounded-xl.border { border-radius:12px; }
+.p2w-passport-page > section.rounded-2xl.bg-ink { box-shadow:0 18px 45px rgba(20,35,62,.12); }
+.p2w-passport-page > section.card { padding:clamp(20px,3vw,32px); }
+.p2w-passport-page h2, .p2w-evidence-page h2 { color:#1e2c46; font:750 clamp(20px,2.5vw,26px)/1.15 'Bricolage Grotesque',sans-serif; letter-spacing:-.035em; }
+.p2w-passport-page details.card { border:1px solid #e1e7f0; box-shadow:0 3px 12px rgba(20,35,62,.025); }
+.p2w-passport-page details > summary:hover { background:#f9faff; }
+.p2w-passport-page pre.code-block, .p2w-evidence-page pre.code-block { overflow:auto; border:1px solid #293852; border-radius:11px; color:#e4eaff; background:#111c31; font:11px/1.7 'JetBrains Mono',monospace; }
+.p2w-evidence-page > .card:first-of-type { border-radius:18px; }
+.p2w-evidence-page .grid.items-start > div:first-child { min-width:0; }
+.p2w-evidence-page .grid.items-start > div:last-child { position:sticky; top:100px; }
+.p2w-evidence-page .grid.items-start > div:last-child > .card { border-radius:16px; border-color:#e2e7f1; }
+.p2w-evidence-page .bg-ink { background:radial-gradient(ellipse at 90% 0%,rgba(98,92,255,.26),transparent 42%),#17233d; }
+.p2w-evidence-page form textarea, .p2w-evidence-page form input { width:100%; }
+.p2w-shortlist-page > .flex.flex-col { padding:20px 0 22px; border-color:#e2e7f1; }
+.p2w-shortlist-page h1 { color:#1a2741; font:800 clamp(28px,3vw,38px)/1.05 'Bricolage Grotesque',sans-serif; letter-spacing:-.05em; }
+.p2w-shortlist-page .grid[class*="md\\:grid-cols-3"] { gap:14px; }
+.p2w-shortlist-page .grid[class*="md\\:grid-cols-3"] > div { padding:15px; border:1px solid #e1e6f0; border-radius:16px; background:#f8f9fc; }
+.p2w-shortlist-page .grid[class*="md\\:grid-cols-3"] > div:nth-child(2) { border-color:#d4eee6; background:#f4fbf8; }
+.p2w-shortlist-page .grid[class*="md\\:grid-cols-3"] > div > div:first-child { padding-bottom:12px; }
+.p2w-shortlist-page .grid[class*="md\\:grid-cols-3"] .card { border-radius:13px; padding:15px; }
+.p2w-shortlist-page .grid[class*="md\\:grid-cols-3"] .card h3 { color:#25324b; font-size:13px; }
+.p2w-workproof-page > .card:first-of-type { border-radius:18px; }
+.p2w-workproof-page h1 { font:800 clamp(27px,3.2vw,38px)/1.05 'Bricolage Grotesque',sans-serif; letter-spacing:-.045em; }
+.p2w-workproof-page #workproof-form { margin-top:0; }
+.p2w-feedback-page > header h1 { color:#17233d; }
+.p2w-feedback-page > section[aria-labelledby="score-title"] { background:linear-gradient(135deg,#fff,#f9f9ff); }
+.p2w-feedback-page > section[aria-labelledby="score-title"] > div > div:first-child { min-width:190px; }
+.p2w-feedback-page > section[aria-labelledby="stages-title"] .card { border-top-width:3px; border-radius:15px; }
+.p2w-feedback-page .p2w-feedback-track { background:#edf0f6; }
+.p2w-feedback-page .rounded-2xl.bg-ink { background:radial-gradient(ellipse at 90% 0%,rgba(98,92,255,.28),transparent 43%),#17233d; }
+@media(max-width:900px) {
+ .p2w-evidence-page .grid.items-start > div:last-child { position:static; }
+}
+@media(max-width:640px) {
+ .p2w-shortlist-page .grid[class*="md\\:grid-cols-3"] { grid-template-columns:1fr; }
+ .p2w-shortlist-page .grid[class*="md\\:grid-cols-3"] > div { min-width:0; }
+ .p2w-passport-page > section.rounded-2xl.bg-ink > div { gap:20px; }
+ .p2w-passport-page > section.rounded-2xl.bg-ink > div > div:last-child { justify-content:space-between; }
+}
+@media print {
+ .p2w-passport-page { max-width:none!important; }
+ .p2w-passport-page .p2w-trust-ladder li, .p2w-passport-page .card { break-inside:avoid; box-shadow:none!important; }
+ .p2w-passport-page details > div { display:block!important; }
+ .p2w-evidence-page .grid.items-start { display:block!important; }
+ .p2w-evidence-page .grid.items-start > div:last-child { display:none!important; }
+}
