@@ -54,6 +54,7 @@ def dashboard():
 def profile():
     user = db.get_or_404(User, session["user_id"])
     passport = SkillsPassport.query.filter_by(user_id=user.id).first()
+    preferences = CandidatePreferences.query.filter_by(user_id=user.id).first()
 
     if request.method == "POST":
         if request.form.get("action") == "skip":
@@ -191,6 +192,16 @@ def onboarding():
 
     pathways = Pathway.query.order_by(Pathway.market_share_pct.desc()).all()
     if request.method == "POST":
+        if request.form.get("action") == "skip":
+            if not preferences:
+                preferences = CandidatePreferences(user_id=user.id)
+                db.session.add(preferences)
+            preferences.onboarding_completed = True
+            db.session.commit()
+            session.pop("needs_onboarding", None)
+            flash("Setup skipped. You can finish your preferences anytime.", "info")
+            return redirect(url_for("candidate.dashboard"))
+
         institution = (request.form.get("institution") or "").strip()
         location = (request.form.get("location") or "").strip()
         grad_year_raw = (request.form.get("graduation_year") or "").strip()
