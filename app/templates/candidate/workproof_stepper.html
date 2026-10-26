@@ -36,7 +36,7 @@
 
         <!-- 3-STAGE PROGRESS RAIL (STEPPER) -->
         <div class="grid grid-cols-3 gap-3 pt-3" role="tablist" aria-label="WorkProof Stages">
-            <button type="button" onclick="showStep(1)" id="tab-1" role="tab" aria-selected="true"
+            <button type="button" onclick="showStep(1)" id="tab-1" role="tab" aria-controls="step-1" aria-selected="true" tabindex="0"
                 class="step-tab text-left p-4 rounded-xl border-2 border-build bg-build-soft/40 transition-all">
                 <div class="flex items-center justify-between">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-build-dark">Stage 1 · 40%</span>
@@ -48,7 +48,7 @@
                 <div class="text-xs text-slate-500 mt-0.5">Repo & Working Code</div>
             </button>
 
-            <button type="button" onclick="showStep(2)" id="tab-2" role="tab" aria-selected="false"
+            <button type="button" onclick="showStep(2)" id="tab-2" role="tab" aria-controls="step-2" aria-selected="false" tabindex="-1"
                 class="step-tab text-left p-4 rounded-xl border-2 border-slate-200 hover:border-prove/50 bg-white transition-all">
                 <div class="flex items-center justify-between">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-prove-dark">Stage 2 · 30%</span>
@@ -60,7 +60,7 @@
                 <div class="text-xs text-slate-500 mt-0.5">Trade-offs & Reasoning</div>
             </button>
 
-            <button type="button" onclick="showStep(3)" id="tab-3" role="tab" aria-selected="false"
+            <button type="button" onclick="showStep(3)" id="tab-3" role="tab" aria-controls="step-3" aria-selected="false" tabindex="-1"
                 class="step-tab text-left p-4 rounded-xl border-2 border-slate-200 hover:border-match/50 bg-white transition-all">
                 <div class="flex items-center justify-between">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-match-dark">Stage 3 · 30%</span>
@@ -78,7 +78,7 @@
     <form method="POST" action="{{ url_for('assessment.submit_workproof', challenge_id=challenge.id) }}" id="workproof-form" class="space-y-6">
         
         <!-- ================= STAGE 1: BUILD ================= -->
-        <div id="step-1" class="card p-6 sm:p-8 border-2 border-build/40 bg-white shadow-sm space-y-6">
+        <div id="step-1" role="tabpanel" aria-labelledby="tab-1" tabindex="0" class="card p-6 sm:p-8 border-2 border-build/40 bg-white shadow-sm space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
                     <span class="badge bg-build-dark text-white font-mono text-[11px]">STAGE 1 OF 3 · 40% SCORE</span>
@@ -134,7 +134,7 @@
         </div>
 
         <!-- ================= STAGE 2: EXPLAIN ================= -->
-        <div id="step-2" class="card p-6 sm:p-8 border-2 border-prove/40 bg-white shadow-sm space-y-6">
+        <div id="step-2" role="tabpanel" aria-labelledby="tab-2" tabindex="0" class="card p-6 sm:p-8 border-2 border-prove/40 bg-white shadow-sm space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
                     <span class="badge bg-prove-dark text-white font-mono text-[11px]">STAGE 2 OF 3 · 30% SCORE</span>
@@ -179,7 +179,7 @@
         </div>
 
         <!-- ================= STAGE 3: ADAPT ================= -->
-        <div id="step-3" class="card p-6 sm:p-8 border-2 border-match/40 bg-white shadow-sm space-y-6">
+        <div id="step-3" role="tabpanel" aria-labelledby="tab-3" tabindex="0" class="card p-6 sm:p-8 border-2 border-match/40 bg-white shadow-sm space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
                     <span class="badge bg-match-dark text-white font-mono text-[11px]">STAGE 3 OF 3 · 30% SCORE</span>
@@ -252,11 +252,15 @@ function showStep(stepNum) {
         if (n === stepNum) {
             panel.classList.remove('hidden');
             tab.setAttribute('aria-selected', 'true');
+            tab.tabIndex = 0;
+            panel.hidden = false;
             tab.classList.add('border-ink', 'bg-slate-50', 'shadow-xs');
             tab.classList.remove('border-slate-200', 'bg-white');
         } else {
             panel.classList.add('hidden');
             tab.setAttribute('aria-selected', 'false');
+            tab.tabIndex = -1;
+            panel.hidden = true;
             tab.classList.remove('border-ink', 'bg-slate-50', 'shadow-xs');
             tab.classList.add('border-slate-200', 'bg-white');
         }
@@ -301,6 +305,20 @@ function checkAdaptLength() {
 
 // Initialise metrics on page load
 document.addEventListener('DOMContentLoaded', function() {
+    var tabs = [1, 2, 3].map(function(n) { return document.getElementById('tab-' + n); }).filter(Boolean);
+    tabs.forEach(function(tab, index) {
+        tab.addEventListener('keydown', function(event) {
+            var nextIndex = index;
+            if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
+            else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+            else if (event.key === 'Home') nextIndex = 0;
+            else if (event.key === 'End') nextIndex = tabs.length - 1;
+            else return;
+            event.preventDefault();
+            tabs[nextIndex].focus();
+            showStep(nextIndex + 1);
+        });
+    });
     showStep(1);
     updateCodeMetrics();
     checkExplainLength();
