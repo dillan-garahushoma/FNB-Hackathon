@@ -4,3 +4,5 @@ Werkzeug==3.0.3
 requests
 python-dotenv
 Faker
+
+gunicorn
