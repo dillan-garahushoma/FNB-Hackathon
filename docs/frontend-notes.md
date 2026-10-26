@@ -28,12 +28,18 @@ The application remains Flask + Jinja + SQLAlchemy. This is a presentation and w
 10. **Employer talent discovery** — visible candidate-pool metrics, server-backed pathway/skill/location/trust/score/Open-to-Work filters, ranked evidence summaries, readiness and trust signals, CSV export and shortlist navigation.
 11. **Employer evidence review** — clearer evidence sections and decision sidebar styling, preserving existing shortlist and endorsement forms.
 12. **Employer shortlist board** — readable hiring-stage columns and candidate evidence links, preserving existing status-management routes.
+13. **First-run candidate onboarding** — a skippable role/location/open-to-work setup that persists preferences and resumes after next sign-in if left incomplete.
+14. **Account settings** — account identity, real password change with current-password verification and clear sign-out; no fake password-reset or delete-account actions.
+15. **Candidate context** — target pathway and optional self-described skills shown separately from assessed evidence in discovery, candidate evidence, and the Skills Passport.
 
 ## Routing and data behavior
 
 - A signed-in user visiting `/` is redirected to the correct role dashboard. This fixes a case where the landing hero could render inside the authenticated workspace shell.
 - Candidate pathway search is a client-side view filter over the pathways already sent by Flask; it does not invent new pathways or backend endpoints.
 - Employer filters remain GET parameters consumed by `employer.dashboard`.
+- `candidate_preferences` persists target pathway, skills context and onboarding completion. The app factory's `db.create_all()` creates this table for existing SQLite deployments.
+- Candidate registration requires a password of at least eight characters. Password changes validate the current password, new-password length, confirmation and reuse.
+- WorkProof stage navigation uses tab/tabpanel semantics, arrow-key navigation, and synchronised hidden/visible state.
 - Demo account email addresses shown on sign-in now match the account records created by `seed.py`. The shared demo password remains `password123` as configured by seed data.
 
 ## Styling and assets
