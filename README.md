@@ -13,18 +13,6 @@ IT students and recent graduates prove they can do the job — with role-specifi
 challenges (Build → Explain → Adapt), a readiness score and a Skills Passport with five
 evidence trust levels — and employers review that evidence before they interview.
 
-This project is the merged work from both hackathon repositories:
-
-- `NqobaMhlongo/FNB-HACKERTHON` — the base Flask application (blueprints, models, seed data, Jinja frontend).
-- `AyandaMnyango/FNB-Hackathon` — a superset of the above, adding the AI review layer, the
-  assessment screens and the upgraded employer pipeline.
-
-Every file from `NqobaMhlongo/FNB-HACKERTHON` is contained in the merged tree, so pulling the
-`AyandaMnyango/FNB-Hackathon` version in loses nothing.
-
-The previous single-page Path2Work site (`app.py`, `templates/`, `static/`, `tests/`) has been
-moved to `legacy/` and is no longer part of the running application.
-
 ## Stack
 
 - Flask 3 (application factory + blueprints: `auth`, `candidate`, `employer`, `assessment`)
