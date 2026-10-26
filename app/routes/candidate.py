@@ -124,6 +124,7 @@ def workproof_stepper(challenge_id: int):
 @candidate_bp.route("/passport/<int:user_id>")
 def skills_passport(user_id: int):
     candidate = db.get_or_404(User, user_id)
+    preferences = CandidatePreferences.query.filter_by(user_id=candidate.id).first()
     passport = SkillsPassport.query.filter_by(user_id=candidate.id).first()
     if not passport:
         passport = SkillsPassport(
@@ -175,6 +176,7 @@ def skills_passport(user_id: int):
         passport=passport,
         submissions=submissions,
         trust_tiers=trust_tiers,
+        preferences=preferences,
     )
 
 @candidate_bp.route("/candidate/onboarding", methods=["GET", "POST"])
