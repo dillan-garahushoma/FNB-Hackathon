@@ -47,3 +47,6 @@ jobs:
 
       - name: Run AI feedback flow tests
         run: python tests/run_flow_test.py
+
+      - name: Smoke-test public, candidate and employer routes
+        run: python tests/run_ux_smoke.py
