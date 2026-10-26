@@ -75,6 +75,7 @@ def profile():
             user.location = location
         user.is_open_to_work = is_open_to_work
         preferences.skills_summary = skills_summary
+        preferences.onboarding_completed = True
         if target_slug:
             target = Pathway.query.filter_by(slug=target_slug).first()
             if target:
