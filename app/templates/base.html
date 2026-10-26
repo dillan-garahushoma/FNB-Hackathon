@@ -4,126 +4,131 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Path2Work helps South African IT graduates prove job readiness with real work, and lets employers see that evidence before they interview.">
-    <meta name="theme-color" content="#0F1B2D">
+    <meta name="theme-color" content="#F7F8FC">
     <title>{% block title %}Path2Work | Prove before hire{% endblock %}</title>
     <link rel="icon" href="{{ url_for('static', filename='assets/path2work-logo.png') }}">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-    <!-- Standalone Design System Stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                        display: ['"Bricolage Grotesque"', 'Figtree', 'ui-sans-serif', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-                    },
-                    colors: {
-                        ink: '#0F1B2D',
-                        build: { DEFAULT: '#635BFF', dark: '#4B43D6', soft: '#EEEDFF' },
-                        prove: { DEFAULT: '#14967F', dark: '#0E6F5E', soft: '#E6F5F1' },
-                        match: { DEFAULT: '#E66C37', dark: '#B24616', soft: '#FDEFE7' },
-                    },
+            theme: { extend: {
+                fontFamily: {
+                    sans: ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    display: ['"Bricolage Grotesque"', 'Figtree', 'ui-sans-serif', 'sans-serif'],
+                    mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace']
                 },
-            },
+                colors: {
+                    ink: '#0F1B2D',
+                    build: { DEFAULT: '#635BFF', dark: '#4B43D6', soft: '#EEEDFF' },
+                    prove: { DEFAULT: '#14967F', dark: '#0E6F5E', soft: '#E6F5F1' },
+                    match: { DEFAULT: '#E66C37', dark: '#B24616', soft: '#FDEFE7' }
+                }
+            }}
         }
     </script>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1" defer></script>
 </head>
-<body class="flex min-h-full flex-col bg-slate-50 text-slate-800 antialiased">
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-semibold focus:text-ink shadow-lg">
-        Skip to main content
-    </a>
+<body class="min-h-full text-slate-800 antialiased">
+    <a href="#main" class="skip-link">Skip to main content</a>
 
     {% set nav_items = [] %}
     {% if current_user %}
         {% if current_user.role == 'candidate' %}
             {% set nav_items = [
                 (url_for('candidate.dashboard'), 'Dashboard', 'candidate.dashboard'),
-                (url_for('candidate.skills_passport', user_id=current_user.id), 'My Skills Passport', 'candidate.skills_passport'),
-                (url_for('candidate.profile'), 'Profile & Readiness', 'candidate.profile')
+                (url_for('candidate.skills_passport', user_id=current_user.id), 'Skills Passport', 'candidate.skills_passport'),
+                (url_for('candidate.profile'), 'Profile & readiness', 'candidate.profile')
             ] %}
         {% elif current_user.role == 'employer' %}
             {% set nav_items = [
-                (url_for('employer.dashboard'), 'Talent pipeline', 'employer.dashboard'),
-                (url_for('employer.shortlist_board'), 'Shortlist Board', 'employer.shortlist_board')
+                (url_for('employer.dashboard'), 'Talent discovery', 'employer.dashboard'),
+                (url_for('employer.shortlist_board'), 'Shortlist board', 'employer.shortlist_board')
             ] %}
         {% endif %}
     {% endif %}
     {% set endpoint = request.endpoint or '' %}
 
-    <header class="sticky top-0 z-40 bg-ink text-white print:hidden shadow-md">
-        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center gap-8">
-                <a href="{{ url_for('index') }}" class="flex items-center gap-3" aria-label="Path2Work Home">
-                    <img src="{{ url_for('static', filename='assets/path2work-logo.png') }}" alt="Path2Work Logo" class="h-9 w-auto rounded-md object-contain bg-white/10 p-1">
-                    <span class="font-display text-lg font-bold tracking-tight">Path2Work</span>
-                </a>
+    {% if current_user %}
+    <div class="workspace-shell">
+        <aside class="workspace-sidebar print:hidden">
+            <a href="{{ url_for('index') }}" class="workspace-brand" aria-label="Path2Work home">
+                <span class="workspace-brand-mark"><img src="{{ url_for('static', filename='assets/path2work-logo.png') }}" alt=""></span>
+                <span class="workspace-brand-copy"><strong>Path2Work</strong><small>PROVE BEFORE HIRE</small></span>
+            </a>
 
-                {% if nav_items %}
-                <nav aria-label="Main" class="hidden items-center gap-1 md:flex">
-                    {% for href, label, prefix in nav_items %}
-                        {% set active = endpoint.startswith(prefix) %}
-                        <a href="{{ href }}" {% if active %}aria-current="page"{% endif %}
-                           class="rounded-md px-3 py-2 text-sm font-medium transition {% if active %}bg-white/15 text-white font-semibold{% else %}text-slate-300 hover:bg-white/10 hover:text-white{% endif %}">
-                            {{ label }}
-                        </a>
-                    {% endfor %}
-                </nav>
-                {% endif %}
-            </div>
+            <div class="workspace-nav-label">WORKSPACE</div>
+            <nav class="workspace-nav" aria-label="Main navigation">
+                {% for href, label, prefix in nav_items %}
+                    {% set active = endpoint.startswith(prefix) %}
+                    <a href="{{ href }}" {% if active %}aria-current="page"{% endif %} class="workspace-nav-link{% if active %} is-active{% endif %}">
+                        {% if prefix == 'candidate.dashboard' %}<i class="ph-bold ph-squares-four" aria-hidden="true"></i>
+                        {% elif prefix == 'candidate.skills_passport' %}<i class="ph-bold ph-identification-card" aria-hidden="true"></i>
+                        {% elif prefix == 'candidate.profile' %}<i class="ph-bold ph-user-circle" aria-hidden="true"></i>
+                        {% elif prefix == 'employer.dashboard' %}<i class="ph-bold ph-users-three" aria-hidden="true"></i>
+                        {% else %}<i class="ph-bold ph-kanban" aria-hidden="true"></i>{% endif %}
+                        <span>{{ label }}</span>
+                        {% if active %}<span class="workspace-nav-indicator" aria-hidden="true"></span>{% endif %}
+                    </a>
+                {% endfor %}
+            </nav>
 
-            <div class="flex items-center gap-3">
-                {% if current_user %}
-                    <div class="hidden text-right leading-tight sm:block">
-                        <div class="text-sm font-semibold text-white">{{ current_user.full_name }}</div>
-                        <div class="text-xs text-slate-300">{{ current_user.role | capitalize }} account</div>
-                    </div>
-                    <a href="{{ url_for('auth.logout') }}" class="rounded-lg border border-white/25 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10">
-                        Sign out
-                    </a>
-                {% else %}
-                    <a href="{{ url_for('auth.login') }}" class="rounded-lg px-3.5 py-2 text-sm font-semibold text-slate-200 transition hover:text-white">
-                        Sign in
-                    </a>
-                    <a href="{{ url_for('auth.register') }}" class="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-slate-200 shadow-sm">
-                        Get verified
-                    </a>
-                {% endif %}
+            <div class="workspace-sidebar-spacer"></div>
+            <div class="workspace-sidebar-note">
+                <span class="workspace-note-icon"><i class="ph-bold ph-sparkle" aria-hidden="true"></i></span>
+                <strong>{% if current_user.role == 'candidate' %}Make your work visible.{% else %}Hire with evidence.{% endif %}</strong>
+                <p>{% if current_user.role == 'candidate' %}Build proof one real-world challenge at a time.{% else %}See what candidates can do before the interview.{% endif %}</p>
             </div>
+            <div class="workspace-sidebar-profile">
+                <span class="workspace-avatar">{{ current_user.full_name[0] | upper }}</span>
+                <span class="workspace-profile-copy"><strong>{{ current_user.full_name }}</strong><small>{{ current_user.role | capitalize }} account</small></span>
+                <a class="workspace-logout-icon" href="{{ url_for('auth.logout') }}" aria-label="Sign out" title="Sign out"><i class="ph-bold ph-sign-out" aria-hidden="true"></i></a>
+            </div>
+        </aside>
+
+        <div class="workspace-page">
+            <header class="workspace-topbar print:hidden">
+                <div>
+                    <p class="workspace-topbar-eyebrow">{% if current_user.role == 'candidate' %}CANDIDATE WORKSPACE{% else %}EMPLOYER WORKSPACE{% endif %}</p>
+                    <p class="workspace-topbar-title">
+                        {% if endpoint.startswith('candidate.dashboard') %}Your dashboard
+                        {% elif endpoint.startswith('candidate.skills_passport') %}Skills Passport
+                        {% elif endpoint.startswith('candidate.profile') %}Profile & readiness
+                        {% elif endpoint.startswith('employer.shortlist') %}Shortlist board
+                        {% else %}Talent discovery{% endif %}
+                    </p>
+                </div>
+                <div class="workspace-topbar-right">
+                    <span class="workspace-live-indicator"><span></span> Evidence-led hiring</span>
+                    <span class="workspace-topbar-divider" aria-hidden="true"></span>
+                    <span class="workspace-topbar-user">{{ current_user.full_name.split(' ')[0] }}</span>
+                </div>
+            </header>
+    {% else %}
+    <header class="public-header print:hidden">
+        <div class="public-header-inner">
+            <a href="{{ url_for('index') }}" class="public-brand" aria-label="Path2Work home">
+                <span class="public-brand-mark"><img src="{{ url_for('static', filename='assets/path2work-logo.png') }}" alt=""></span>
+                <span>Path2Work</span>
+            </a>
+            <nav class="public-nav" aria-label="Main navigation">
+                <a href="{{ url_for('auth.login') }}">Sign in</a>
+                <a href="{{ url_for('auth.register') }}" class="public-nav-cta">Create your free account <i class="ph-bold ph-arrow-up-right" aria-hidden="true"></i></a>
+            </nav>
         </div>
-
-        {% if nav_items %}
-        <nav aria-label="Main (mobile)" class="flex gap-1 overflow-x-auto border-t border-white/10 px-4 py-2 md:hidden">
-            {% for href, label, prefix in nav_items %}
-                {% set active = endpoint.startswith(prefix) %}
-                <a href="{{ href }}" {% if active %}aria-current="page"{% endif %}
-                   class="shrink-0 rounded-md px-3 py-1.5 text-xs font-medium {% if active %}bg-white/15 text-white font-semibold{% else %}text-slate-300{% endif %}">
-                    {{ label }}
-                </a>
-            {% endfor %}
-        </nav>
-        {% endif %}
     </header>
+    {% endif %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div class="mx-auto mt-4 w-full max-w-7xl space-y-2 px-4 sm:px-6 lg:px-8 print:hidden">
+            <div class="flash-stack{% if current_user %} workspace-flash{% else %} public-flash{% endif %} print:hidden">
                 {% for category, message in messages %}
                     <div role="{% if category == 'error' %}alert{% else %}status{% endif %}"
-                         class="flex items-start justify-between gap-3 rounded-lg border p-4 text-sm font-medium shadow-xs
-                         {% if category == 'success' %}border-emerald-300 bg-emerald-50 text-emerald-900
-                         {% elif category == 'error' %}border-red-300 bg-red-50 text-red-900
-                         {% elif category == 'warning' %}border-amber-300 bg-amber-50 text-amber-900
-                         {% else %}border-indigo-200 bg-indigo-50 text-indigo-900{% endif %}">
+                         class="flash-message flash-{{ category }}">
                         <span>{{ message }}</span>
-                        <button type="button" onclick="this.parentElement.remove()" class="-m-1 rounded p-1 hover:bg-black/5" aria-label="Dismiss message">
+                        <button type="button" onclick="this.parentElement.remove()" aria-label="Dismiss message">
                             <i class="ph-bold ph-x" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -132,18 +137,20 @@
         {% endif %}
     {% endwith %}
 
-    <main id="main" class="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+    <main id="main" class="{% if current_user %}workspace-content{% else %}public-content{% endif %}">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="mt-12 border-t border-slate-200 bg-white print:hidden">
-        <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-            <div class="flex items-center gap-2">
-                <img src="{{ url_for('static', filename='assets/path2work-logo.png') }}" alt="" class="h-6 w-auto object-contain">
-                <p><span class="font-semibold text-slate-800">Path2Work South Africa</span> · Early-Career IT Readiness Platform</p>
-            </div>
-            <p class="font-display text-xs text-slate-500">“A CV says what you know. Path2Work shows what you can do.”</p>
+    <footer class="{% if current_user %}workspace-footer{% else %}public-footer{% endif %} print:hidden">
+        <div>
+            <span class="footer-brand">Path2Work</span>
+            <span>South Africa · Early-career IT readiness</span>
         </div>
+        <p>“A CV says what you know. Path2Work shows what you can do.”</p>
     </footer>
+    {% if current_user %}
+        </div>
+    </div>
+    {% endif %}
 </body>
 </html>
