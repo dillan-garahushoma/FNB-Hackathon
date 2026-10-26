@@ -1,0 +1,49 @@
+name: Path2Work smoke checks
+
+on:
+  push:
+    branches:
+      - main
+      - ui/path2work-product-redesign
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Python, Jinja and feedback flow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compile Python
+        run: python -m compileall -q app
+
+      - name: Compile Jinja templates
+        run: |
+          python - <<'PY'
+          from app import create_app
+          app = create_app()
+          with app.app_context():
+              for template_name in app.jinja_env.list_templates():
+                  app.jinja_env.get_template(template_name)
+          print("All discoverable Jinja templates compile.")
+          PY
+
+      - name: Run AI feedback flow tests
+        run: python tests/run_flow_test.py
