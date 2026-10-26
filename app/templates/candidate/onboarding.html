@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Get started | Path2Work{% endblock %}
+{% block content %}
+<div class="p2w-onboarding">
+  <div class="p2w-onboarding-heading">
+    <a href="{{ url_for('candidate.dashboard') }}" class="p2w-inline-link"><i class="ph-bold ph-arrow-left" aria-hidden="true"></i> Skip for now</a>
+    <div class="p2w-onboarding-progress" aria-label="First-time setup"><span class="is-done"></span><span class="is-current"></span><span></span></div>
+    <span class="page-eyebrow">YOUR FIRST FEW MINUTES</span>
+    <h1>Let's make your next step clear.</h1>
+    <p>Set a direction for your profile. You can change these details later, and your answers do not count as verified evidence.</p>
+  </div>
+
+  <form method="POST" action="{{ url_for('candidate.onboarding') }}" class="p2w-onboarding-form">
+    <section class="p2w-onboarding-section">
+      <div class="p2w-onboarding-number">01</div>
+      <div class="p2w-onboarding-section-copy">
+        <h2>Choose the work you want to do</h2>
+        <p>Your target role helps us put the most relevant challenge in front of you first.</p>
+      </div>
+      <div class="p2w-onboarding-fields">
+        <label for="target_pathway" class="field-label">Target IT pathway <span aria-hidden="true">*</span></label>
+        <select id="target_pathway" name="target_pathway" class="field" required>
+          <option value="">Choose a pathway</option>
+          {% for pathway in pathways %}
+          <option value="{{ pathway.slug }}" {% if (preferences and preferences.target_pathway_id == pathway.id) or (not preferences and loop.first) %}selected{% endif %}>{{ pathway.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </section>
+
+    <section class="p2w-onboarding-section">
+      <div class="p2w-onboarding-number">02</div>
+      <div class="p2w-onboarding-section-copy">
+        <h2>Help employers understand your context</h2>
+        <p>Accurate details make your profile more useful in talent searches.</p>
+      </div>
+      <div class="p2w-onboarding-fields">
+        <div>
+          <label for="institution" class="field-label">University, TVET or institution</label>
+          <input id="institution" name="institution" class="field" autocomplete="organization" value="{{ user.institution or '' }}" placeholder="Your institution">
+        </div>
+        <div>
+          <label for="graduation_year" class="field-label">Graduation year</label>
+          <input id="graduation_year" name="graduation_year" type="number" min="2020" max="2035" class="field" value="{{ user.graduation_year or 2026 }}">
+        </div>
+        <div>
+          <label for="location" class="field-label">Preferred location</label>
+          {% set locations = ['Johannesburg, Gauteng', 'Pretoria, Gauteng', 'Cape Town, Western Cape', 'Durban, KwaZulu-Natal', 'Gqeberha, Eastern Cape', 'Bloemfontein, Free State', 'Remote / Nationwide', 'South Africa'] %}
+          <select id="location" name="location" class="field">
+            {% for loc in locations %}
+            <option value="{{ loc }}" {% if user.location == loc or (user.location == 'Durban' and loc.startswith('Durban')) or (user.location == 'Cape Town' and loc.startswith('Cape Town')) or (user.location == 'Johannesburg' and loc.startswith('Johannesburg')) %}selected{% endif %}>{{ loc }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="p2w-onboarding-work-toggle">
+          <label for="is_open_to_work"><span><strong>Open to work opportunities</strong><small>Let employers see that you are open to relevant opportunities.</small></span><input id="is_open_to_work" type="checkbox" name="is_open_to_work" {% if user.is_open_to_work %}checked{% endif %}></label>
+        </div>
+        <div>
+          <label for="skills_summary" class="field-label">Skills or interests <span class="text-slate-400">(optional)</span></label>
+          <textarea id="skills_summary" name="skills_summary" class="field" rows="3" maxlength="600" placeholder="Python, SQL, cloud fundamentals, customer support…">{{ preferences.skills_summary if preferences and preferences.skills_summary else '' }}</textarea>
+          <p class="field-hint">This is self-described context, not verified skills. Verified skills come from assessed evidence.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="p2w-onboarding-footer">
+      <p><i class="ph-bold ph-lock-key" aria-hidden="true"></i> Your preferences can be updated any time.</p>
+      <button type="submit" class="p2w-button p2w-button-primary">Save and open workspace <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></button>
+    </div>
+  </form>
+</div>
+{% endblock %}
