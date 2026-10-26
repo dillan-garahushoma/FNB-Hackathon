@@ -71,14 +71,22 @@ Seeded by `seed.py`. Password for all accounts: `password123`.
 |---|---|
 | `/` | Role-aware entry — redirects to the right dashboard or to sign in |
 | `/login`, `/register`, `/logout` | Authentication (candidate or employer) |
-| `/candidate/dashboard` | Candidate home: readiness score, trust level, pathway chooser |
+| `/settings` | Account basics and authenticated password change |
+| `/candidate/onboarding` | First-run candidate setup: target pathway, location, availability and optional profile context |
+| `/candidate/dashboard` | Candidate home: readiness score, trust level, next step and pathway chooser |
+| `/candidate/profile` | Update institution, graduation year, location, open-to-work state, target pathway and optional self-described skills |
 | `/candidate/workproof/<challenge_id>` | The three-stage WorkProof stepper |
 | `/assessment/submit/<challenge_id>` | Saves a WorkProof draft or submits it for review |
 | `/assessment/submission/<id>/feedback` | AI first review, with status polling and retry |
 | `/passport/<user_id>` | Public Skills Passport (contact details gated to owner/employers) |
-| `/employer/dashboard` | Talent pipeline with pathway, skill, location, trust and score filters |
+| `/employer/dashboard` | Talent discovery with pathway, skill, location, trust, score and Open-to-Work filters | 
+| `/employer/shortlist-board` | Review candidates by shortlist status and next action |
 | `/employer/candidate/<user_id>/evidence` | Full candidate evidence review + shortlist actions |
 | `/employer/export/csv` | CSV export of verified candidates |
+
+## Candidate profile data
+
+Candidate role preferences are stored in the `candidate_preferences` table: selected target pathway, optional self-described skills context, and onboarding completion. The existing application factory calls `db.create_all()`, so the table is created when the app next starts. The summary can be used for discovery, but is explicitly labelled self-described and is not considered verified evidence. Existing candidate records continue to work without a preferences row until the candidate saves their profile.
 
 ## AI review (optional)
 
