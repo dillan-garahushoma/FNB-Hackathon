@@ -15,12 +15,12 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(256), nullable=False)
     full_name = db.Column(db.String(120), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default="candidate") 
-    institution = db.Column(db.String(150), nullable=True) 
+    role = db.Column(db.String(20), nullable=False, default="candidate")
+    institution = db.Column(db.String(150), nullable=True)
     graduation_year = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=utc_now)
 
-    # --- NEW B2B FEATURES ---
+    # Candidate discovery preferences
     location = db.Column(db.String(100), nullable=True, default="South Africa")
     is_open_to_work = db.Column(db.Boolean, default=True)
 
@@ -84,9 +84,7 @@ class WorkProofSubmission(db.Model):
     build_code_snippet = db.Column(db.Text, nullable=True)
     explain_notes = db.Column(db.Text, nullable=True)
     adapt_solution = db.Column(db.Text, nullable=True)
-    status = db.Column(
-        db.String(20), nullable=False, default="in_progress"
-    )
+    status = db.Column(db.String(20), nullable=False, default="in_progress")
     evidence_score = db.Column(db.Integer, nullable=False, default=0)
     readiness_feedback = db.Column(db.Text, nullable=True)
     next_best_action = db.Column(db.Text, nullable=True)
@@ -144,10 +142,24 @@ class EmployerShortlist(db.Model):
     employer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     candidate_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     notes = db.Column(db.Text, nullable=True)
-    status = db.Column(
-        db.String(20), nullable=False, default="shortlisted"
-    )
+    status = db.Column(db.String(20), nullable=False, default="shortlisted")
     created_at = db.Column(db.DateTime, default=utc_now)
 
     employer = db.relationship("User", foreign_keys=[employer_id], backref="shortlists_created")
     candidate_user = db.relationship("User", foreign_keys=[candidate_id], backref="shortlisted_by")
+
+
+class CandidatePreferences(db.Model):
+    """Persisted candidate discovery preferences; safe to add to existing databases."""
+
+    __tablename__ = "candidate_preferences"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False, index=True)
+    target_pathway_id = db.Column(db.Integer, db.ForeignKey("pathways.id"), nullable=True)
+    skills_summary = db.Column(db.Text, nullable=True)
+    onboarding_completed = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime, default=utc_now)
+    updated_at = db.Column(db.DateTime, default=utc_now, onupdate=utc_now)
+
+    target_pathway = db.relationship("Pathway", lazy="joined")
