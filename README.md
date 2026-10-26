@@ -1,5 +1,13 @@
 # Path2Work — Prove Before Hire
 
+> 🚀 **Live demo:** [https://fnb-hackathon.onrender.com](https://fnb-hackathon.onrender.com)
+>
+> | Role | Email | Password |
+> |------|-------|----------|
+> | Candidate | `sipho.dlamini@richfield.ac.za` | `password123` |
+> | Candidate | `zanele.khumalo@wits.ac.za` | `password123` |
+> | Employer | `talent@paystack-sa.co.za` | `password123` |
+
 Path2Work is a South African early-career IT readiness and verified-talent platform.
 IT students and recent graduates prove they can do the job — with role-specific WorkProof
 challenges (Build → Explain → Adapt), a readiness score and a Skills Passport with five
